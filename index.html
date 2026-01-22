@@ -1,130 +1,113 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>IFE_System_v99_FINAL</title><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"><style>body{margin:0;font-family:sans-serif;background:#000;color:#fff;overflow:hidden}.wrap{display:flex;height:100vh}
-.sdbr{width:90px;background:#006564;display:flex;flex-direction:column;align-items:center;padding-top:20px;z-index:9}.btn{width:60px;height:60px;margin-bottom:10px;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff;opacity:.6;cursor:pointer;border-radius:10px}.btn:hover,.btn.act{opacity:1;background:rgba(255,255,255,0.2)}
-.main{flex:1;background:#111;position:relative;overflow:hidden}.bg{position:absolute;width:100%;height:100%;top:0;left:0;z-index:0;background:url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Earthmap1000x500compac.jpg/1000px-Earthmap1000x500compac.jpg');background-size:cover;animation:rot 120s linear infinite;opacity:.6}@keyframes rot{from{background-position:0 0}to{background-position:200% 0}}
-.cont{position:absolute;z-index:2;top:0;left:0;width:100%;height:100%;padding:30px;overflow-y:auto;background:linear-gradient(90deg,#000,transparent)}.hide{display:none!important}
-.c-card{display:inline-block;width:200px;margin:10px;vertical-align:top;cursor:pointer;transition:.2s}.c-card:hover{transform:scale(1.05)}.img-box{width:100%;height:280px;background:#333;background-size:cover;border-radius:8px}.meta{padding:10px}
-.mod{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);z-index:999;display:flex;justify-content:center;align-items:center}.bbox{background:#222;padding:20px;width:500px;border:1px solid #444}
-input{width:100%;padding:10px;margin:5px 0;background:#000;border:1px solid #555;color:#fff}
-.vid-o{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9999;display:flex;justify-content:center;align-items:center}video{width:90%;height:90%}.x-btn{position:absolute;top:20px;right:20px;font-size:30px;cursor:pointer}
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CX_IFE_Build_vFINAL_FINAL_2</title><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet"><style>
+:root{--c:#006564;--g:#c6a87c;--b:#000;--w:#fff}body{margin:0;font-family:'Inter',sans-serif;background:var(--b);color:var(--w);overflow:hidden;height:100vh}#bg{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;background:radial-gradient(circle at 30% 30%,#1a2a40,#000)}.globe{position:absolute;top:50%;left:50%;width:800px;height:800px;margin:-400px;border-radius:50%;background:url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Earthmap1000x500compac.jpg/1000px-Earthmap1000x500compac.jpg');background-size:200% 100%;box-shadow:inset -100px -50px 100px 20px rgba(0,0,0,.95);animation:spin 120s linear infinite}@keyframes spin{0%{background-position:0 0}100%{background-position:200% 0}}
+.ui{position:absolute;z-index:10;width:100%;height:100%;display:flex}.bar{width:90px;background:rgba(0,30,30,0.9);backdrop-filter:blur(10px);display:flex;flex-direction:column;align-items:center;padding:30px 0;border-right:1px solid rgba(255,255,255,0.1)}.logo{width:50px;margin-bottom:50px;fill:white}.n-it{width:60px;height:60px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:10px;color:#889;cursor:pointer;transition:.2s}.n-it:hover,.n-it.act{background:var(--c);color:#fff;box-shadow:0 5px 15px rgba(0,100,100,.4)}.n-it i{font-size:20px;margin-bottom:4px}.n-it span{font-size:9px;font-weight:700;text-transform:uppercase}
+.main{flex:1;padding:40px;background:linear-gradient(90deg,rgba(0,0,0,.9),rgba(0,0,0,.1));overflow-y:auto;position:relative}.top{display:flex;justify-content:space-between;border-bottom:1px solid #333;padding-bottom:20px;margin-bottom:30px}.flt span{font-size:24px;font-weight:300}.page{display:none;animation:up .4s}.page.s{display:block}@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.grd{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:25px}.cd{background:rgba(255,255,255,0.05);border-radius:8px;overflow:hidden;transition:.3s;cursor:pointer;border:1px solid transparent}.cd:hover{transform:scale(1.05);border-color:var(--c);background:#222;z-index:2}.post{width:100%;height:280px;object-fit:cover}.inf{padding:12px}.tit{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sub{font-size:11px;color:#aaa;margin-top:4px}
+.mod{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);z-index:999;display:none;justify-content:center;align-items:center}.bx{background:#1a1a1a;width:500px;padding:30px;border-radius:12px;border:1px solid var(--c);box-shadow:0 0 50px #000}.bx h3{margin-top:0;color:var(--g)}.fm-g{margin-bottom:15px}label{display:block;color:#aaa;font-size:11px;margin-bottom:5px;text-transform:uppercase}input,select{width:100%;background:#333;border:1px solid #444;color:#fff;padding:10px;border-radius:4px}.btn-go{width:100%;background:var(--c);color:#fff;padding:12px;border:none;border-radius:6px;font-weight:bold;cursor:pointer;margin-top:10px}
+.vid-ov{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9000;display:none;flex-direction:column;justify-content:center;align-items:center}video{width:90%;max-height:80vh}.cls{position:absolute;top:30px;right:30px;font-size:30px;cursor:pointer}
 </style></head><body>
 
-<div class="wrap">
- <div class="sdbr">
-  <div style="font-size:30px;margin-bottom:40px"><i class="fas fa-feather-alt"></i></div>
-  <div class="btn act" onclick="nav('p1',this)"><i class="fas fa-home"></i><br><small>HOME</small></div>
-  <div class="btn" onclick="nav('p2',this)"><i class="fas fa-film"></i><br><small>MOVIES</small></div>
-  <div class="btn" onclick="nav('p3',this)"><i class="fas fa-gamepad"></i><br><small>GAMES</small></div>
-  <div class="btn" style="margin-top:auto" onclick="document.getElementById('set_mod').classList.remove('hide')"><i class="fas fa-cog"></i></div>
+<div id="bg"><div class="globe"></div></div>
+
+<div class="ui">
+ <div class="bar">
+  <svg class="logo" viewBox="0 0 100 100"><path d="M20,50 Q40,20 80,40 T90,60" fill="none" stroke="white" stroke-width="8" stroke-linecap="round"/></svg>
+  <div class="n-it act" onclick="sw('h',this)"><i class="fas fa-home"></i><span>Flight</span></div>
+  <div class="n-it" onclick="sw('m',this)"><i class="fas fa-film"></i><span>Watch</span></div>
+  <div class="n-it" onclick="sw('g',this)"><i class="fas fa-gamepad"></i><span>Play</span></div>
+  <div class="n-it" style="margin-top:auto;color:var(--g)" onclick="togSet()"><i class="fas fa-cog"></i><span>Crew</span></div>
  </div>
 
  <div class="main">
-  <div class="bg" id="bg_el"></div>
-  
-  <div id="p1" class="cont">
-   <h1 style="font-size:50px">Welcome Aboard</h1>
-   <h2>CX-882 <span style="color:#c6a87c">HKG > TYO</span></h2>
-   <div style="margin-top:50px;font-size:20px;color:#aaa">
-    Temp: -50C <br> Alt: 34,000ft <br> Speed: 500mph
+  <div class="top">
+   <div class="flt"><span style="color:var(--g);font-weight:600">CATHAY</span> | CX 882</div>
+   <div class="flt">HKG <i class="fas fa-arrow-right" style="font-size:14px;color:var(--c);margin:0 10px"></i> TYO</div>
+  </div>
+
+  <div id="h" class="page s">
+   <h1 style="font-size:40px;margin-bottom:10px">Welcome, Seat 42A</h1>
+   <p style="color:#ccc;font-size:18px;max-width:500px">We are cruising at an altitude of 38,000ft. The outside temperature is -52°C. Arrival time: 14:30.</p>
+   <div style="margin-top:60px;padding:20px;background:rgba(255,255,255,0.08);border-left:4px solid var(--c);display:inline-block">
+     <div style="font-size:12px;color:#aaa">DISTANCE REMAINING</div>
+     <div style="font-size:32px;font-weight:700">1,240 <span style="font-size:16px">km</span></div>
    </div>
   </div>
 
-  <div id="p2" class="cont hide">
-   <h1>Movies</h1>
-   <div id="m_list"></div>
+  <div id="m" class="page">
+   <h2 style="color:var(--g);letter-spacing:1px;border-bottom:1px solid #333;padding-bottom:10px;margin-bottom:20px">ENTERTAINMENT</h2>
+   <div class="grd" id="mov_lst"></div>
   </div>
 
-  <div id="p3" class="cont hide">
-   <h1>Games</h1>
-   <div id="g_list"></div>
-   <div id="game_frame" class="hide" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:500;padding:50px">
-    <button onclick="document.getElementById('game_frame').classList.add('hide')" style="background:red;color:white;padding:10px;border:none">CLOSE GAME</button>
-    <iframe id="gf_src" style="width:100%;height:80%;border:none;background:#fff;margin-top:20px"></iframe>
-   </div>
+  <div id="g" class="page">
+   <h2 style="color:var(--g);letter-spacing:1px;border-bottom:1px solid #333;padding-bottom:10px;margin-bottom:20px">ARCADE</h2>
+   <div class="grd" id="gam_lst"></div>
+   <iframe id="gm_fr" style="display:none;position:fixed;top:5%;left:5%;width:90%;height:90%;z-index:5000;border:none;background:#fff;border-radius:10px"></iframe>
+   <div id="gm_cls" onclick="clsG()" style="display:none;position:fixed;top:2%;right:2%;z-index:5001;background:red;padding:10px;cursor:pointer;border-radius:5px">CLOSE GAME</div>
   </div>
 
  </div>
 </div>
 
-<div id="set_mod" class="mod hide">
- <div class="bbox">
-  <div style="display:flex;justify-content:space-between"><h3>Crew Panel</h3><span onclick="document.getElementById('set_mod').classList.add('hide')" style="cursor:pointer">X</span></div>
-  <hr style="border-color:#333">
-  <h4>Add Content</h4>
-  <select id="add_type" style="padding:10px;background:#333;color:#fff;border:none"><option value="mov">Movie</option><option value="gam">Game</option></select>
-  <input id="n_tit" placeholder="Title Name">
-  <input id="n_img" placeholder="Image URL (Poster)">
-  <input id="n_lnk" placeholder="Link (mp4 or game url)">
-  <button onclick="addStuff()" style="width:100%;padding:15px;background:#006564;color:white;border:none;margin-top:10px;cursor:pointer">ADD TO SYSTEM</button>
-  <hr>
-  <input id="bg_url" placeholder="Change BG Image URL...">
-  <button onclick="document.getElementById('bg_el').style.backgroundImage='url('+document.getElementById('bg_url').value+')'" style="width:100%;padding:10px;background:#444;color:white;border:none;margin-top:5px">UPDATE BG</button>
+<div class="mod" id="set_pan">
+ <div class="bx">
+  <div style="display:flex;justify-content:space-between;margin-bottom:20px"><h3>CREW CONTROL</h3><i class="fas fa-times" onclick="togSet()" style="cursor:pointer"></i></div>
+  <div class="fm-g"><label>ADD NEW CONTENT</label><select id="n_typ"><option value="1">Movie</option><option value="2">Game</option></select></div>
+  <div class="fm-g"><input id="n_tt" placeholder="Title Name..."></div>
+  <div class="fm-g"><input id="n_im" placeholder="Image URL..."></div>
+  <div class="fm-g"><input id="n_ur" placeholder="Video/Game Link..."></div>
+  <button class="btn-go" onclick="addIt()">UPLOAD TO SYSTEM</button>
  </div>
 </div>
 
-<div id="vp" class="vid-o hide">
- <div class="x-btn" onclick="document.getElementById('vp').classList.add('hide');document.getElementById('vv').pause()">X</div>
- <video id="vv" controls></video>
+<div class="vid-ov" id="v_ov">
+ <div class="cls" onclick="vClose()"><i class="fas fa-times"></i></div>
+ <video id="v_main" controls></video>
 </div>
 
 <script>
-var m = [
- {t:"Big Buck Bunny", i:"https://upload.wikimedia.org/wikipedia/commons/c/c5/Big_buck_bunny_poster_big.jpg", l:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"},
- {t:"Sintel", i:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Sintel_poster.jpg/800px-Sintel_poster.jpg", l:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"},
- {t:"Tears of Steel", i:"https://mango.blender.org/wp-content/uploads/2013/05/01_thom_celia_bridge.jpg", l:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"},
- {t:"Elephants Dream", i:"https://upload.wikimedia.org/wikipedia/commons/0/0c/Elephants_Dream_poster.jpg", l:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"},
- {t:"Cosmos Laundromat", i:"https://upload.wikimedia.org/wikipedia/commons/e/e0/Cosmos_Laundromat_-_Poster.jpg", l:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"}
-];
+// messy data arrays
+var M=[{t:"Big Buck Bunny",p:"https://upload.wikimedia.org/wikipedia/commons/c/c5/Big_buck_bunny_poster_big.jpg",u:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"},{t:"Sintel",p:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Sintel_poster.jpg/800px-Sintel_poster.jpg",u:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"},{t:"Tears of Steel",p:"https://mango.blender.org/wp-content/uploads/2013/05/01_thom_celia_bridge.jpg",u:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"}];
+var G=[{t:"Pac-Man",p:"https://upload.wikimedia.org/wikipedia/commons/2/26/Pacman_HD.png",u:"https://freepacman.org/"},{t:"Snake",p:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Snake_video_game_screen.png/640px-Snake_video_game_screen.png",u:"https://patorjk.com/games/snake/"}];
 
-var g = [
- {t:"Snake", i:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Snake_video_game_screen.png/640px-Snake_video_game_screen.png", l:"https://patorjk.com/games/snake/"},
- {t:"Pacman Clone", i:"https://upload.wikimedia.org/wikipedia/commons/2/26/Pacman_HD.png", l:"https://freepacman.org/"}
-];
-
-function r(){
- var h1=""; var h2="";
- for(var i=0;i<m.length;i++){
-  h1+=`<div class="c-card" onclick="play('${m[i].l}')"><div class="img-box" style="background-image:url('${m[i].i}')"></div><div class="meta"><b>${m[i].t}</b></div></div>`
- }
- document.getElementById('m_list').innerHTML=h1;
-
- for(var j=0;j<g.length;j++){
-  h2+=`<div class="c-card" onclick="playG('${g[j].l}')"><div class="img-box" style="background-image:url('${g[j].i}')"></div><div class="meta"><b>${g[j].t}</b></div></div>`
- }
- document.getElementById('g_list').innerHTML=h2;
-}
-
-function nav(id,el){
- var x = document.getElementsByClassName('cont');
- for(var i=0;i<x.length;i++){x[i].classList.add('hide')}
- document.getElementById(id).classList.remove('hide');
- var y = document.getElementsByClassName('btn');
- for(var k=0;k<y.length;k++){y[k].classList.remove('act')}
+function sw(id,el){
+ var ps=document.querySelectorAll('.page'); ps.forEach(p=>p.classList.remove('s'));
+ document.getElementById(id).classList.add('s');
+ var ns=document.querySelectorAll('.n-it'); ns.forEach(n=>n.classList.remove('act'));
  if(el)el.classList.add('act');
 }
-
-function play(u){
- document.getElementById('vp').classList.remove('hide');
- var v = document.getElementById('vv');
- v.src=u; v.play();
+function ren(){
+ var h=""; M.forEach(x=>{ h+=`<div class="cd" onclick="play('${x.u}')"><img src="${x.p}" class="post"><div class="inf"><div class="tit">${x.t}</div><div class="sub">Movie</div></div></div>` });
+ document.getElementById('mov_lst').innerHTML=h;
+ var h2=""; G.forEach(y=>{ h2+=`<div class="cd" onclick="playG('${y.u}')"><img src="${y.p}" class="post"><div class="inf"><div class="tit">${y.t}</div><div class="sub">Game</div></div></div>` });
+ document.getElementById('gam_lst').innerHTML=h2;
 }
-
-function playG(u){
- document.getElementById('game_frame').classList.remove('hide');
- document.getElementById('gf_src').src=u;
+function play(url){
+ var v=document.getElementById('v_main'); v.src=url;
+ document.getElementById('v_ov').style.display='flex'; v.play();
 }
-
-function addStuff(){
- var typ = document.getElementById('add_type').value;
- var o = {
-  t: document.getElementById('n_tit').value,
-  i: document.getElementById('n_img').value,
-  l: document.getElementById('n_lnk').value
- };
- if(typ=='mov'){ m.push(o); } else { g.push(o); }
- r(); // re render
- document.getElementById('set_mod').classList.add('hide');
- alert('Added '+o.t);
+function vClose(){
+ var v=document.getElementById('v_main'); v.pause();
+ document.getElementById('v_ov').style.display='none';
 }
-
-window.onload=r;
+function playG(url){
+ document.getElementById('gm_fr').src=url;
+ document.getElementById('gm_fr').style.display='block';
+ document.getElementById('gm_cls').style.display='block';
+}
+function clsG(){
+ document.getElementById('gm_fr').style.display='none'; document.getElementById('gm_fr').src="";
+ document.getElementById('gm_cls').style.display='none';
+}
+function togSet(){
+ var s=document.getElementById('set_pan');
+ s.style.display=(s.style.display=='flex')?'none':'flex';
+}
+function addIt(){
+ var typ=document.getElementById('n_typ').value;
+ var o={t:document.getElementById('n_tt').value,p:document.getElementById('n_im').value,u:document.getElementById('n_ur').value};
+ if(typ=="1") M.push(o); else G.push(o);
+ ren(); togSet(); alert("Content Added!");
+}
+// init
+window.onload=ren;
 </script></body></html>
