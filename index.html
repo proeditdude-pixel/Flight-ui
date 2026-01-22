@@ -3,1045 +3,844 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>CX_IFE_V27_TITAN_OS</title>
+<title>CX_IFE_V30_OMNIBUS</title>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=Oswald:wght@200;300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=Oswald:wght@200;300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBiabDx61thAOm_A-_2x_mC9Nb9gArRCns",
+        authDomain: "flight-ui.firebaseapp.com",
+        databaseURL: "https://flight-ui-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "flight-ui",
+        storageBucket: "flight-ui.firebasestorage.app",
+        messagingSenderId: "507585547506",
+        appId: "1:507585547506:web:a2f401ddda5055b59ed46b",
+        measurementId: "G-894GEVXT4V"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+    console.log(">> FIREBASE V30 ONLINE");
+    window.FB_APP = app;
+</script>
 
 <style>
-/* =============================================================================
-   SECTION 1: CSS VARIABLES & RESET
-   =============================================================================
+/* ==========================================================================
+   1. CORE VARIABLES 
+   ========================================================================== 
 */
 :root {
-    /* IDENTITY */
-    --brand-teal: #006B6E;
-    --brand-teal-dark: #004F52;
-    --brand-teal-light: #008C90;
-    --brand-gold: #C3A676;
-    --brand-gold-dim: #8a734e;
+    /* DARK MODE PALETTE */
+    --bg-deep: #000000;
+    --bg-main: #0a0a0a;
+    --bg-card: #141414;
+    --bg-card-hover: #1f1f1f;
+    --bg-input: #050505;
     
-    /* SURFACES */
-    --bg-deep: #050505;
-    --bg-panel: #121212;
-    --bg-panel-glass: rgba(18, 18, 18, 0.85);
-    --bg-card: #1E1E1E;
+    /* ACCENTS */
+    --acc-teal: #006B6E;
+    --acc-teal-glow: rgba(0, 107, 110, 0.5);
+    --acc-gold: #C3A676;
+    --acc-gold-dim: #8a734e;
+    --acc-red: #d63031;
     
-    /* BORDERS */
-    --border-subtle: 1px solid rgba(255,255,255,0.08);
-    --border-light: 1px solid rgba(255,255,255,0.15);
-    --border-active: 1px solid var(--brand-teal);
-
     /* TEXT */
-    --text-primary: #FFFFFF;
-    --text-secondary: #A0A0A0;
-    --text-tertiary: #606060;
-
-    /* ANIMATIONS */
-    --anim-fast: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    --anim-smooth: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-    --anim-slow: 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    --txt-white: #ffffff;
+    --txt-grey: #a0a0a0;
+    --txt-dim: #555555;
+    
+    /* LAYOUT */
+    --sb-width: 100px;
+    --hd-height: 80px;
+    --pad-page: 40px;
+    
+    /* BORDERS & EFFECTS */
+    --border: 1px solid rgba(255,255,255,0.08);
+    --shadow: 0 10px 30px rgba(0,0,0,0.5);
+    --glass: blur(10px);
 }
 
-* {
-    box-sizing: border-box;
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    scrollbar-width: none; /* Firefox */
-}
-
-*::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
-}
-
+/* ==========================================================================
+   2. RESET & BASE 
+   ========================================================================== 
+*/
+* { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
 body {
-    margin: 0;
-    padding: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: var(--bg-deep);
-    color: var(--text-primary);
+    margin: 0; padding: 0;
+    width: 100vw; height: 100vh;
+    background: var(--bg-deep);
+    color: var(--txt-white);
     font-family: 'Inter', sans-serif;
     overflow: hidden;
     display: flex;
 }
+::-webkit-scrollbar { width: 0; display: none; }
 
-/* =============================================================================
-   SECTION 2: GLOBAL UTILITIES & ANIMATIONS
-   =============================================================================
+/* UTILITY FONTS */
+.font-head { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
+.font-mono { font-family: 'Space Mono', monospace; }
+.text-teal { color: var(--acc-teal); }
+.text-gold { color: var(--acc-gold); }
+
+/* ==========================================================================
+   3. SYSTEM LAYERS (BOOT, LOCK, VIEWER)
+   ========================================================================== 
 */
-
-.hidden { display: none !important; }
-.fade-in { animation: fadeIn var(--anim-smooth) forwards; }
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-@keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-}
-
-/* =============================================================================
-   SECTION 3: BOOT SEQUENCE (AVIONICS SIMULATION)
-   =============================================================================
-*/
-#boot-layer {
+#sys-boot {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #000; z-index: 9999;
-    font-family: 'Share Tech Mono', monospace;
-    padding: 40px;
-    display: flex; flex-direction: column; justify-content: flex-end;
+    background: #000; z-index: 9000;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
 }
+.boot-txt { font-family: 'Space Mono'; color: var(--acc-teal); font-size: 12px; margin-top: 10px; }
 
-.boot-log { color: var(--brand-teal); font-size: 14px; margin-bottom: 5px; opacity: 0.8; }
-.boot-progress {
-    width: 100%; height: 4px; background: #333; margin-top: 20px;
-}
-.boot-bar {
-    width: 0%; height: 100%; background: var(--brand-teal);
-    transition: width 0.2s linear;
-}
-
-/* =============================================================================
-   SECTION 4: WELCOME SCREEN
-   =============================================================================
-*/
-#welcome-layer {
+#sys-lock {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: #000;
-    z-index: 5000;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    transition: transform 1s cubic-bezier(0.7, 0, 0.3, 1);
+    background: #000; z-index: 5000;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex; align-items: center; justify-content: center;
 }
-
-.wc-bg {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-size: cover; background-position: center;
-    opacity: 0.5; filter: contrast(1.2);
-}
-
-.wc-container {
-    position: relative; z-index: 2;
+.lock-cont {
     text-align: center;
-    padding: 40px;
-    background: rgba(0,0,0,0.4);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 4px;
+    background: rgba(20,20,20,0.8);
+    backdrop-filter: blur(20px);
+    padding: 60px;
+    border: var(--border);
+    border-radius: 20px;
+    width: 500px;
 }
-
-.wc-logo { width: 100px; filter: brightness(0) invert(1); margin-bottom: 30px; }
-.wc-title { font-family: 'Oswald'; font-size: 4rem; letter-spacing: 0.2em; text-transform: uppercase; margin: 0; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-.wc-subtitle { font-family: 'Inter'; font-size: 0.9rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--brand-gold); margin-top: 10px; }
-.wc-btn {
-    margin-top: 60px; padding: 18px 60px;
+.lock-logo { width: 120px; height: auto; margin-bottom: 20px; }
+.btn-unlock {
     background: transparent; border: 1px solid rgba(255,255,255,0.3);
-    color: #fff; font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase;
-    cursor: pointer; transition: all 0.3s ease;
-    position: relative; overflow: hidden;
+    color: #fff; padding: 15px 40px; font-family: 'Space Mono';
+    text-transform: uppercase; cursor: pointer; margin-top: 30px;
+    transition: 0.3s;
 }
-.wc-btn:hover { background: #fff; color: var(--brand-teal); letter-spacing: 0.4em; }
+.btn-unlock:hover { background: #fff; color: #000; border-color: #fff; }
 
-/* =============================================================================
-   SECTION 5: SIDEBAR NAVIGATION
-   =============================================================================
+#sys-viewer {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000; z-index: 6000; display: none; flex-direction: column;
+}
+.viewer-bar {
+    height: 50px; background: #111; display: flex;
+    justify-content: space-between; align-items: center; padding: 0 20px;
+    border-bottom: 1px solid #333;
+}
+.viewer-frame { flex: 1; border: none; width: 100%; height: 100%; }
+
+/* ==========================================================================
+   4. NAVIGATION SIDEBAR
+   ========================================================================== 
 */
 .sidebar {
-    position: relative; z-index: 100;
-    width: 110px; height: 100%;
-    background: #000;
-    border-right: var(--border-subtle);
-    display: flex; flex-direction: column;
+    width: var(--sb-width); height: 100%;
+    background: #080808; border-right: var(--border);
+    display: flex; flex-direction: column; z-index: 100;
 }
-
-.sb-brand {
-    height: 130px;
-    background-color: var(--brand-teal);
-    display: flex; justify-content: center; align-items: center;
-    box-shadow: 0 5px 30px rgba(0,0,0,0.5);
-    margin-bottom: 20px;
-    position: relative;
+.sb-logo-box {
+    height: 100px; display: flex; justify-content: center; align-items: center;
+    background: linear-gradient(to bottom, rgba(0,107,110,0.1), transparent);
 }
-.sb-brand::after {
-    content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
-    border-left: 10px solid transparent; border-right: 10px solid transparent;
-    border-top: 10px solid var(--brand-teal);
-}
-.sb-logo-img { width: 55px; height: 55px; object-fit: contain; filter: brightness(0) invert(1); }
+.sb-logo { width: 40px; height: 40px; object-fit: contain; }
 
-.sb-nav { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
-
-.nav-item {
-    height: 85px;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    color: var(--text-secondary);
-    cursor: pointer; transition: all 0.2s ease;
+.nav-btn {
+    height: 90px; display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    color: var(--txt-grey); cursor: pointer; transition: 0.3s;
     border-left: 3px solid transparent;
 }
-.nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
-.nav-item.active {
-    color: var(--brand-teal);
-    border-left-color: var(--brand-teal);
+.nav-btn i { font-size: 20px; margin-bottom: 8px; }
+.nav-btn span { font-size: 9px; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
+.nav-btn:hover { color: #fff; background: rgba(255,255,255,0.03); }
+.nav-btn.active {
+    color: var(--acc-teal); border-left: 3px solid var(--acc-teal);
     background: linear-gradient(90deg, rgba(0,107,110,0.1), transparent);
 }
-.nav-item i { font-size: 20px; margin-bottom: 8px; }
-.nav-item span { font-size: 9px; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
 
-/* =============================================================================
-   SECTION 6: MAIN STAGE & TOP BAR
-   =============================================================================
+/* ==========================================================================
+   5. MAIN STAGE & HEADER
+   ========================================================================== 
 */
-.stage { flex: 1; position: relative; z-index: 50; display: flex; flex-direction: column; }
-.bg-wallpaper {
+.stage { flex: 1; position: relative; display: flex; flex-direction: column; }
+
+/* BACKGROUNDS */
+.bg-layer {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-size: cover; background-position: center;
-    z-index: 0; opacity: 0.15; pointer-events: none;
-    transition: background-image 0.5s ease;
+    background-size: cover; background-position: center; opacity: 0.3;
+    z-index: 0; transition: background-image 0.5s;
+}
+.bg-vignette {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at center, transparent 0%, #000 120%);
+    z-index: 1; pointer-events: none;
 }
 
-.top-bar {
-    height: 80px; padding: 0 40px;
+/* HEADER */
+.header {
+    height: var(--hd-height); padding: 0 40px;
     display: flex; justify-content: space-between; align-items: center;
-    border-bottom: var(--border-subtle);
-    background: linear-gradient(180deg, rgba(0,0,0,0.9), transparent);
-    z-index: 10;
+    border-bottom: var(--border); background: rgba(10,10,10,0.5);
+    backdrop-filter: blur(10px); position: relative; z-index: 10;
+}
+.flight-track { display: flex; align-items: center; gap: 20px; }
+.ft-code { font-family: 'Oswald'; font-size: 32px; }
+.ft-icon { color: var(--acc-gold); transform: rotate(90deg); font-size: 18px; }
+.user-info { display: flex; align-items: center; gap: 30px; }
+.seat-badge {
+    border: 1px solid var(--acc-gold); color: var(--acc-gold);
+    padding: 5px 12px; font-family: 'Oswald'; border-radius: 4px; font-size: 18px;
 }
 
-.tb-flight { display: flex; align-items: center; gap: 20px; }
-.tb-code { font-family: 'Oswald'; font-size: 28px; letter-spacing: 2px; }
-.tb-plane { color: var(--brand-gold); transform: rotate(90deg); font-size: 18px; }
-
-.tb-user { display: flex; align-items: center; gap: 30px; }
-.tb-seat-badge {
-    border: 1px solid var(--brand-gold); color: var(--brand-gold);
-    padding: 5px 12px; font-family: 'Oswald'; font-size: 18px; border-radius: 4px;
-}
-.tb-clock { font-family: 'Share Tech Mono'; font-size: 22px; color: #fff; }
-
-/* =============================================================================
-   SECTION 7: PAGE ARCHITECTURE
-   =============================================================================
+/* ==========================================================================
+   6. PAGE CONTAINERS
+   ========================================================================== 
 */
-.viewport { flex: 1; position: relative; overflow: hidden; }
+.content-area { flex: 1; position: relative; overflow: hidden; z-index: 10; }
+
 .page {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    padding: 40px; overflow-y: auto; opacity: 0; transform: translateY(20px);
-    transition: all 0.5s var(--anim-smooth); pointer-events: none;
+    padding: var(--pad-page); overflow-y: auto;
+    opacity: 0; transform: translateY(20px); pointer-events: none;
+    transition: all 0.4s ease;
 }
 .page.active { opacity: 1; transform: translateY(0); pointer-events: all; }
 
-h1 { font-family: 'Oswald'; font-weight: 300; font-size: 52px; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 5px 0; }
-h2 { font-size: 12px; color: var(--brand-gold); text-transform: uppercase; letter-spacing: 4px; margin: 0 0 40px 0; font-weight: 600; }
-h3 { font-family: 'Oswald'; font-size: 20px; color: #fff; margin-bottom: 15px; border-bottom: var(--border-subtle); padding-bottom: 10px; }
-
-/* =============================================================================
-   SECTION 8: HOME DASHBOARD WIDGETS
-   =============================================================================
+/* ==========================================================================
+   7. ENT (ENTERTAINMENT) TABS & CARDS
+   ========================================================================== 
 */
-.dashboard-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px;
-    grid-template-rows: 250px 150px;
+.ent-nav { display: flex; gap: 20px; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0px; }
+.ent-tab {
+    padding: 10px 20px; cursor: pointer; color: var(--txt-grey);
+    font-family: 'Oswald'; text-transform: uppercase; letter-spacing: 1px;
+    border-bottom: 2px solid transparent; transition: 0.3s;
 }
+.ent-tab:hover { color: #fff; }
+.ent-tab.active { color: var(--acc-teal); border-bottom: 2px solid var(--acc-teal); }
 
-.widget {
-    background: var(--bg-panel-glass); border: var(--border-subtle);
-    border-radius: 8px; padding: 20px; position: relative; overflow: hidden;
-    backdrop-filter: blur(10px);
+.media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; padding-bottom: 100px; display: none; }
+.media-grid.show { display: grid; animation: fadeIn 0.5s; }
+
+.card-media {
+    background: var(--bg-card); border: var(--border);
+    border-radius: 8px; overflow: hidden; cursor: pointer;
+    transition: 0.3s; position: relative; aspect-ratio: 2/3;
 }
-
-.widget.map-preview { grid-column: span 3; padding: 0; background: #000; }
-.widget.stat { display: flex; flex-direction: column; justify-content: space-between; }
-
-.stat-label { font-size: 10px; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 1px; }
-.stat-value { font-family: 'Oswald'; font-size: 36px; color: #fff; }
-.stat-unit { font-size: 14px; color: var(--brand-gold); margin-left: 5px; }
-
-#mini-map-canvas { width: 100%; height: 100%; }
-
-/* =============================================================================
-   SECTION 9: MEDIA & GAMES GRIDS
-   =============================================================================
-*/
-.media-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 30px;
-    padding-bottom: 60px;
-}
-
-.poster-card {
-    aspect-ratio: 2/3; background: #222; border-radius: 8px; overflow: hidden;
-    position: relative; transition: all 0.3s ease; cursor: pointer;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-}
-.poster-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.6); z-index: 5; }
-.poster-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: 0.3s; }
-.poster-card:hover img { opacity: 1; }
-.poster-meta {
+.card-media:hover { transform: translateY(-5px); border-color: var(--acc-teal); box-shadow: var(--shadow); }
+.cm-img { width: 100%; height: 100%; object-fit: cover; }
+.cm-over {
     position: absolute; bottom: 0; left: 0; width: 100%;
-    background: linear-gradient(to top, rgba(0,0,0,1), transparent);
-    padding: 20px 15px 15px 15px;
+    background: linear-gradient(to top, #000, transparent);
+    padding: 15px;
 }
-.pm-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pm-sub { font-size: 10px; color: #aaa; margin-top: 2px; }
+.cm-tag {
+    position: absolute; top: 10px; right: 10px;
+    background: var(--acc-teal); color: #fff;
+    padding: 3px 8px; font-size: 9px; border-radius: 3px;
+    font-weight: bold; text-transform: uppercase;
+}
 
-/* =============================================================================
-   SECTION 10: SETTINGS (GOD MODE) CMS
-   =============================================================================
+/* ==========================================================================
+   8. CHAT INTERFACE
+   ========================================================================== 
 */
-.settings-container {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+.chat-layout {
+    display: flex; flex-direction: column; height: 100%;
+    background: #111; border: var(--border); border-radius: 8px; overflow: hidden;
 }
-.cfg-panel {
-    background: #151515; border: 1px solid #222; border-radius: 8px; padding: 30px;
+.chat-history {
+    flex: 1; padding: 20px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 15px;
 }
-.cfg-header {
-    font-size: 14px; color: var(--brand-teal); font-weight: bold; text-transform: uppercase;
-    letter-spacing: 2px; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 25px;
+.chat-bubble {
+    max-width: 70%; padding: 12px 16px; border-radius: 12px;
+    font-size: 13px; line-height: 1.5; position: relative;
+}
+.cb-in { background: #222; align-self: flex-start; border-bottom-left-radius: 2px; }
+.cb-out { background: var(--acc-teal-glow); align-self: flex-end; border-bottom-right-radius: 2px; }
+.cb-meta { display: block; font-size: 10px; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+
+.chat-controls {
+    height: 70px; background: #080808; border-top: var(--border);
+    display: flex; padding: 15px; gap: 15px;
+}
+.chat-input {
+    flex: 1; background: #1a1a1a; border: 1px solid #333;
+    color: #fff; padding: 0 15px; border-radius: 4px; font-family: 'Inter';
+}
+.chat-send {
+    width: 100px; background: var(--acc-teal); color: #fff;
+    border: none; border-radius: 4px; font-weight: bold; cursor: pointer;
 }
 
-.form-group { margin-bottom: 20px; }
-.fg-label { display: block; font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
-.fg-input {
-    width: 100%; background: #080808; border: 1px solid #333; color: #fff;
-    padding: 12px; font-family: 'Inter'; font-size: 13px; border-radius: 4px;
-    transition: 0.2s;
+/* ==========================================================================
+   9. SETTINGS FORMS & INPUTS
+   ========================================================================== 
+*/
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+.set-panel { background: #111; border: var(--border); padding: 25px; border-radius: 8px; }
+.set-head {
+    font-family: 'Oswald'; font-size: 18px; color: var(--acc-teal);
+    border-bottom: 1px solid #222; padding-bottom: 15px; margin-bottom: 20px;
 }
-.fg-input:focus { border-color: var(--brand-teal); }
-
+.inp-row { margin-bottom: 15px; }
+.inp-lbl { display: block; font-size: 10px; color: var(--txt-grey); margin-bottom: 5px; text-transform: uppercase; font-weight: bold; }
+.inp-field {
+    width: 100%; padding: 10px; background: var(--bg-input);
+    border: 1px solid #333; color: #fff; border-radius: 4px;
+}
+.inp-field:focus { border-color: var(--acc-teal); }
 .btn-action {
-    width: 100%; padding: 15px; background: var(--brand-teal); border: none;
-    color: #fff; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
-    cursor: pointer; border-radius: 4px; transition: 0.2s; margin-top: 10px;
+    width: 100%; padding: 12px; margin-top: 10px; background: var(--acc-teal);
+    color: #fff; border: none; font-weight: bold; text-transform: uppercase;
+    cursor: pointer; border-radius: 4px; transition: 0.2s;
 }
 .btn-action:hover { background: #fff; color: #000; }
-.btn-danger { background: #5a1a1a; }
-.btn-danger:hover { background: #ff4444; color: #fff; }
+.btn-danger { background: #631818; }
 
-/* =============================================================================
-   SECTION 11: OVERLAYS (PLAYER & GAME)
-   =============================================================================
+/* ==========================================================================
+   10. KEYFRAMES
+   ========================================================================== 
 */
-#universal-player {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 6000;
-    background: #000; display: none; flex-direction: column;
-}
-.up-header {
-    height: 60px; background: #111; display: flex; justify-content: space-between; align-items: center;
-    padding: 0 30px; border-bottom: 1px solid #222;
-}
-.up-title { font-family: 'Oswald'; letter-spacing: 2px; }
-.up-close { font-size: 24px; cursor: pointer; color: #666; transition: 0.2s; }
-.up-close:hover { color: #fff; }
-
-.up-content { flex: 1; width: 100%; height: 100%; border: none; }
-
-/* SNAKE GAME SPECIFIC */
-#snake-canvas {
-    background: #000; border: 2px solid #333; display: block; margin: 0 auto;
-}
-#snake-score { text-align: center; font-family: 'Oswald'; font-size: 30px; margin-bottom: 20px; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 </style>
 </head>
 <body>
 
-<div id="boot-layer">
-    <div id="boot-log-container"></div>
-    <div class="boot-progress"><div class="boot-bar" id="boot-bar"></div></div>
+<div id="sys-boot">
+    <i class="fas fa-plane-departure" style="font-size: 40px; color: #fff;"></i>
+    <div class="boot-txt">CX_IFE_V30 LOADED</div>
 </div>
 
-<div id="welcome-layer">
-    <div class="wc-bg" id="wc_bg_img"></div>
-    <div class="wc-container">
-        <img id="wc_logo_img" src="" class="wc-logo">
-        <h1 class="wc-title" id="wc_txt_title">Welcome</h1>
-        <div class="wc-subtitle" id="wc_txt_msg"></div>
-        <button class="wc-btn" onclick="SYS.unlock()">Enter System</button>
+<div id="sys-lock">
+    <div class="bg-layer" style="background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2000'); z-index:-1;"></div>
+    <div class="lock-cont">
+        <img id="lock-logo" src="" class="lock-logo">
+        <h1 class="font-head" style="font-size: 40px;">Welcome Aboard</h1>
+        <p style="color: var(--acc-gold); font-family: 'Space Mono'; text-transform: uppercase; font-size: 12px; margin-bottom: 30px;">
+            First Class Suite • Seat <span id="lock-seat">1A</span>
+        </p>
+        <button class="btn-unlock" onclick="SYS.unlock()">Access System</button>
     </div>
 </div>
 
-<div id="universal-player">
-    <div class="up-header">
-        <span class="up-title">ENTERTAINMENT SYSTEM</span>
-        <i class="fas fa-times up-close" onclick="SYS.closePlayer()"></i>
+<div id="sys-viewer">
+    <div class="viewer-bar">
+        <span class="font-mono text-teal">MEDIA PLAYBACK</span>
+        <i class="fas fa-times" style="font-size: 24px; cursor: pointer; color: #fff;" onclick="PLAYER.close()"></i>
     </div>
-    <iframe class="up-content" id="player-frame" allowfullscreen allow="autoplay"></iframe>
+    <iframe id="viewer-frame" class="viewer-frame" allowfullscreen allow="autoplay; gamepad"></iframe>
 </div>
 
 <div class="sidebar">
-    <div class="sb-brand">
-        <img id="sb_logo_img" src="" class="sb-logo-img">
+    <div class="sb-logo-box">
+        <img id="sb-logo" src="" class="sb-logo">
     </div>
-    <div class="sb-nav">
-        <div class="nav-item active" onclick="SYS.nav('p_home', this)"><i class="fas fa-home"></i><span>Home</span></div>
-        <div class="nav-item" onclick="SYS.nav('p_mov', this)"><i class="fas fa-film"></i><span>Movies</span></div>
-        <div class="nav-item" onclick="SYS.nav('p_music', this)"><i class="fas fa-music"></i><span>Audio</span></div>
-        <div class="nav-item" onclick="SYS.nav('p_map', this)"><i class="fas fa-map-marked-alt"></i><span>Flight</span></div>
-        <div class="nav-item" onclick="SYS.nav('p_dine', this)"><i class="fas fa-utensils"></i><span>Dining</span></div>
-        <div class="nav-item" onclick="SYS.nav('p_game', this)"><i class="fas fa-gamepad"></i><span>Games</span></div>
-        <div style="flex:1"></div>
-        <div class="nav-item" onclick="SYS.nav('p_set', this)"><i class="fas fa-cogs"></i><span>Settings</span></div>
+    
+    <div class="nav-btn active" onclick="NAV.go('p-home', this)">
+        <i class="fas fa-home"></i><span>Home</span>
+    </div>
+    <div class="nav-btn" onclick="NAV.go('p-ent', this)">
+        <i class="fas fa-photo-video"></i><span>Ent</span>
+    </div>
+    <div class="nav-btn" onclick="NAV.go('p-map', this)">
+        <i class="fas fa-globe-asia"></i><span>Flight</span>
+    </div>
+    <div class="nav-btn" onclick="NAV.go('p-shop', this)">
+        <i class="fas fa-shopping-bag"></i><span>Shop</span>
+    </div>
+    <div class="nav-btn" onclick="NAV.go('p-chat', this)">
+        <i class="fas fa-comments"></i><span>Chat</span>
+    </div>
+    <div style="flex:1;"></div>
+    <div class="nav-btn" onclick="NAV.go('p-set', this)">
+        <i class="fas fa-sliders-h"></i><span>Settings</span>
     </div>
 </div>
 
 <div class="stage">
-    <div class="bg-wallpaper" id="bg_wall"></div>
-    
-    <div class="top-bar">
-        <div class="tb-flight">
-            <span class="tb-code" id="lbl_og">HKG</span>
-            <i class="fas fa-plane tb-plane"></i>
-            <span class="tb-code" id="lbl_ds">LHR</span>
+    <div class="bg-vignette"></div>
+    <div id="main-bg" class="bg-layer"></div>
+
+    <div class="header">
+        <div class="flight-track">
+            <span class="ft-code" id="h-org">HKG</span>
+            <i class="fas fa-plane ft-icon"></i>
+            <span class="ft-code" id="h-dst">LHR</span>
+            <div style="margin-left: 15px; border: 1px solid #444; padding: 4px 8px; border-radius: 4px;">
+                <span class="font-mono" style="font-size: 11px; color: #aaa;" id="h-flt">CX888</span>
+            </div>
         </div>
-        <div class="tb-user">
-            <span class="tb-seat-badge" id="lbl_seat">1A</span>
-            <span class="tb-clock" id="sys_clock">00:00</span>
+        <div class="user-info">
+            <span class="font-head" style="font-size: 14px;" id="sys-clock">12:00</span>
+            <div class="seat-badge" id="h-seat">1A</div>
         </div>
     </div>
 
-    <div class="viewport">
+    <div class="content-area">
 
-        <div id="p_home" class="page active">
-            <h1 id="lbl_greet">Hello</h1>
-            <h2>Flight Dashboard</h2>
+        <div id="p-home" class="page active">
+            <h1 class="font-head" style="font-size: 48px;">Hello, <span class="text-teal" id="u-name">Guest</span></h1>
+            <p class="font-mono" style="color: var(--acc-gold);">SYSTEM STATUS: NORMAL</p>
             
-            <div class="dashboard-grid">
-                <div class="widget map-preview">
-                    <canvas id="mini-map-canvas"></canvas>
-                    <div style="position:absolute; bottom:15px; left:20px; font-family:'Share Tech Mono'; font-size:12px; color:#0f0;">
-                        LAT: 22.3193 N | LON: 114.1694 E
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-top: 40px; height: 400px;">
+                <div style="background: #000; border: var(--border); position: relative;">
+                    <canvas id="mini-map" style="width: 100%; height: 100%;"></canvas>
+                    <div style="position: absolute; bottom: 20px; left: 20px; font-family: 'Space Mono'; font-size: 12px; background: rgba(0,0,0,0.7); padding: 10px;">
+                        ALT: 38,000 FT <br> SPD: 590 MPH
                     </div>
                 </div>
+                <div style="background: #111; border: var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+                    <i class="fas fa-cloud-moon" style="font-size: 60px; margin-bottom: 20px;"></i>
+                    <div class="font-head" style="font-size: 40px;">14°C</div>
+                    <div class="font-mono text-gold" style="font-size: 12px; text-transform: uppercase;">Destination Temp</div>
+                </div>
+            </div>
+        </div>
 
-                <div class="widget stat">
-                    <div>
-                        <div class="stat-label">Altitude</div>
-                        <div style="display:flex; align-items:baseline;">
-                            <div class="stat-value">38,000</div><div class="stat-unit">FT</div>
+        <div id="p-ent" class="page">
+            <h1 class="font-head" style="margin-bottom: 10px;">Entertainment Hub</h1>
+            
+            <div class="ent-nav">
+                <div class="ent-tab active" onclick="ENT.tab('mov')">Movies & TV</div>
+                <div class="ent-tab" onclick="ENT.tab('gam')">Arcade Games</div>
+            </div>
+
+            <div id="grid-mov" class="media-grid show">
+                </div>
+
+            <div id="grid-gam" class="media-grid">
+                </div>
+        </div>
+
+        <div id="p-map" class="page">
+            <div style="width: 100%; height: 100%; background: #000; position: relative; border: var(--border);">
+                <canvas id="main-map" style="width: 100%; height: 100%;"></canvas>
+                <div style="position: absolute; top: 30px; right: 30px; text-align: right;">
+                    <div class="font-head" style="font-size: 60px; line-height: 1;">38,000</div>
+                    <div class="font-mono text-gold">FEET</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="p-shop" class="page">
+            <h1 class="font-head" style="margin-bottom: 30px;">Duty Free</h1>
+            <div id="grid-shop" class="media-grid show" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+                </div>
+        </div>
+
+        <div id="p-chat" class="page">
+            <h1 class="font-head" style="margin-bottom: 20px;">Crew Messenger</h1>
+            <div class="chat-layout">
+                <div class="chat-history" id="chat-box">
+                    </div>
+                <div class="chat-controls">
+                    <input type="text" id="chat-inp" class="chat-input" placeholder="Type your request...">
+                    <button class="chat-send" onclick="CHAT.send()">SEND</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="p-set" class="page">
+            <h1 class="font-head" style="margin-bottom: 30px;">System Config</h1>
+            
+            <div class="settings-grid">
+                
+                <div class="set-panel">
+                    <div class="set-head">Flight Identity</div>
+                    <div class="inp-row">
+                        <label class="inp-lbl">Passenger Name</label>
+                        <input id="set-name" class="inp-field">
+                    </div>
+                    <div class="inp-row">
+                        <label class="inp-lbl">Seat</label>
+                        <input id="set-seat" class="inp-field">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                         <div class="inp-row">
+                            <label class="inp-lbl">Origin</label>
+                            <input id="set-org" class="inp-field" maxlength="3" style="text-transform:uppercase;">
+                        </div>
+                        <div class="inp-row">
+                            <label class="inp-lbl">Dest</label>
+                            <input id="set-dst" class="inp-field" maxlength="3" style="text-transform:uppercase;">
                         </div>
                     </div>
-                    <div style="width:100%; height:2px; background:#333; margin:10px 0;">
-                        <div style="width:80%; height:100%; background:var(--brand-teal);"></div>
+                    <div class="inp-row">
+                        <label class="inp-lbl">Flight #</label>
+                        <input id="set-flt" class="inp-field" style="text-transform:uppercase;">
                     </div>
+                    <button class="btn-action" onclick="CMS.saveId()">Update Identity</button>
                 </div>
 
-                <div class="widget stat">
-                    <div class="stat-label">Ground Speed</div>
-                    <div class="stat-value">594 <span class="stat-unit">MPH</span></div>
-                </div>
-
-                <div class="widget stat">
-                    <div class="stat-label">Outside Temp</div>
-                    <div class="stat-value">-54 <span class="stat-unit">°C</span></div>
-                </div>
-
-                <div class="widget stat">
-                    <div class="stat-label">Time To Dest</div>
-                    <div class="stat-value">09:14</div>
-                </div>
-
-                <div class="widget stat">
-                    <div class="stat-label">Distance Rem.</div>
-                    <div class="stat-value">5,432 <span class="stat-unit">KM</span></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="p_mov" class="page">
-            <h1>Cinema</h1>
-            <h2>New Releases</h2>
-            <div class="media-grid" id="grid_movies"></div>
-        </div>
-
-        <div id="p_music" class="page">
-            <h1>Audio Lounge</h1>
-            <h2>Curated Playlists</h2>
-            <div style="display:flex; gap:30px; align-items:center; background:#181818; padding:30px; border-radius:12px; border:1px solid #333;">
-                <div style="width:150px; height:150px; background:#333; border-radius:6px; overflow:hidden;">
-                    <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=300" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div style="flex:1;">
-                    <h3 style="border:none; font-size:24px; margin-bottom:5px;">Jazz in the Sky</h3>
-                    <div style="color:#888; margin-bottom:20px;">Miles Davis • Kind of Blue</div>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <i class="fas fa-step-backward" style="font-size:20px; cursor:pointer;"></i>
-                        <div style="width:50px; height:50px; background:var(--brand-teal); border-radius:50%; display:flex; justify-content:center; align-items:center; cursor:pointer;">
-                            <i class="fas fa-play" style="color:#fff;"></i>
-                        </div>
-                        <i class="fas fa-step-forward" style="font-size:20px; cursor:pointer;"></i>
-                        
-                        <div style="flex:1; height:4px; background:#333; margin:0 20px; border-radius:2px; overflow:hidden;">
-                            <div style="width:30%; height:100%; background:#fff;"></div>
-                        </div>
-                        <div style="font-family:'Share Tech Mono'; font-size:12px;">03:45</div>
+                <div class="set-panel">
+                    <div class="set-head">Visuals</div>
+                    <div class="inp-row">
+                        <label class="inp-lbl">Logo URL (Raw Image)</label>
+                        <input id="set-logo" class="inp-field">
                     </div>
-                </div>
-            </div>
-            
-            <h3 style="margin-top:40px;">Albums</h3>
-            <div class="media-grid" style="margin-top:20px;">
-                <div class="poster-card"><img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=300"><div class="poster-meta"><div class="pm-title">Chill Lo-Fi</div></div></div>
-                <div class="poster-card"><img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=300"><div class="poster-meta"><div class="pm-title">Classical Essentials</div></div></div>
-                <div class="poster-card"><img src="https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=300"><div class="poster-meta"><div class="pm-title">Acoustic Covers</div></div></div>
-            </div>
-        </div>
-
-        <div id="p_map" class="page">
-            <h1>Flight Path</h1>
-            <h2>Global Tracking</h2>
-            <div style="width:100%; height:600px; background:#050505; border:1px solid #333; position:relative;">
-                <canvas id="main-map-canvas" style="width:100%; height:100%;"></canvas>
-                <div style="position:absolute; top:20px; right:20px; background:rgba(0,0,0,0.8); padding:15px; border:1px solid #333; font-family:'Share Tech Mono'; font-size:12px; color:#fff;">
-                    <div>ALT: 38,000 FT</div>
-                    <div>SPD: 594 MPH</div>
-                    <div>HDG: 284 DEG</div>
-                    <div>WND: 45 KTS TB</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="p_dine" class="page">
-            <h1>In-Flight Dining</h1>
-            <h2>A La Carte</h2>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px;">
-                <div style="background:#151515; border-radius:8px; overflow:hidden;">
-                    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=600" style="width:100%; height:200px; object-fit:cover;">
-                    <div style="padding:20px;">
-                        <h3 style="border:none;">Signature Pizza</h3>
-                        <p style="color:#999; font-size:13px; line-height:1.5;">San Marzano tomato sauce, fresh mozzarella di bufala, basil, and extra virgin olive oil. Served with a side salad.</p>
-                        <button style="margin-top:15px; padding:10px 20px; border:1px solid var(--brand-teal); background:transparent; color:var(--brand-teal); cursor:pointer;">ORDER</button>
+                    <div class="inp-row">
+                        <label class="inp-lbl">Wallpaper URL</label>
+                        <input id="set-bg" class="inp-field">
                     </div>
-                </div>
-                <div style="background:#151515; border-radius:8px; overflow:hidden;">
-                    <img src="https://images.unsplash.com/photo-1600891964092-4316c288032e?q=80&w=600" style="width:100%; height:200px; object-fit:cover;">
-                    <div style="padding:20px;">
-                        <h3 style="border:none;">Wagyu Steak</h3>
-                        <p style="color:#999; font-size:13px; line-height:1.5;">Grilled Australian Wagyu beef tenderloin with truffle mashed potatoes, asparagus, and red wine jus.</p>
-                        <button style="margin-top:15px; padding:10px 20px; border:1px solid var(--brand-teal); background:transparent; color:var(--brand-teal); cursor:pointer;">ORDER</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="p_game" class="page">
-            <h1>Arcade</h1>
-            <h2>Interactive Entertainment</h2>
-            
-            <div style="background:#222; padding:30px; border-radius:8px; margin-bottom:40px; border-left:4px solid var(--brand-teal); display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <h3 style="border:none; margin:0;">System Snake</h3>
-                    <div style="color:#888; font-size:12px; margin-top:5px;">Classic arcade action built into the OS.</div>
-                </div>
-                <button onclick="GAME_SNAKE.start()" style="padding:10px 25px; background:var(--brand-teal); border:none; color:#fff; cursor:pointer;">PLAY NOW</button>
-            </div>
-
-            <div class="media-grid" id="grid_games"></div>
-        </div>
-
-        <div id="p_set" class="page">
-            <h1>Settings</h1>
-            <h2>System Override (God Mode)</h2>
-            
-            <div class="settings-container">
-                <div class="cfg-panel">
-                    <div class="cfg-header">Identity & Visuals</div>
-                    
-                    <div class="form-group">
-                        <label class="fg-label">Passenger Name</label>
-                        <input id="in_name" class="fg-input">
-                    </div>
-                    <div class="form-group">
-                        <label class="fg-label">Seat Number</label>
-                        <input id="in_seat" class="fg-input">
-                    </div>
-                    <div class="form-group">
-                        <label class="fg-label">Welcome Message</label>
-                        <input id="in_w_msg" class="fg-input">
-                    </div>
-                    <div class="form-group">
-                        <label class="fg-label">Logo URL</label>
-                        <input id="in_logo" class="fg-input">
-                    </div>
-                    <div class="form-group">
-                        <label class="fg-label">Wallpaper URL</label>
-                        <input id="in_bg" class="fg-input">
-                    </div>
-                    
-                    <button class="btn-action" onclick="CMS.saveIdentity()">Save Identity</button>
+                    <button class="btn-action" onclick="CMS.saveVis()">Update Visuals</button>
                 </div>
 
-                <div class="cfg-panel">
-                    <div class="cfg-header">Content Injection</div>
-                    
-                    <div style="background:#080808; padding:15px; border-radius:4px; border:1px solid #333; margin-bottom:20px;">
-                        <label class="fg-label" style="color:var(--brand-teal);">ADD MOVIE</label>
-                        <input id="new_m_t" class="fg-input" placeholder="Title" style="margin-bottom:5px;">
-                        <input id="new_m_i" class="fg-input" placeholder="Poster URL" style="margin-bottom:5px;">
-                        <input id="new_m_u" class="fg-input" placeholder="YouTube/MP4 Link" style="margin-bottom:5px;">
-                        <button class="btn-action" onclick="CMS.addMedia('movie')">Add Movie</button>
+                <div class="set-panel">
+                    <div class="set-head">Add Movie / Video</div>
+                    <div class="inp-row">
+                        <label class="inp-lbl">Title</label>
+                        <input id="add-mov-t" class="inp-field">
                     </div>
-
-                    <div style="background:#080808; padding:15px; border-radius:4px; border:1px solid #333;">
-                        <label class="fg-label" style="color:var(--brand-teal);">ADD GAME (Embed)</label>
-                        <input id="new_g_t" class="fg-input" placeholder="Title" style="margin-bottom:5px;">
-                        <input id="new_g_i" class="fg-input" placeholder="Thumbnail URL" style="margin-bottom:5px;">
-                        <input id="new_g_u" class="fg-input" placeholder="HTML5 Game URL" style="margin-bottom:5px;">
-                        <button class="btn-action" onclick="CMS.addMedia('game')">Add Game</button>
+                    <div class="inp-row">
+                        <label class="inp-lbl">Poster Image URL</label>
+                        <input id="add-mov-i" class="inp-field">
                     </div>
-                    
-                    <button class="btn-action btn-danger" onclick="CMS.factoryReset()" style="margin-top:30px;">FACTORY RESET SYSTEM</button>
+                    <div class="inp-row">
+                        <label class="inp-lbl">YouTube Embed / MP4 URL</label>
+                        <input id="add-mov-u" class="inp-field">
+                    </div>
+                    <button class="btn-action" onclick="CMS.addMedia()">Add to Library</button>
                 </div>
+
+                <div class="set-panel">
+                    <div class="set-head">Add Game</div>
+                    <div class="inp-row">
+                        <label class="inp-lbl">Game Title</label>
+                        <input id="add-gam-t" class="inp-field">
+                    </div>
+                    <div class="inp-row">
+                        <label class="inp-lbl">Thumbnail Image URL</label>
+                        <input id="add-gam-i" class="inp-field">
+                    </div>
+                    <div class="inp-row">
+                        <label class="inp-lbl">Game URL (HTML5)</label>
+                        <input id="add-gam-u" class="inp-field">
+                    </div>
+                    <button class="btn-action" onclick="CMS.addGame()">Add to Arcade</button>
+
+                    <button class="btn-action btn-danger" style="margin-top: 30px;" onclick="CMS.reset()">Factory Reset</button>
+                </div>
+
             </div>
         </div>
 
     </div>
-</div>
-
-<div id="snake-overlay" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:7000; flex-direction:column; justify-content:center; align-items:center;">
-    <div style="position:absolute; top:20px; right:30px; color:#fff; font-size:30px; cursor:pointer;" onclick="GAME_SNAKE.stop()">&times;</div>
-    <div style="color:var(--brand-teal); font-family:'Oswald'; font-size:40px; margin-bottom:10px;">SYSTEM SNAKE</div>
-    <div id="snake-score" style="color:#fff;">SCORE: 0</div>
-    <canvas id="snake-canvas" width="400" height="400"></canvas>
-    <div style="color:#666; font-size:12px; margin-top:15px;">USE ARROW KEYS TO NAVIGATE</div>
 </div>
 
 <script>
 /**
  * =============================================================================
- * V27 TITAN OS - CORE JAVASCRIPT
+ * CX_IFE V30 SYSTEM KERNEL
  * =============================================================================
  */
 
-// --- 1. DEFAULT DATA STRUCTURES ---
-const DEFAULTS = {
-    identity: {
-        name: "Honored Guest",
-        seat: "1A",
-        og: "HKG", ds: "LHR",
-        wTitle: "Welcome",
-        wMsg: "The World's Best Business Class",
+// --- 1. DEFAULT DATABASE ---
+const DB_FACTORY = {
+    user: { name: "Valued Guest", seat: "1A", org: "HKG", dst: "LHR", flt: "CX888" },
+    vis: { 
         logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/96/Cathay_Pacific_logo.svg/1200px-Cathay_Pacific_logo.svg.png",
         bg: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2000"
     },
     movies: [
         { t: "Top Gun: Maverick", i: "https://upload.wikimedia.org/wikipedia/en/1/13/Top_Gun_Maverick_Poster.jpg", u: "https://www.youtube.com/embed/giXco2jaZ_4?autoplay=1" },
-        { t: "Oppenheimer", i: "https://upload.wikimedia.org/wikipedia/en/4/4a/Oppenheimer_%28film%29.jpg", u: "https://www.youtube.com/embed/uYPbbksJxIg?autoplay=1" },
         { t: "Dune: Part Two", i: "https://upload.wikimedia.org/wikipedia/en/5/52/Dune_Part_Two_poster.jpeg", u: "https://www.youtube.com/embed/Way9Dexny3w?autoplay=1" },
-        { t: "Interstellar", i: "https://upload.wikimedia.org/wikipedia/en/b/bc/Interstellar_film_poster.jpg", u: "https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1" }
+        { t: "Interstellar", i: "https://upload.wikimedia.org/wikipedia/en/b/bc/Interstellar_film_poster.jpg", u: "https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1" },
+        { t: "Blade Runner 2049", i: "https://upload.wikimedia.org/wikipedia/en/9/9b/Blade_Runner_2049_poster.png", u: "https://www.youtube.com/embed/gCcx85zbxz4?autoplay=1" }
     ],
     games: [
-        { t: "2048", i: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/2048_logo.svg/1200px-2048_logo.svg.png", u: "https://play2048.co/" },
-        { t: "Hextris", i: "https://raw.githubusercontent.com/Hextris/hextris/gh-pages/images/icons/apple-touch-icon-120x120.png", u: "https://hextris.io/" }
+        { t: "Pac-Man", i: "https://upload.wikimedia.org/wikipedia/en/thumb/0/03/PacMan1980NA.jpg/220px-PacMan1980NA.jpg", u: "https://www.google.com/logos/2010/pacman10-i.html" },
+        { t: "Space Invaders", i: "https://upload.wikimedia.org/wikipedia/en/thumb/5/52/Space_Invaders_arcade_flyer_%28Taito%29.jpg/220px-Space_Invaders_arcade_flyer_%28Taito%29.jpg", u: "https://freeinvaders.org/" },
+        { t: "2048", i: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/2048_logo.svg/220px-2048_logo.svg.png", u: "https://play2048.co/" }
+    ],
+    products: [
+        { t: "Chanel No.5", p: "$130", i: "https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=300" },
+        { t: "Ray-Ban Aviator", p: "$180", i: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=300" },
+        { t: "Sony XM5", p: "$350", i: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?q=80&w=300" }
+    ],
+    chat: [
+        { s: "in", m: "Welcome aboard, Mr. Guest. Dinner will be served in 40 minutes." }
     ]
 };
 
 // --- 2. SYSTEM CONTROLLER ---
 const SYS = {
-    state: {},
+    data: {},
     
     init: function() {
-        BOOT.sequence(() => {
-            this.loadState();
-            this.applyVisuals();
-            this.renderMedia();
-            this.startClock();
+        this.loadStorage();
+        setTimeout(() => {
+            document.getElementById('sys-boot').style.display = 'none';
+            this.render();
             MAP.init();
-        });
+            CHAT.render();
+            this.startTime();
+        }, 1500); // Fake boot time
     },
 
-    loadState: function() {
-        const id = localStorage.getItem('cx_v27_id');
-        const mov = localStorage.getItem('cx_v27_mov');
-        const gam = localStorage.getItem('cx_v27_gam');
+    loadStorage: function() {
+        const u = localStorage.getItem('cx30_user');
+        const v = localStorage.getItem('cx30_vis');
+        const m = localStorage.getItem('cx30_mov');
+        const g = localStorage.getItem('cx30_gam');
 
-        this.state.identity = id ? JSON.parse(id) : {...DEFAULTS.identity};
-        this.state.movies = mov ? JSON.parse(mov) : [...DEFAULTS.movies];
-        this.state.games = gam ? JSON.parse(gam) : [...DEFAULTS.games];
+        this.data.user = u ? JSON.parse(u) : {...DB_FACTORY.user};
+        this.data.vis = v ? JSON.parse(v) : {...DB_FACTORY.vis};
+        this.data.movies = m ? JSON.parse(m) : [...DB_FACTORY.movies];
+        this.data.games = g ? JSON.parse(g) : [...DB_FACTORY.games];
+        this.data.products = [...DB_FACTORY.products];
+        this.data.chat = [...DB_FACTORY.chat];
     },
 
-    applyVisuals: function() {
-        const id = this.state.identity;
-        // Text
-        document.getElementById('wc_txt_title').innerText = id.wTitle;
-        document.getElementById('wc_txt_msg').innerText = id.wMsg;
-        document.getElementById('lbl_greet').innerText = `Hello, ${id.name}`;
-        document.getElementById('lbl_seat').innerText = id.seat;
-        document.getElementById('lbl_og').innerText = id.og;
-        document.getElementById('lbl_ds').innerText = id.ds;
+    render: function() {
+        const d = this.data;
+        // Text Info
+        document.getElementById('u-name').innerText = d.user.name;
+        document.getElementById('h-seat').innerText = d.user.seat;
+        document.getElementById('lock-seat').innerText = d.user.seat;
+        document.getElementById('h-org').innerText = d.user.org;
+        document.getElementById('h-dst').innerText = d.user.dst;
+        document.getElementById('h-flt').innerText = d.user.flt;
+
+        // Visuals
+        document.getElementById('sb-logo').src = d.vis.logo;
+        document.getElementById('lock-logo').src = d.vis.logo;
+        document.getElementById('main-bg').style.backgroundImage = `url('${d.vis.bg}')`;
+
+        // Entertainment Grids
+        this.renderGrid('grid-mov', d.movies, 'MOVIE');
+        this.renderGrid('grid-gam', d.games, 'GAME');
         
-        // Images
-        document.getElementById('wc_bg_img').style.backgroundImage = `url('${id.bg}')`;
-        document.getElementById('bg_wall').style.backgroundImage = `url('${id.bg}')`;
-        document.getElementById('wc_logo_img').src = id.logo;
-        document.getElementById('sb_logo_img').src = id.logo;
+        // Shop Grid
+        const sGrid = document.getElementById('grid-shop');
+        sGrid.innerHTML = d.products.map(p => `
+            <div class="card-media" style="height:300px; display:flex; flex-direction:column;">
+                <div style="height:200px;"><img src="${p.i}" class="cm-img"></div>
+                <div style="padding:15px;">
+                    <div style="font-weight:bold;">${p.t}</div>
+                    <div class="font-mono text-gold">${p.p}</div>
+                    <button class="btn-action" style="padding:5px; margin-top:5px; font-size:10px;">BUY</button>
+                </div>
+            </div>
+        `).join('');
 
         // Settings Inputs
-        document.getElementById('in_name').value = id.name;
-        document.getElementById('in_seat').value = id.seat;
-        document.getElementById('in_w_msg').value = id.wMsg;
-        document.getElementById('in_logo').value = id.logo;
-        document.getElementById('in_bg').value = id.bg;
+        document.getElementById('set-name').value = d.user.name;
+        document.getElementById('set-seat').value = d.user.seat;
+        document.getElementById('set-org').value = d.user.org;
+        document.getElementById('set-dst').value = d.user.dst;
+        document.getElementById('set-flt').value = d.user.flt;
+        document.getElementById('set-logo').value = d.vis.logo;
+        document.getElementById('set-bg').value = d.vis.bg;
     },
 
-    renderMedia: function() {
-        // Movies
-        const mg = document.getElementById('grid_movies');
-        mg.innerHTML = this.state.movies.map(m => `
-            <div class="poster-card" onclick="SYS.play('${m.u}')">
-                <img src="${m.i}">
-                <div class="poster-meta"><div class="pm-title">${m.t}</div><div class="pm-sub">Movie</div></div>
-            </div>
-        `).join('');
-
-        // Games
-        const gg = document.getElementById('grid_games');
-        gg.innerHTML = this.state.games.map(g => `
-            <div class="poster-card" onclick="SYS.play('${g.u}')">
-                <img src="${g.i}">
-                <div class="poster-meta"><div class="pm-title">${g.t}</div><div class="pm-sub">HTML5 Game</div></div>
+    renderGrid: function(id, data, tag) {
+        const el = document.getElementById(id);
+        el.innerHTML = data.map(item => `
+            <div class="card-media" onclick="PLAYER.open('${item.u}')">
+                <img src="${item.i}" class="cm-img">
+                <div class="cm-over">
+                    <div class="font-head" style="font-size:14px; margin-bottom:2px;">${item.t}</div>
+                </div>
+                <div class="cm-tag">${tag}</div>
             </div>
         `).join('');
     },
 
-    nav: function(pid, btn) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(pid).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+    startTime: function() {
+        setInterval(() => {
+            const n = new Date();
+            document.getElementById('sys-clock').innerText = n.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        }, 1000);
     },
 
     unlock: function() {
-        document.getElementById('welcome-layer').style.transform = "translateY(-100%)";
-    },
-
-    play: function(url) {
-        // Simple YouTube Embed Fixer
-        if(url.includes('youtube.com/watch?v=')) {
-            url = url.replace('watch?v=', 'embed/') + "?autoplay=1";
-        }
-        document.getElementById('player-frame').src = url;
-        document.getElementById('universal-player').style.display = 'flex';
-    },
-
-    closePlayer: function() {
-        document.getElementById('player-frame').src = "";
-        document.getElementById('universal-player').style.display = 'none';
-    },
-
-    startClock: function() {
-        setInterval(() => {
-            const d = new Date();
-            document.getElementById('sys_clock').innerText = 
-                d.getHours().toString().padStart(2,'0') + ":" + 
-                d.getMinutes().toString().padStart(2,'0');
-        }, 1000);
+        document.getElementById('sys-lock').style.transform = "translateY(-100%)";
     }
 };
 
-// --- 3. BOOT SEQUENCE SIMULATION ---
-const BOOT = {
-    logs: [
-        "INITIALIZING KERNEL...", "LOADING DRIVERS: AVIONICS_V2", 
-        "CHECKING NETWORK...", "SATELLITE LINK: OK", 
-        "LOADING UI ASSETS...", "MOUNTING FILESYSTEM...", "SYSTEM READY"
-    ],
-    sequence: function(cb) {
-        const bar = document.getElementById('boot-bar');
-        const logContainer = document.getElementById('boot-log-container');
-        let step = 0;
-
-        const interval = setInterval(() => {
-            if (step >= this.logs.length) {
-                clearInterval(interval);
-                bar.style.width = "100%";
-                setTimeout(() => {
-                    document.getElementById('boot-layer').classList.add('hidden');
-                    cb();
-                }, 500);
-                return;
-            }
-            
-            // Add Log
-            const div = document.createElement('div');
-            div.className = "boot-log";
-            div.innerText = "> " + this.logs[step];
-            logContainer.appendChild(div);
-            
-            // Move Bar
-            bar.style.width = ((step + 1) / this.logs.length * 100) + "%";
-            step++;
-        }, 300);
+// --- 3. NAVIGATION & TABS ---
+const NAV = {
+    go: function(pid, btn) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pid).classList.add('active');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if(pid === 'p-home' || pid === 'p-map') MAP.init();
     }
 };
 
-// --- 4. CONTENT MANAGEMENT SYSTEM (CMS) ---
+const ENT = {
+    tab: function(type) {
+        document.querySelectorAll('.ent-tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        document.querySelectorAll('.media-grid').forEach(g => g.classList.remove('show'));
+        document.getElementById('grid-' + type).classList.add('show');
+    }
+};
+
+// --- 4. PLAYER / VIEWER ---
+const PLAYER = {
+    open: function(url) {
+        document.getElementById('viewer-frame').src = url;
+        document.getElementById('sys-viewer').style.display = 'flex';
+    },
+    close: function() {
+        document.getElementById('viewer-frame').src = '';
+        document.getElementById('sys-viewer').style.display = 'none';
+    }
+};
+
+// --- 5. CHAT SYSTEM ---
+const CHAT = {
+    render: function() {
+        const box = document.getElementById('chat-box');
+        box.innerHTML = SYS.data.chat.map(m => `
+            <div class="chat-bubble ${m.s === 'in' ? 'cb-in' : 'cb-out'}">
+                <span class="cb-meta">${m.s === 'in' ? 'Flight Crew' : 'Me'}</span>
+                ${m.m}
+            </div>
+        `).join('');
+        box.scrollTop = box.scrollHeight;
+    },
+    send: function() {
+        const inp = document.getElementById('chat-inp');
+        const txt = inp.value.trim();
+        if(!txt) return;
+
+        SYS.data.chat.push({s: 'out', m: txt});
+        this.render();
+        inp.value = '';
+
+        // Auto Reply Simulation
+        setTimeout(() => {
+            SYS.data.chat.push({s: 'in', m: "Received. A crew member is on their way."});
+            this.render();
+        }, 2000);
+    }
+};
+
+// --- 6. CMS / SETTINGS MANAGER ---
 const CMS = {
-    saveIdentity: function() {
-        SYS.state.identity.name = document.getElementById('in_name').value;
-        SYS.state.identity.seat = document.getElementById('in_seat').value;
-        SYS.state.identity.wMsg = document.getElementById('in_w_msg').value;
-        SYS.state.identity.logo = document.getElementById('in_logo').value;
-        SYS.state.identity.bg = document.getElementById('in_bg').value;
-
-        localStorage.setItem('cx_v27_id', JSON.stringify(SYS.state.identity));
-        alert("Identity Saved! Reloading...");
+    saveId: function() {
+        const u = SYS.data.user;
+        u.name = document.getElementById('set-name').value;
+        u.seat = document.getElementById('set-seat').value;
+        u.org = document.getElementById('set-org').value.toUpperCase();
+        u.dst = document.getElementById('set-dst').value.toUpperCase();
+        u.flt = document.getElementById('set-flt').value.toUpperCase();
+        localStorage.setItem('cx30_user', JSON.stringify(u));
+        alert("Identity Updated");
         location.reload();
     },
-
-    addMedia: function(type) {
-        if(type === 'movie') {
-            const t = document.getElementById('new_m_t').value;
-            const i = document.getElementById('new_m_i').value;
-            const u = document.getElementById('new_m_u').value;
-            if(!t || !i || !u) return alert("Missing Fields");
-            
-            SYS.state.movies.push({t, i, u});
-            localStorage.setItem('cx_v27_mov', JSON.stringify(SYS.state.movies));
-        } else {
-            const t = document.getElementById('new_g_t').value;
-            const i = document.getElementById('new_g_i').value;
-            const u = document.getElementById('new_g_u').value;
-            if(!t || !i || !u) return alert("Missing Fields");
-
-            SYS.state.games.push({t, i, u});
-            localStorage.setItem('cx_v27_gam', JSON.stringify(SYS.state.games));
-        }
-        
-        alert("Added!");
-        SYS.renderMedia();
+    saveVis: function() {
+        const v = SYS.data.vis;
+        v.logo = document.getElementById('set-logo').value;
+        v.bg = document.getElementById('set-bg').value;
+        localStorage.setItem('cx30_vis', JSON.stringify(v));
+        alert("Visuals Updated");
+        location.reload();
     },
-
-    factoryReset: function() {
-        if(confirm("FULL SYSTEM RESET. ARE YOU SURE?")) {
+    addMedia: function() {
+        const t = document.getElementById('add-mov-t').value;
+        const i = document.getElementById('add-mov-i').value;
+        const u = document.getElementById('add-mov-u').value;
+        if(t && i && u) {
+            SYS.data.movies.push({t, i, u});
+            localStorage.setItem('cx30_mov', JSON.stringify(SYS.data.movies));
+            alert("Movie/Video Added!");
+            location.reload();
+        }
+    },
+    addGame: function() {
+        const t = document.getElementById('add-gam-t').value;
+        const i = document.getElementById('add-gam-i').value;
+        const u = document.getElementById('add-gam-u').value;
+        if(t && i && u) {
+            SYS.data.games.push({t, i, u});
+            localStorage.setItem('cx30_gam', JSON.stringify(SYS.data.games));
+            alert("Game Added to Arcade!");
+            location.reload();
+        }
+    },
+    reset: function() {
+        if(confirm("Factory Reset System?")) {
             localStorage.clear();
             location.reload();
         }
     }
 };
 
-// --- 5. SNAKE GAME ENGINE ---
-const GAME_SNAKE = {
-    canvas: null, ctx: null, interval: null,
-    grid: 20, count: 0,
-    snake: { x: 160, y: 160, dx: 20, dy: 0, cells: [], maxCells: 4 },
-    apple: { x: 320, y: 320 },
-    score: 0,
-
-    start: function() {
-        document.getElementById('snake-overlay').style.display = 'flex';
-        this.canvas = document.getElementById('snake-canvas');
-        this.ctx = this.canvas.getContext('2d');
-        
-        // Reset
-        this.snake = { x: 160, y: 160, dx: 20, dy: 0, cells: [], maxCells: 4 };
-        this.score = 0;
-        document.getElementById('snake-score').innerText = "SCORE: 0";
-        
-        document.addEventListener('keydown', this.handleKey);
-        this.interval = requestAnimationFrame(() => this.loop());
-    },
-
-    stop: function() {
-        cancelAnimationFrame(this.interval);
-        document.removeEventListener('keydown', this.handleKey);
-        document.getElementById('snake-overlay').style.display = 'none';
-    },
-
-    handleKey: function(e) {
-        // Prevent reversing
-        const s = GAME_SNAKE.snake;
-        if (e.which === 37 && s.dx === 0) { s.dx = -20; s.dy = 0; }
-        else if (e.which === 38 && s.dy === 0) { s.dy = -20; s.dx = 0; }
-        else if (e.which === 39 && s.dx === 0) { s.dx = 20; s.dy = 0; }
-        else if (e.which === 40 && s.dy === 0) { s.dy = 20; s.dx = 0; }
-    },
-
-    loop: function() {
-        this.interval = requestAnimationFrame(() => this.loop());
-        // Slow game loop to 15fps
-        if (++this.count < 6) return;
-        this.count = 0;
-
-        const ctx = this.ctx;
-        const cvs = this.canvas;
-        ctx.clearRect(0,0,cvs.width,cvs.height);
-
-        // Move Snake
-        this.snake.x += this.snake.dx;
-        this.snake.y += this.snake.dy;
-
-        // Wrap walls
-        if (this.snake.x < 0) this.snake.x = cvs.width - this.grid;
-        else if (this.snake.x >= cvs.width) this.snake.x = 0;
-        if (this.snake.y < 0) this.snake.y = cvs.height - this.grid;
-        else if (this.snake.y >= cvs.height) this.snake.y = 0;
-
-        // Keep track of snake trail
-        this.snake.cells.unshift({x: this.snake.x, y: this.snake.y});
-        if (this.snake.cells.length > this.snake.maxCells) {
-            this.snake.cells.pop();
-        }
-
-        // Draw Apple
-        ctx.fillStyle = '#C3A676'; // Gold
-        ctx.fillRect(this.apple.x, this.apple.y, this.grid-1, this.grid-1);
-
-        // Draw Snake
-        ctx.fillStyle = '#006B6E'; // Teal
-        this.snake.cells.forEach((cell, index) => {
-            ctx.fillRect(cell.x, cell.y, this.grid-1, this.grid-1);
-
-            // Eat Apple
-            if (cell.x === this.apple.x && cell.y === this.apple.y) {
-                this.snake.maxCells++;
-                this.score += 10;
-                document.getElementById('snake-score').innerText = "SCORE: " + this.score;
-                this.apple.x = this.getRandomInt(0, 25) * this.grid;
-                this.apple.y = this.getRandomInt(0, 25) * this.grid;
-            }
-
-            // Death check (ignore head)
-            for (let i = index + 1; i < this.snake.cells.length; i++) {
-                if (cell.x === this.snake.cells[i].x && cell.y === this.snake.cells[i].y) {
-                    this.snake.x = 160; this.snake.y = 160;
-                    this.snake.cells = [];
-                    this.snake.maxCells = 4;
-                    this.score = 0;
-                    document.getElementById('snake-score').innerText = "GAME OVER";
-                }
-            }
-        });
-    },
-
-    getRandomInt: function(min, max) {
-        return Math.floor(Math.random() * (max - min)) + min;
-    }
-};
-
-// --- 6. FLIGHT MAP ENGINE (CANVAS) ---
+// --- 7. MAP CANVAS ENGINE ---
 const MAP = {
     init: function() {
-        this.drawMini();
-        this.drawMain();
-        window.addEventListener('resize', () => { this.drawMini(); this.drawMain(); });
+        ['mini-map', 'main-map'].forEach(id => {
+            const c = document.getElementById(id);
+            if(c) this.draw(c);
+        });
     },
-
-    drawMini: function() {
-        const c = document.getElementById('mini-map-canvas');
-        if(!c) return;
-        // Fix DPI
-        const rect = c.parentElement.getBoundingClientRect();
-        c.width = rect.width; c.height = rect.height;
+    draw: function(c) {
         const ctx = c.getContext('2d');
+        const w = c.parentElement.clientWidth;
+        const h = c.parentElement.clientHeight;
+        c.width = w; c.height = h;
 
-        // Dark BG
-        ctx.fillStyle = '#000';
-        ctx.fillRect(0,0,c.width,c.height);
+        // Space/Ocean
+        ctx.fillStyle = '#050505';
+        ctx.fillRect(0,0,w,h);
 
-        // Draw Curve
+        // Grid
+        ctx.strokeStyle = '#111';
+        ctx.lineWidth = 1;
+        for(let i=0; i<w; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,h); ctx.stroke(); }
+        for(let j=0; j<h; j+=40) { ctx.beginPath(); ctx.moveTo(0,j); ctx.lineTo(w,j); ctx.stroke(); }
+
+        // Path Logic
+        const p1 = {x: w*0.1, y: h*0.6};
+        const p2 = {x: w*0.9, y: h*0.4};
+        const cp = {x: w*0.5, y: h*0.2};
+
+        // Dashed Future Path
         ctx.beginPath();
-        ctx.moveTo(20, c.height-20);
-        ctx.quadraticCurveTo(c.width/2, 20, c.width-20, 50);
+        ctx.moveTo(p1.x, p1.y);
+        ctx.quadraticCurveTo(cp.x, cp.y, p2.x, p2.y);
         ctx.strokeStyle = '#333';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([5,5]);
+        ctx.setLineDash([6, 6]);
         ctx.stroke();
 
         // Active Path
-        ctx.beginPath();
-        ctx.moveTo(20, c.height-20);
-        ctx.quadraticCurveTo(c.width/3, c.height/1.5, c.width/2, c.height/2);
-        ctx.strokeStyle = '#006B6E';
-        ctx.lineWidth = 3;
         ctx.setLineDash([]);
-        ctx.stroke();
-
-        // Plane Dot
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.arc(c.width/2, c.height/2, 4, 0, Math.PI*2);
-        ctx.fill();
-    },
-
-    drawMain: function() {
-        const c = document.getElementById('main-map-canvas');
-        if(!c) return;
-        const rect = c.parentElement.getBoundingClientRect();
-        c.width = rect.width; c.height = rect.height;
-        const ctx = c.getContext('2d');
-
-        // Background (Grid)
-        ctx.fillStyle = '#050505';
-        ctx.fillRect(0,0,c.width,c.height);
+        const t = 0.55; 
+        const cx = (1-t)*(1-t)*p1.x + 2*(1-t)*t*cp.x + t*t*p2.x;
+        const cy = (1-t)*(1-t)*p1.y + 2*(1-t)*t*cp.y + t*t*p2.y;
         
-        ctx.strokeStyle = '#111';
-        ctx.lineWidth = 1;
-        for(let i=0; i<c.width; i+=50) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,c.height); ctx.stroke(); }
-        for(let i=0; i<c.height; i+=50) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(c.width,i); ctx.stroke(); }
-
-        // Continents (Simulated Abstract Shapes)
-        ctx.fillStyle = '#111';
         ctx.beginPath();
-        ctx.arc(c.width*0.2, c.height*0.6, 100, 0, Math.PI*2); // Asia sim
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(c.width*0.8, c.height*0.3, 80, 0, Math.PI*2); // Europe sim
-        ctx.fill();
-
-        // Flight Path
-        const startX = c.width * 0.2;
-        const startY = c.height * 0.6;
-        const endX = c.width * 0.8;
-        const endY = c.height * 0.3;
-        const cpX = c.width * 0.5;
-        const cpY = c.height * 0.1; // Curvature
-
-        // Full Path Line
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.quadraticCurveTo(cpX, cpY, endX, endY);
-        ctx.strokeStyle = '#333';
+        ctx.moveTo(p1.x, p1.y);
+        ctx.quadraticCurveTo(cp.x, cp.y, cx, cy);
+        ctx.strokeStyle = '#006B6E';
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Progress Line
-        ctx.beginPath();
-        // Just drawing half for simulation
-        ctx.moveTo(startX, startY);
-        ctx.quadraticCurveTo(startX + (cpX-startX)*0.6, startY + (cpY-startY)*0.6, c.width*0.5, c.height*0.38);
-        ctx.strokeStyle = '#006B6E'; // Teal
-        ctx.lineWidth = 4;
-        ctx.stroke();
-
-        // Plane Icon
-        ctx.save();
-        ctx.translate(c.width*0.5, c.height*0.38);
-        ctx.rotate(-Math.PI/4);
-        ctx.fillStyle = '#C3A676'; // Gold
-        ctx.beginPath();
-        ctx.moveTo(10, 0); ctx.lineTo(-10, 7); ctx.lineTo(-5, 0); ctx.lineTo(-10, -7); ctx.closePath();
-        ctx.fill();
-        ctx.restore();
-
-        // Pulse Effect
-        ctx.beginPath();
-        ctx.arc(c.width*0.5, c.height*0.38, 20, 0, Math.PI*2);
-        ctx.strokeStyle = 'rgba(0, 107, 110, 0.3)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
+        // Plane
+        ctx.translate(cx, cy);
+        ctx.fillStyle = '#C3A676';
+        ctx.beginPath(); ctx.arc(0,0,5,0,Math.PI*2); ctx.fill();
+        ctx.strokeStyle = 'rgba(195,166,118,0.4)';
+        ctx.beginPath(); ctx.arc(0,0,15,0,Math.PI*2); ctx.stroke();
     }
 };
 
-// --- START SYSTEM ---
 window.onload = () => SYS.init();
-
 </script>
 </body>
 </html>
