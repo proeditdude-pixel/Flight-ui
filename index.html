@@ -1,0 +1,130 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>IFE_System_v99_FINAL</title><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"><style>body{margin:0;font-family:sans-serif;background:#000;color:#fff;overflow:hidden}.wrap{display:flex;height:100vh}
+.sdbr{width:90px;background:#006564;display:flex;flex-direction:column;align-items:center;padding-top:20px;z-index:9}.btn{width:60px;height:60px;margin-bottom:10px;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff;opacity:.6;cursor:pointer;border-radius:10px}.btn:hover,.btn.act{opacity:1;background:rgba(255,255,255,0.2)}
+.main{flex:1;background:#111;position:relative;overflow:hidden}.bg{position:absolute;width:100%;height:100%;top:0;left:0;z-index:0;background:url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Earthmap1000x500compac.jpg/1000px-Earthmap1000x500compac.jpg');background-size:cover;animation:rot 120s linear infinite;opacity:.6}@keyframes rot{from{background-position:0 0}to{background-position:200% 0}}
+.cont{position:absolute;z-index:2;top:0;left:0;width:100%;height:100%;padding:30px;overflow-y:auto;background:linear-gradient(90deg,#000,transparent)}.hide{display:none!important}
+.c-card{display:inline-block;width:200px;margin:10px;vertical-align:top;cursor:pointer;transition:.2s}.c-card:hover{transform:scale(1.05)}.img-box{width:100%;height:280px;background:#333;background-size:cover;border-radius:8px}.meta{padding:10px}
+.mod{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);z-index:999;display:flex;justify-content:center;align-items:center}.bbox{background:#222;padding:20px;width:500px;border:1px solid #444}
+input{width:100%;padding:10px;margin:5px 0;background:#000;border:1px solid #555;color:#fff}
+.vid-o{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9999;display:flex;justify-content:center;align-items:center}video{width:90%;height:90%}.x-btn{position:absolute;top:20px;right:20px;font-size:30px;cursor:pointer}
+</style></head><body>
+
+<div class="wrap">
+ <div class="sdbr">
+  <div style="font-size:30px;margin-bottom:40px"><i class="fas fa-feather-alt"></i></div>
+  <div class="btn act" onclick="nav('p1',this)"><i class="fas fa-home"></i><br><small>HOME</small></div>
+  <div class="btn" onclick="nav('p2',this)"><i class="fas fa-film"></i><br><small>MOVIES</small></div>
+  <div class="btn" onclick="nav('p3',this)"><i class="fas fa-gamepad"></i><br><small>GAMES</small></div>
+  <div class="btn" style="margin-top:auto" onclick="document.getElementById('set_mod').classList.remove('hide')"><i class="fas fa-cog"></i></div>
+ </div>
+
+ <div class="main">
+  <div class="bg" id="bg_el"></div>
+  
+  <div id="p1" class="cont">
+   <h1 style="font-size:50px">Welcome Aboard</h1>
+   <h2>CX-882 <span style="color:#c6a87c">HKG > TYO</span></h2>
+   <div style="margin-top:50px;font-size:20px;color:#aaa">
+    Temp: -50C <br> Alt: 34,000ft <br> Speed: 500mph
+   </div>
+  </div>
+
+  <div id="p2" class="cont hide">
+   <h1>Movies</h1>
+   <div id="m_list"></div>
+  </div>
+
+  <div id="p3" class="cont hide">
+   <h1>Games</h1>
+   <div id="g_list"></div>
+   <div id="game_frame" class="hide" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:500;padding:50px">
+    <button onclick="document.getElementById('game_frame').classList.add('hide')" style="background:red;color:white;padding:10px;border:none">CLOSE GAME</button>
+    <iframe id="gf_src" style="width:100%;height:80%;border:none;background:#fff;margin-top:20px"></iframe>
+   </div>
+  </div>
+
+ </div>
+</div>
+
+<div id="set_mod" class="mod hide">
+ <div class="bbox">
+  <div style="display:flex;justify-content:space-between"><h3>Crew Panel</h3><span onclick="document.getElementById('set_mod').classList.add('hide')" style="cursor:pointer">X</span></div>
+  <hr style="border-color:#333">
+  <h4>Add Content</h4>
+  <select id="add_type" style="padding:10px;background:#333;color:#fff;border:none"><option value="mov">Movie</option><option value="gam">Game</option></select>
+  <input id="n_tit" placeholder="Title Name">
+  <input id="n_img" placeholder="Image URL (Poster)">
+  <input id="n_lnk" placeholder="Link (mp4 or game url)">
+  <button onclick="addStuff()" style="width:100%;padding:15px;background:#006564;color:white;border:none;margin-top:10px;cursor:pointer">ADD TO SYSTEM</button>
+  <hr>
+  <input id="bg_url" placeholder="Change BG Image URL...">
+  <button onclick="document.getElementById('bg_el').style.backgroundImage='url('+document.getElementById('bg_url').value+')'" style="width:100%;padding:10px;background:#444;color:white;border:none;margin-top:5px">UPDATE BG</button>
+ </div>
+</div>
+
+<div id="vp" class="vid-o hide">
+ <div class="x-btn" onclick="document.getElementById('vp').classList.add('hide');document.getElementById('vv').pause()">X</div>
+ <video id="vv" controls></video>
+</div>
+
+<script>
+var m = [
+ {t:"Big Buck Bunny", i:"https://upload.wikimedia.org/wikipedia/commons/c/c5/Big_buck_bunny_poster_big.jpg", l:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"},
+ {t:"Sintel", i:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Sintel_poster.jpg/800px-Sintel_poster.jpg", l:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"},
+ {t:"Tears of Steel", i:"https://mango.blender.org/wp-content/uploads/2013/05/01_thom_celia_bridge.jpg", l:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"},
+ {t:"Elephants Dream", i:"https://upload.wikimedia.org/wikipedia/commons/0/0c/Elephants_Dream_poster.jpg", l:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"},
+ {t:"Cosmos Laundromat", i:"https://upload.wikimedia.org/wikipedia/commons/e/e0/Cosmos_Laundromat_-_Poster.jpg", l:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"}
+];
+
+var g = [
+ {t:"Snake", i:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Snake_video_game_screen.png/640px-Snake_video_game_screen.png", l:"https://patorjk.com/games/snake/"},
+ {t:"Pacman Clone", i:"https://upload.wikimedia.org/wikipedia/commons/2/26/Pacman_HD.png", l:"https://freepacman.org/"}
+];
+
+function r(){
+ var h1=""; var h2="";
+ for(var i=0;i<m.length;i++){
+  h1+=`<div class="c-card" onclick="play('${m[i].l}')"><div class="img-box" style="background-image:url('${m[i].i}')"></div><div class="meta"><b>${m[i].t}</b></div></div>`
+ }
+ document.getElementById('m_list').innerHTML=h1;
+
+ for(var j=0;j<g.length;j++){
+  h2+=`<div class="c-card" onclick="playG('${g[j].l}')"><div class="img-box" style="background-image:url('${g[j].i}')"></div><div class="meta"><b>${g[j].t}</b></div></div>`
+ }
+ document.getElementById('g_list').innerHTML=h2;
+}
+
+function nav(id,el){
+ var x = document.getElementsByClassName('cont');
+ for(var i=0;i<x.length;i++){x[i].classList.add('hide')}
+ document.getElementById(id).classList.remove('hide');
+ var y = document.getElementsByClassName('btn');
+ for(var k=0;k<y.length;k++){y[k].classList.remove('act')}
+ if(el)el.classList.add('act');
+}
+
+function play(u){
+ document.getElementById('vp').classList.remove('hide');
+ var v = document.getElementById('vv');
+ v.src=u; v.play();
+}
+
+function playG(u){
+ document.getElementById('game_frame').classList.remove('hide');
+ document.getElementById('gf_src').src=u;
+}
+
+function addStuff(){
+ var typ = document.getElementById('add_type').value;
+ var o = {
+  t: document.getElementById('n_tit').value,
+  i: document.getElementById('n_img').value,
+  l: document.getElementById('n_lnk').value
+ };
+ if(typ=='mov'){ m.push(o); } else { g.push(o); }
+ r(); // re render
+ document.getElementById('set_mod').classList.add('hide');
+ alert('Added '+o.t);
+}
+
+window.onload=r;
+</script></body></html>
