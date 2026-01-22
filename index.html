@@ -2,302 +2,444 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>CX_IFE_V5_COMPLETE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IFE_V7_SMART_SEAT</title>
 <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
 <style>
-  :root { --pry: #006564; --sec: #c6a87c; --bg: #000000; --sur: #121212; --txt: #e0e0e0; }
-  body { margin: 0; background: var(--bg); color: var(--txt); font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-  
-  /* --- LAYOUT --- */
-  .app { display: flex; flex: 1; height: 100%; overflow: hidden; }
-  
-  /* Sidebar / Bottom Nav */
-  .sidebar { width: 80px; background: #080808; border-right: 1px solid #222; display: flex; flex-direction: column; align-items: center; padding: 20px 0; z-index: 50; }
-  .logo { width: 40px; height: 40px; object-fit: contain; margin-bottom: 20px; }
-  
-  .nav-item { width: 50px; height: 50px; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #666; cursor: pointer; margin-bottom: 10px; transition: .2s; }
-  .nav-item.active { background: var(--pry); color: #fff; box-shadow: 0 0 15px var(--pry); }
-  .nav-item i { font-size: 18px; margin-bottom: 4px; }
-  .nav-item span { font-size: 8px; text-transform: uppercase; font-weight: 700; }
-
-  /* Main Area */
-  .main { flex: 1; position: relative; display: flex; flex-direction: column; background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); overflow: hidden; }
-  .header { height: 60px; border-bottom: 1px solid #222; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: rgba(0,0,0,0.8); }
-  .flight-info { font-weight: 800; font-size: 18px; color: var(--sec); }
-  .stats-bar { display: flex; gap: 10px; font-size: 11px; color: #888; }
-  
-  /* Views */
-  .view { display: none; padding: 20px; height: 100%; overflow-y: auto; padding-bottom: 100px; box-sizing: border-box; }
-  .view.active { display: block; animation: fade In 0.3s; }
-  @keyframes fade { from {opacity:0} to {opacity:1} }
-
-  /* CHAT STYLES */
-  .chat-box { height: calc(100% - 60px); overflow-y: auto; background: #0a0a0a; border: 1px solid #333; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; }
-  .chat-msg { margin-bottom: 8px; font-size: 13px; word-wrap: break-word; }
-  .chat-msg b { color: var(--sec); margin-right: 5px; }
-  .chat-input-area { display: flex; height: 50px; margin-top: 10px; }
-  .chat-input-area input { flex: 1; background: #222; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 4px 0 0 4px; }
-  .chat-input-area button { width: 70px; background: var(--pry); border: none; color: #fff; font-weight: 700; border-radius: 0 4px 4px 0; cursor: pointer; }
-
-  /* MOBILE RESPONSIVE */
-  @media (max-width: 768px) {
-    .app { flex-direction: column-reverse; }
-    .sidebar { width: 100%; height: 70px; flex-direction: row; justify-content: space-around; padding: 0; border-right: none; border-top: 1px solid #333; background: #000; }
-    .logo { display: none; }
-    .nav-item { margin: 0; height: 100%; width: 100%; border-radius: 0; background: transparent; }
-    .nav-item.active { box-shadow: inset 0 -3px 0 var(--pry); background: #111; }
-    .stats-bar span { display: none; } 
-    .stats-bar b { display: block; }
+  /* --- THEME VARIABLES --- */
+  :root {
+    --pry: #0078d4;
+    --bg-img: url('https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?q=80&w=2068&auto=format&fit=crop');
+    --glass: rgba(0, 0, 0, 0.65);
+    --border: 1px solid rgba(255, 255, 255, 0.15);
+    --txt: #ffffff;
   }
 
-  /* SETTINGS PANEL */
-  .admin-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; z-index: 999; display: none; flex-direction: column; }
-  .admin-overlay.open { display: flex; }
-  .adm-header { padding: 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; background: #000; }
-  .adm-content { flex: 1; overflow-y: auto; padding: 20px; }
-  .adm-group { margin-bottom: 20px; background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; }
-  .adm-group h4 { margin: 0 0 10px 0; color: var(--sec); font-size: 12px; text-transform: uppercase; }
-  .inp-row { margin-bottom: 10px; }
-  .inp-row label { display: block; font-size: 10px; color: #888; margin-bottom: 5px; }
-  input, select { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 4px; box-sizing: border-box; }
-  .btn { width: 100%; padding: 12px; background: var(--pry); border: none; color: #fff; font-weight: 700; cursor: pointer; border-radius: 4px; margin-top: 5px; }
+  body { margin: 0; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; color: var(--txt); }
+  
+  /* Background */
+  .bg-layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: var(--bg-img); background-size: cover; background-position: center;
+    z-index: -1; filter: brightness(0.4);
+  }
 
-  /* CARDS (Movies & Games) */
-  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-  .card { background: var(--sur); border-radius: 8px; overflow: hidden; position: relative; }
-  .card img { width: 100%; height: 120px; object-fit: cover; }
-  .card-info { padding: 10px; font-size: 12px; }
-  .game-badge { position: absolute; top: 5px; right: 5px; background: var(--pry); color: #fff; font-size: 9px; padding: 3px 6px; border-radius: 4px; }
+  /* Layout */
+  .app { display: flex; height: 100%; backdrop-filter: blur(8px); }
 
-  /* VIDEO MODAL */
-  .vid-mod { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; display: none; flex-direction: column; }
-  .vid-head { padding: 15px; text-align: right; background: #111; }
-  iframe { flex: 1; border: none; }
+  /* Sidebar */
+  .sidebar {
+    width: 90px; background: rgba(0,0,0,0.85); border-right: var(--border);
+    display: flex; flex-direction: column; align-items: center; padding: 25px 0; z-index: 100;
+  }
+  .logo { width: 50px; height: 50px; object-fit: contain; margin-bottom: 40px; }
+  
+  .nav-btn {
+    width: 55px; height: 55px; border-radius: 15px; margin-bottom: 15px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    color: #888; cursor: pointer; transition: 0.3s;
+  }
+  .nav-btn:hover, .nav-btn.active { background: var(--pry); color: #fff; box-shadow: 0 0 20px var(--pry); transform: scale(1.05); }
+  .nav-btn i { font-size: 20px; margin-bottom: 5px; }
+  .nav-btn span { font-size: 9px; font-weight: 700; text-transform: uppercase; }
+
+  /* Main Content */
+  .main { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+
+  /* Header */
+  .top-bar {
+    height: 70px; border-bottom: var(--border); background: rgba(0,0,0,0.4);
+    display: flex; align-items: center; justify-content: space-between; padding: 0 30px;
+  }
+  .flight-title { font-size: 24px; font-weight: 800; letter-spacing: 1px; }
+  .flight-stats { display: flex; gap: 20px; font-size: 13px; }
+  .stat-pill { background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; border: var(--border); display: flex; align-items: center; gap: 8px; }
+
+  /* Content Area */
+  .content-area { flex: 1; padding: 30px; overflow-y: auto; position: relative; }
+  .view { display: none; animation: slideUp 0.4s ease-out; }
+  .view.active { display: block; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Widgets */
+  .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+  .widget { background: var(--glass); border: var(--border); border-radius: 15px; padding: 20px; }
+  .widget h3 { margin: 0 0 10px 0; font-size: 12px; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
+  .big-text { font-size: 36px; font-weight: 300; }
+  
+  /* Map */
+  .map-frame { width: 100%; height: 350px; background: #050505; border-radius: 15px; border: var(--border); position: relative; overflow: hidden; }
+  .plane-marker { position: absolute; top: 48%; font-size: 32px; color: var(--pry); transition: left 1s linear; transform: rotate(90deg) translateY(-50%); text-shadow: 0 0 15px var(--pry); }
+
+  /* Media Grid */
+  .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+  .media-card { background: #000; border-radius: 10px; overflow: hidden; cursor: pointer; transition: 0.2s; border: var(--border); position: relative; }
+  .media-card:hover { transform: scale(1.05); border-color: var(--pry); z-index: 10; }
+  .media-card img { width: 100%; height: 260px; object-fit: cover; }
+  .media-info { padding: 12px; background: #111; }
+
+  /* Chat */
+  .chat-container { display: flex; flex-direction: column; height: 500px; background: var(--glass); border-radius: 15px; border: var(--border); overflow: hidden; }
+  .chat-msgs { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+  .msg-bubble { background: rgba(255,255,255,0.1); padding: 10px 14px; border-radius: 12px; max-width: 70%; align-self: flex-start; font-size: 14px; }
+  .msg-bubble.mine { background: var(--pry); align-self: flex-end; }
+  .chat-input { display: flex; border-top: var(--border); background: rgba(0,0,0,0.5); }
+  .chat-input input { flex: 1; background: transparent; border: none; color: #fff; padding: 20px; outline: none; font-size: 16px; }
+  .chat-input button { width: 90px; background: var(--pry); border: none; color: #fff; font-weight: bold; cursor: pointer; }
+
+  /* Admin Panel */
+  .admin-panel {
+    position: fixed; top: 0; right: -500px; width: 400px; height: 100%;
+    background: #090909; border-left: 1px solid #333; z-index: 2000;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 25px; box-shadow: -30px 0 60px #000; overflow-y: auto;
+  }
+  .admin-panel.open { right: 0; }
+  
+  .adm-section { background: #151515; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
+  .adm-section h4 { margin: 0 0 15px 0; color: var(--pry); font-size: 14px; letter-spacing: 1px; }
+  .inp-group { margin-bottom: 12px; }
+  .inp-group label { display: block; font-size: 11px; color: #888; margin-bottom: 5px; }
+  .inp-group input, .inp-group select { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 6px; box-sizing: border-box; }
+  
+  .btn-save { width: 100%; background: var(--pry); color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 5px; letter-spacing: 1px; }
+
+  /* Video Modal */
+  .vid-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 3000; display: none; }
+  .close-vid { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 30px; cursor: pointer; z-index: 3001; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 50%; }
+  iframe { width: 100%; height: 100%; border: none; }
 </style>
 </head>
 <body>
 
+<div class="bg-layer"></div>
+
 <div class="app">
   <div class="sidebar">
-    <img id="ui_logo" class="logo" src="">
-    <div class="nav-item active" onclick="nav('home', this)"><i class="fas fa-home"></i><span>Home</span></div>
-    <div class="nav-item" onclick="nav('watch', this)"><i class="fas fa-film"></i><span>Watch</span></div>
-    <div class="nav-item" onclick="nav('game', this)"><i class="fas fa-gamepad"></i><span>Play</span></div>
-    <div class="nav-item" onclick="nav('chat', this)"><i class="fas fa-comments"></i><span>Chat</span></div>
-    <div class="nav-item" onclick="openAdmin()" style="color:var(--sec)"><i class="fas fa-cog"></i><span>Set</span></div>
+    <img id="logo_img" class="logo" src="">
+    <div class="nav-btn active" onclick="nav('home', this)"><i class="fas fa-home"></i><span>Home</span></div>
+    <div class="nav-btn" onclick="nav('map', this)"><i class="fas fa-map-marked-alt"></i><span>Map</span></div>
+    <div class="nav-btn" onclick="nav('watch', this)"><i class="fas fa-film"></i><span>Watch</span></div>
+    <div class="nav-btn" onclick="nav('games', this)"><i class="fas fa-gamepad"></i><span>Play</span></div>
+    <div class="nav-btn" onclick="nav('chat', this)"><i class="fas fa-comments"></i><span>Chat</span></div>
+    
+    <div style="margin-top:auto;"></div>
+    <div class="nav-btn" onclick="toggleAdmin()" style="opacity:0.5"><i class="fas fa-cog"></i><span>Set</span></div>
   </div>
 
   <div class="main">
-    <div class="header">
-      <div class="flight-info" id="ui_fn">CX 882</div>
-      <div class="stats-bar">
-        <div><i class="fas fa-user"></i> <b id="ui_seat">---</b></div>
-        <div><i class="fas fa-clock"></i> <b id="ui_rem">00:00</b></div>
+    <div class="top-bar">
+      <div>
+        <div class="flight-title" id="ui_fn">FLIGHT...</div>
+        <div style="font-size:12px; color:#bbb;" id="ui_al">AIRLINE</div>
+      </div>
+      <div class="flight-stats">
+        <div class="stat-pill"><i class="fas fa-chair"></i> <span id="ui_seat">Allocating...</span></div>
+        <div class="stat-pill"><i class="fas fa-clock"></i> <span id="ui_rem">00:00</span></div>
       </div>
     </div>
 
-    <div id="home" class="view active">
-      <h1>Welcome Aboard</h1>
-      <p style="color:#888" id="ui_al">Airline</p>
-      <div style="background:#111; padding:20px; border-radius:10px; border:1px solid #333; margin-top:20px;">
-        <h3 style="margin-top:0">Flight Status</h3>
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:12px; color:#888;">
-          <span>ORIGIN</span><span>DESTINATION</span>
+    <div id="anno_bar" style="background:var(--pry); color:#fff; padding:12px 30px; font-size:14px; font-weight:600; display:none; animation:slideUp 0.3s;">
+      <i class="fas fa-bullhorn" style="margin-right:10px;"></i> <span id="ui_msg"></span>
+    </div>
+
+    <div class="content-area">
+      
+      <div id="home" class="view active">
+        <h2 style="margin-top:0;">Flight Dashboard</h2>
+        <div class="dash-grid">
+          <div class="widget">
+            <h3>Route</h3>
+            <div class="big-text" style="font-size:24px"><span id="ui_org">---</span> <i class="fas fa-arrow-right" style="font-size:16px; margin:0 10px; opacity:0.5"></i> <span id="ui_dst">---</span></div>
+          </div>
+          <div class="widget">
+            <h3>Ground Speed</h3>
+            <div class="big-text"><span id="ui_spd">0</span> <small style="font-size:14px">km/h</small></div>
+          </div>
+          <div class="widget">
+            <h3>Altitude</h3>
+            <div class="big-text">38,000 <small style="font-size:14px">ft</small></div>
+          </div>
+          <div class="widget">
+            <h3>Temp</h3>
+            <div class="big-text">-54 <small style="font-size:14px">&deg;C</small></div>
+          </div>
         </div>
-        <div style="height:4px; background:#333; position:relative; border-radius:2px;">
-           <div id="bar_fill" style="width:10%; height:100%; background:var(--sec); position:absolute;"></div>
+      </div>
+
+      <div id="map" class="view">
+        <h2>Live Tracker</h2>
+        <div class="map-frame">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/World_map_blank_without_borders.svg/2000px-World_map_blank_without_borders.svg.png" style="width:100%; height:100%; opacity:0.4; object-fit:cover;">
+          <div style="position:absolute; top:50%; left:10%; right:10%; height:1px; background:rgba(255,255,255,0.2);"></div>
+          <i class="fas fa-plane plane-marker" id="plane_icon" style="left:10%"></i>
         </div>
-        <div style="text-align:center; margin-top:15px; font-size:24px;" id="ui_spd">900 km/h</div>
       </div>
-    </div>
 
-    <div id="watch" class="view">
-      <h2>Movies</h2>
-      <div class="grid" id="m_grid"></div>
-    </div>
-
-    <div id="game" class="view">
-      <h2>Arcade</h2>
-      <div class="grid" id="g_grid"></div>
-    </div>
-
-    <div id="chat" class="view">
-      <h2>Passenger Link</h2>
-      <div class="chat-box" id="c_box">
-        <div class="chat-msg" style="color:#666; text-align:center">--- Welcome to Flight Chat ---</div>
+      <div id="watch" class="view">
+        <h2>Entertainment</h2>
+        <div class="media-grid" id="movie_list"></div>
       </div>
-      <div class="chat-input-area">
-        <input id="c_in" placeholder="Say hello...">
-        <button onclick="sendChat()">SEND</button>
-      </div>
-    </div>
 
+      <div id="games" class="view">
+        <h2>Arcade</h2>
+        <div class="media-grid" id="game_list"></div>
+      </div>
+
+      <div id="chat" class="view">
+        <h2>Passenger Network</h2>
+        <div class="chat-container">
+          <div class="chat-msgs" id="chat_area">
+            <div style="text-align:center; opacity:0.5; font-size:12px; margin-top:10px;">Connected to onboard network.</div>
+          </div>
+          <div class="chat-input">
+            <input type="text" id="msg_in" placeholder="Type a message...">
+            <button onclick="sendMsg()">SEND</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 
-<div class="admin-overlay" id="adm">
-  <div class="adm-header">
-    <h3 style="margin:0; color:#fff">SETTINGS</h3>
-    <button class="btn" style="background:#333; width:auto; padding:5px 15px;" onclick="closeAdmin()">CLOSE X</button>
+<div class="admin-panel" id="adm_panel">
+  <div style="margin-bottom:20px; overflow:hidden;">
+    <h2 style="float:left; margin:0; color:#fff;">SYSTEM SETTINGS</h2>
+    <button class="btn-save" style="width:auto; float:right; background:#333; margin:0; padding:8px 15px;" onclick="toggleAdmin()">CLOSE</button>
   </div>
-  <div class="adm-content">
-    
-    <div class="adm-group" style="border-color:var(--sec);">
-      <h4>MY PROFILE</h4>
-      <div class="inp-row">
-        <label>My Seat Number (Visible in Chat)</label>
-        <input id="my_seat_in" placeholder="e.g. 42A" onchange="saveSeat()">
-      </div>
-    </div>
 
-    <div class="adm-group">
-      <h4>CREW CONTROLS (ADMIN)</h4>
-      <div class="inp-row"><label>Airline Name</label><input id="s_al"></div>
-      <div class="inp-row"><label>Flight Number</label><input id="s_fn"></div>
-      <div class="inp-row"><label>Logo URL</label><input id="s_lg"></div>
-      <hr style="border-color:#333; margin:15px 0">
-      <div class="inp-row"><label>Flight Progress (%)</label><input type="range" id="s_pr" min="0" max="100" oninput="live(this.value)"></div>
-      <div class="inp-row"><label>Speed</label><input id="s_sp"></div>
-      <button class="btn" onclick="saveCrew()">UPDATE FLIGHT</button>
-    </div>
+  <div class="adm-section">
+    <h4>MY PROFILE</h4>
+    <div class="inp-group"><label>My Seat Number</label><input id="my_seat_in" readonly style="opacity:0.5; cursor:not-allowed"></div>
+    <div style="font-size:10px; color:#666;">*Assigned automatically to prevent duplicates.</div>
+  </div>
 
+  <div class="adm-section">
+    <h4>VISUALS (GLOBAL)</h4>
+    <div class="inp-group"><label>Theme Color (Hex)</label><input id="s_color"></div>
+    <div class="inp-group"><label>Background Image URL</label><input id="s_bg"></div>
+    <button class="btn-save" onclick="saveVisuals()">APPLY VISUALS</button>
+  </div>
+
+  <div class="adm-section">
+    <h4>FLIGHT DATA (GLOBAL)</h4>
+    <div class="inp-group"><label>Airline Name</label><input id="s_al"></div>
+    <div class="inp-group"><label>Flight Number</label><input id="s_fn"></div>
+    <div class="inp-group"><label>Origin Code</label><input id="s_og"></div>
+    <div class="inp-group"><label>Dest Code</label><input id="s_ds"></div>
+    <div class="inp-group"><label>Logo URL</label><input id="s_lg"></div>
+    <button class="btn-save" onclick="saveFlightInfo()">UPDATE INFO</button>
+  </div>
+
+  <div class="adm-section">
+    <h4>LIVE STATUS</h4>
+    <div class="inp-group"><label>Progress (%)</label><input type="range" id="s_pr" min="0" max="100" oninput="liveUpdate(this.value)"></div>
+    <div class="inp-group"><label>Speed (km/h)</label><input id="s_sp"></div>
+    <div class="inp-group"><label>Time Remaining</label><input id="s_rm"></div>
+    <button class="btn-save" onclick="saveStatus()">UPDATE STATUS</button>
+  </div>
+
+  <div class="adm-section">
+    <h4>ANNOUNCEMENT</h4>
+    <div class="inp-group"><label>Message</label><input id="s_msg"></div>
+    <div style="display:flex; gap:10px;">
+        <button class="btn-save" onclick="saveMsg()">BROADCAST</button>
+        <button class="btn-save" style="background:#555;" onclick="clearMsg()">CLEAR</button>
+    </div>
   </div>
 </div>
 
-<div class="vid-mod" id="vid">
-  <div class="vid-head"><button class="btn" style="width:auto; background:#333" onclick="clsVid()">CLOSE</button></div>
-  <iframe id="ifr" allow="autoplay; fullscreen"></iframe>
+<div class="vid-overlay" id="vid_modal">
+  <div class="close-vid" onclick="closeVid()">&times;</div>
+  <iframe id="vid_frame" allow="autoplay; fullscreen"></iframe>
 </div>
 
 <script>
-// === CONFIGURATION ===
+// --- CONFIGURATION ---
 const C = { apiKey: "AIzaSyBiabDx61thAOm_A-_2x_mC9Nb9gArRCns", authDomain: "flight-ui.firebaseapp.com", projectId: "flight-ui", appId: "1:507585547506:web:a2f401ddda5055b59ed46b" };
 
 const MOVIES = [
-  {t:"Top Gun", i:"https://upload.wikimedia.org/wikipedia/en/1/13/Top_Gun_Maverick_Poster.jpg", u:"https://www.youtube.com/embed/qSqVVzvW13s?autoplay=1"},
+  {t:"Top Gun: Maverick", i:"https://upload.wikimedia.org/wikipedia/en/1/13/Top_Gun_Maverick_Poster.jpg", u:"https://www.youtube.com/embed/qSqVVzvW13s?autoplay=1"},
   {t:"Interstellar", i:"https://upload.wikimedia.org/wikipedia/en/b/bc/Interstellar_film_poster.jpg", u:"https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1"},
-  {t:"Nature", i:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Altja_j%C3%B5gi_Lahemaal.jpg/800px-Altja_j%C3%B5gi_Lahemaal.jpg", u:"https://www.youtube.com/embed/JkaxUblCGz0?autoplay=1"}
+  {t:"Avatar 2", i:"https://upload.wikimedia.org/wikipedia/en/5/54/Avatar_The_Way_of_Water_poster.jpg", u:"https://www.youtube.com/embed/d9MyqF3bPhI?autoplay=1"},
+  {t:"Spider-Man", i:"https://upload.wikimedia.org/wikipedia/en/2/21/Web_of_Spider-Man_Vol_1_129-1.png", u:"https://www.youtube.com/embed/JfVOs4VSpmA?autoplay=1"}
 ];
-
 const GAMES = [
-  {t:"Minecraft Classic", i:"https://upload.wikimedia.org/wikipedia/en/5/51/Minecraft_cover.png", u:"https://classic.minecraft.net/"},
+  {t:"Minecraft", i:"https://upload.wikimedia.org/wikipedia/en/5/51/Minecraft_cover.png", u:"https://classic.minecraft.net/"},
   {t:"Space Invaders", i:"https://upload.wikimedia.org/wikipedia/en/thumb/5/56/Space_Invaders_Arcade.png/220px-Space_Invaders_Arcade.png", u:"https://freeinvaders.org/"}
 ];
 
-let db, r, chatR;
-let mySeat = localStorage.getItem('mySeat') || "Seat ??";
+let db, ref, chatRef, presenceRef;
+let mySeat = "";
 
-function init(){
-  try{
+function init() {
+  try {
     firebase.initializeApp(C);
-    db=firebase.database();
-    r=db.ref('v5/flight');
-    chatR=db.ref('v5/chat');
+    db = firebase.database();
+    ref = db.ref('v7_flight');
+    chatRef = db.ref('v7_chat');
+    presenceRef = db.ref('v7_presence');
 
-    // Load Saved Seat
-    document.getElementById('my_seat_in').value = mySeat;
-    document.getElementById('ui_seat').innerText = mySeat;
-
-    // Listen to Flight Data
-    r.child('info').on('value', s=>{
-      let v=s.val(); if(!v)return;
-      document.getElementById('ui_fn').innerText = v.fn;
-      document.getElementById('ui_al').innerText = v.al;
-      document.getElementById('ui_logo').src = v.lg;
-      document.getElementById('s_fn').value = v.fn;
-      document.getElementById('s_al').value = v.al;
-      document.getElementById('s_lg').value = v.lg;
-    });
-
-    r.child('stat').on('value', s=>{
-      let v=s.val(); if(!v)return;
-      document.getElementById('ui_spd').innerText = v.sp + " km/h";
-      document.getElementById('ui_rem').innerText = v.rm;
-      document.getElementById('bar_fill').style.width = (v.pr||0) + "%";
-      document.getElementById('s_pr').value = v.pr;
-      document.getElementById('s_sp').value = v.sp;
-    });
-
-    // Listen to Chat
-    chatR.limitToLast(20).on('child_added', s=>{
-      let v=s.val();
-      let d = document.getElementById('c_box');
-      d.innerHTML += `<div class="chat-msg"><b>${v.u}:</b> ${v.m}</div>`;
-      d.scrollTop = d.scrollHeight;
-    });
-
+    setupSeat();
     renderMedia();
-  }catch(e){console.log(e)}
+    listen();
+  } catch(e) { console.log(e); }
 }
 
-// === ACTIONS ===
-function nav(p, e){
-  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
-  document.getElementById(p).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
-  e.classList.add('active');
-}
-
-function openAdmin(){ document.getElementById('adm').classList.add('open'); }
-function closeAdmin(){ document.getElementById('adm').classList.remove('open'); }
-
-// Seat Logic
-function saveSeat(){
-  let s = document.getElementById('my_seat_in').value;
-  if(s){
-    mySeat = s;
-    localStorage.setItem('mySeat', s);
-    document.getElementById('ui_seat').innerText = s;
+// --- INTELLIGENT SEAT LOGIC ---
+function setupSeat() {
+  // Check if we already have a session seat (in case of refresh)
+  let saved = localStorage.getItem("v7_seat_id");
+  if(saved) {
+    checkAndClaim(saved);
+  } else {
+    generateAndClaim();
   }
 }
 
-// Crew Logic
-function saveCrew(){
-  r.child('info').set({
-    al: document.getElementById('s_al').value,
+function generateAndClaim() {
+  // Gen random seat: 1-60 + A-F
+  let r = Math.floor(Math.random() * 60) + 1;
+  let l = ["A","B","C","D","E","F"][Math.floor(Math.random()*6)];
+  let candidate = "Seat " + r + l;
+  checkAndClaim(candidate);
+}
+
+function checkAndClaim(seat) {
+  // Check DB to see if this seat is taken by an ONLINE user
+  presenceRef.child(seat).once('value', snap => {
+    if(snap.exists()) {
+       // Seat is taken! Try another one.
+       console.log("Collision on " + seat + ". Retrying...");
+       generateAndClaim(); 
+    } else {
+      // Seat is free! Claim it.
+      mySeat = seat;
+      localStorage.setItem("v7_seat_id", seat);
+      
+      // UI Update
+      document.getElementById('ui_seat').innerText = seat;
+      document.getElementById('my_seat_in').value = seat;
+
+      // DATABASE CLAIM (The Magic Part)
+      // We set a value, and tell Firebase: "If I disconnect, delete this."
+      let myRef = presenceRef.child(seat);
+      myRef.set({ status: 'online', time: Date.now() });
+      myRef.onDisconnect().remove(); 
+    }
+  });
+}
+
+// --- LISTENERS ---
+function listen() {
+  ref.child('info').on('value', s => {
+    const v = s.val(); if(!v) return;
+    document.getElementById('ui_fn').innerText = v.fn || "FLIGHT";
+    document.getElementById('ui_al').innerText = v.al || "AIRLINE";
+    document.getElementById('ui_org').innerText = v.og;
+    document.getElementById('ui_dst').innerText = v.ds;
+    document.getElementById('logo_img').src = v.lg;
+    
+    // Set Theme
+    if(v.col) document.documentElement.style.setProperty('--pry', v.col);
+    if(v.bg) document.documentElement.style.setProperty('--bg-img', `url('${v.bg}')`);
+    
+    // Sync Admin
+    document.getElementById('s_fn').value = v.fn;
+    document.getElementById('s_al').value = v.al;
+    document.getElementById('s_og').value = v.og;
+    document.getElementById('s_ds').value = v.ds;
+    document.getElementById('s_lg').value = v.lg;
+    document.getElementById('s_color').value = v.col;
+    document.getElementById('s_bg').value = v.bg;
+  });
+
+  ref.child('status').on('value', s => {
+    const v = s.val(); if(!v) return;
+    document.getElementById('ui_spd').innerText = v.sp;
+    document.getElementById('ui_rem').innerText = v.rm;
+    let pct = v.pr || 0;
+    document.getElementById('plane_icon').style.left = (10 + pct*0.8) + "%";
+    
+    document.getElementById('s_pr').value = pct;
+    document.getElementById('s_sp').value = v.sp;
+    document.getElementById('s_rm').value = v.rm;
+  });
+
+  ref.child('msg').on('value', s => {
+    const txt = s.val();
+    const bar = document.getElementById('anno_bar');
+    if(txt) {
+      bar.style.display = "block";
+      document.getElementById('ui_msg').innerText = txt;
+    } else {
+      bar.style.display = "none";
+    }
+    document.getElementById('s_msg').value = txt || "";
+  });
+
+  chatRef.limitToLast(30).on('child_added', s => {
+    const v = s.val();
+    const area = document.getElementById('chat_area');
+    const isMe = v.u === mySeat;
+    area.innerHTML += `<div class="msg-bubble ${isMe?'mine':''}"><b style="font-size:10px; opacity:0.7">${v.u}</b><br>${v.m}</div>`;
+    area.scrollTop = area.scrollHeight;
+  });
+}
+
+// --- ACTIONS ---
+function saveFlightInfo() {
+  ref.child('info').update({
     fn: document.getElementById('s_fn').value,
+    al: document.getElementById('s_al').value,
+    og: document.getElementById('s_og').value,
+    ds: document.getElementById('s_ds').value,
     lg: document.getElementById('s_lg').value
   });
-  r.child('stat').update({
+}
+function saveVisuals() {
+  ref.child('info').update({
+    col: document.getElementById('s_color').value,
+    bg: document.getElementById('s_bg').value
+  });
+}
+function saveStatus() {
+  ref.child('status').update({
     sp: document.getElementById('s_sp').value,
+    rm: document.getElementById('s_rm').value,
     pr: document.getElementById('s_pr').value
   });
-  closeAdmin();
 }
-function live(v){ r.child('stat').update({pr: v}); }
+function liveUpdate(v){ ref.child('status').update({pr: v}); }
+function saveMsg(){ ref.child('msg').set(document.getElementById('s_msg').value); }
+function clearMsg(){ ref.child('msg').remove(); }
 
-// Chat Logic
-function sendChat(){
-  let i = document.getElementById('c_in');
-  let txt = i.value;
-  if(!txt) return;
-  chatR.push({ u: mySeat, m: txt });
+function sendMsg() {
+  const i = document.getElementById('msg_in');
+  if(!i.value || !mySeat) return;
+  chatRef.push({ u: mySeat, m: i.value });
   i.value = "";
 }
 
-// Media Logic
-function renderMedia(){
-  document.getElementById('m_grid').innerHTML = MOVIES.map(m=>`
-    <div class="card" onclick="play('${m.u}')">
-      <img src="${m.i}"><div class="card-info">${m.t}</div>
-    </div>`).join('');
-    
-  document.getElementById('g_grid').innerHTML = GAMES.map(g=>`
-    <div class="card" onclick="play('${g.u}')">
-      <div class="game-badge">PLAY</div>
-      <img src="${g.i}"><div class="card-info">${g.t}</div>
-    </div>`).join('');
+function nav(id, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if(el) el.classList.add('active');
 }
+function toggleAdmin(){ document.getElementById('adm_panel').classList.toggle('open'); }
+function renderMedia() {
+  document.getElementById('movie_list').innerHTML = MOVIES.map(m=>`<div class="media-card" onclick="play('${m.u}')"><img src="${m.i}"><div class="media-info">${m.t}</div></div>`).join('');
+  document.getElementById('game_list').innerHTML = GAMES.map(g=>`<div class="media-card" onclick="play('${g.u}')"><img src="${g.i}"><div class="media-info">${g.t}</div></div>`).join('');
+}
+function play(u){ document.getElementById('vid_modal').style.display='block'; document.getElementById('vid_frame').src=u; }
+function closeVid(){ document.getElementById('vid_modal').style.display='none'; document.getElementById('vid_frame').src=""; }
 
-function play(u){ document.getElementById('vid').style.display='flex'; document.getElementById('ifr').src=u; }
-function clsVid(){ document.getElementById('vid').style.display='none'; document.getElementById('ifr').src=''; }
-
-window.onload=init;
+window.onload = init;
 </script>
 </body>
 </html>
