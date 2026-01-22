@@ -3,719 +3,1045 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>CX_IFE_V15_ZENITH</title>
-
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+<title>CX_IFE_V27_TITAN_OS</title>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=Oswald:wght@200;300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
-  /* --- 1. CORE VARIABLES & THEME --- */
-  :root {
-    /* Brand Identity */
-    --brand-primary: #006564;
-    --brand-sec: #004d4d;
+/* =============================================================================
+   SECTION 1: CSS VARIABLES & RESET
+   =============================================================================
+*/
+:root {
+    /* IDENTITY */
+    --brand-teal: #006B6E;
+    --brand-teal-dark: #004F52;
+    --brand-teal-light: #008C90;
     --brand-gold: #C3A676;
+    --brand-gold-dim: #8a734e;
     
-    /* Glassmorphism Palette */
-    --glass-bg: rgba(20, 20, 20, 0.75);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
-    --glass-shine: rgba(255, 255, 255, 0.05);
+    /* SURFACES */
+    --bg-deep: #050505;
+    --bg-panel: #121212;
+    --bg-panel-glass: rgba(18, 18, 18, 0.85);
+    --bg-card: #1E1E1E;
     
-    /* Text */
-    --txt-main: #ffffff;
-    --txt-muted: #9ca3af;
-    
-    /* Layout */
-    --nav-w: 96px;
-    --player-h: 80px;
-    
-    /* Font */
-    --font-ui: 'Inter', sans-serif;
-    --font-disp: 'DM Serif Display', serif;
-  }
+    /* BORDERS */
+    --border-subtle: 1px solid rgba(255,255,255,0.08);
+    --border-light: 1px solid rgba(255,255,255,0.15);
+    --border-active: 1px solid var(--brand-teal);
 
-  /* KIDS MODE OVERRIDES */
-  body.kids-mode {
-    --brand-primary: #FF6B6B;
-    --brand-gold: #FFD93D;
-    --font-disp: 'Inter', sans-serif; /* Simplified font */
-    --glass-bg: rgba(40, 40, 100, 0.9);
-  }
+    /* TEXT */
+    --text-primary: #FFFFFF;
+    --text-secondary: #A0A0A0;
+    --text-tertiary: #606060;
 
-  * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
-  
-  body {
-    margin: 0; background: #000; color: var(--txt-main);
-    font-family: var(--font-ui); height: 100vh; overflow: hidden;
-  }
+    /* ANIMATIONS */
+    --anim-fast: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --anim-smooth: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    --anim-slow: 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
 
-  /* SCROLLBARS */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-thumb { background: var(--brand-gold); border-radius: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
+* {
+    box-sizing: border-box;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    scrollbar-width: none; /* Firefox */
+}
 
-  /* --- 2. BACKGROUND & LAYOUT --- */
-  #app_container {
-    display: flex; height: 100%; width: 100%; opacity: 0;
-    transition: opacity 1s ease, transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
-    transform: scale(0.95); pointer-events: none;
-  }
-  #app_container.active { opacity: 1; transform: scale(1); pointer-events: all; }
+*::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
 
-  #bg_layer {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-    background-size: cover; background-position: center;
-    transition: background-image 1s ease; opacity: 0.4;
-    animation: bgPan 60s infinite alternate linear;
-  }
-  @keyframes bgPan { from{transform:scale(1);} to{transform:scale(1.1);} }
+body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    display: flex;
+}
 
-  /* --- 3. SIDEBAR NAVIGATION --- */
-  .sidebar {
-    width: var(--nav-w); height: 100%;
-    background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(20px);
-    border-right: var(--glass-border); display: flex; flex-direction: column;
-    z-index: 100;
-  }
-  
-  .brand-area {
-    height: 100px; display: flex; justify-content: center; align-items: center;
-    border-bottom: var(--glass-border); margin-bottom: 20px;
-    background: linear-gradient(180deg, var(--brand-primary), transparent);
-  }
-  .brand-logo { width: 48px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
+/* =============================================================================
+   SECTION 2: GLOBAL UTILITIES & ANIMATIONS
+   =============================================================================
+*/
 
-  .nav-btn {
-    padding: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    color: var(--txt-muted); cursor: pointer; transition: 0.3s; position: relative;
-    opacity: 0.7;
-  }
-  .nav-btn i { font-size: 22px; margin-bottom: 6px; transition: 0.3s; }
-  .nav-btn span { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
-  
-  .nav-btn:hover { opacity: 1; color: #fff; background: rgba(255,255,255,0.05); }
-  .nav-btn.active { opacity: 1; color: var(--brand-gold); }
-  .nav-btn.active::before {
-    content: ''; position: absolute; left: 0; top: 15%; height: 70%; width: 3px;
-    background: var(--brand-gold); box-shadow: 0 0 15px var(--brand-gold); border-radius: 0 4px 4px 0;
-  }
+.hidden { display: none !important; }
+.fade-in { animation: fadeIn var(--anim-smooth) forwards; }
 
-  /* --- 4. MAIN CONTENT AREA --- */
-  .main-stage { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-  /* HEADER */
-  .header {
-    height: 90px; padding: 0 40px; display: flex; align-items: center; justify-content: space-between;
-    background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
-  }
-  
-  .route-info h1 { font-family: var(--font-disp); font-weight: 400; font-size: 32px; margin: 0; letter-spacing: 1px; }
-  .route-info span { font-size: 11px; color: var(--brand-gold); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
-  
-  .sys-status { display: flex; gap: 20px; align-items: center; }
-  .status-pill { 
-    background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 30px; 
-    font-size: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); 
-    display: flex; align-items: center; gap: 8px;
-  }
-  .blink { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; animation: blink 2s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
 
-  /* VIEWPORT */
-  .viewport { flex: 1; position: relative; padding: 0 40px 100px 40px; overflow-y: auto; scroll-behavior: smooth; }
-  
-  .page { 
-    display: none; animation: fadeSlide 0.6s cubic-bezier(0.16, 1, 0.3, 1); 
-  }
-  .page.active { display: block; }
-  @keyframes fadeSlide { from{opacity:0; transform:translateY(30px)} to{opacity:1; transform:translateY(0)} }
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
 
-  /* SECTIONS STYLING */
-  .hero-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; height: 450px; }
-  
-  .card {
-    background: var(--glass-bg); border: var(--glass-border); border-radius: 16px;
-    padding: 25px; backdrop-filter: blur(12px); box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-    display: flex; flex-direction: column; position: relative; overflow: hidden;
-  }
-  .card-title { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--txt-muted); margin-bottom: 10px; }
-  .card-val { font-size: 36px; font-weight: 300; margin-top: auto; }
-
-  /* MAP SVG */
-  .map-wrap { width: 100%; height: 100%; position: relative; }
-  .map-svg { width: 100%; height: 100%; }
-  .path-line { fill: none; stroke: rgba(255,255,255,0.2); stroke-width: 2; }
-  .path-active { fill: none; stroke: var(--brand-gold); stroke-width: 2; stroke-dasharray: 600; stroke-dashoffset: 600; filter: drop-shadow(0 0 8px var(--brand-gold)); }
-  
-  /* CAMERA FEED */
-  .cam-feed { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; border-radius: 12px; }
-  .cam-overlay { position: absolute; bottom: 20px; left: 20px; font-family: monospace; color: #0f0; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 4px; font-size: 12px; }
-
-  /* ENTERTAINMENT GRID */
-  .media-row { margin-bottom: 40px; }
-  .row-title { font-family: var(--font-disp); font-size: 24px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
-  .posters { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 25px; }
-  
-  .poster-card { 
-    aspect-ratio: 2/3; background: #222; border-radius: 12px; overflow: hidden; 
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; position: relative;
-    border: 1px solid transparent;
-  }
-  .poster-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
-  .poster-card:hover { transform: scale(1.05) translateY(-10px); border-color: var(--brand-gold); z-index: 10; box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
-  .poster-card:hover img { opacity: 0.6; }
-  .play-icon { 
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); 
-    font-size: 40px; color: #fff; transition: 0.3s; 
-  }
-  .poster-card:hover .play-icon { transform: translate(-50%, -50%) scale(1); }
-
-  /* DINING & CART */
-  .menu-tabs { display: flex; gap: 10px; margin-bottom: 30px; }
-  .m-tab { padding: 10px 25px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: 0.3s; font-size: 13px; text-transform: uppercase; }
-  .m-tab.active, .m-tab:hover { background: var(--brand-gold); color: #000; border-color: var(--brand-gold); font-weight: bold; }
-
-  .dish-card { 
-    display: flex; gap: 20px; padding: 20px; background: rgba(255,255,255,0.03); 
-    border-radius: 12px; margin-bottom: 15px; border: 1px solid transparent; transition: 0.3s;
-  }
-  .dish-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
-  .dish-btn { margin-left: auto; padding: 10px 20px; background: transparent; border: 1px solid var(--brand-gold); color: var(--brand-gold); border-radius: 6px; cursor: pointer; transition: 0.2s; }
-  .dish-btn:hover { background: var(--brand-gold); color: #000; }
-
-  /* CHAT / CREW */
-  .chat-layout { display: flex; height: 500px; gap: 20px; }
-  .chat-box { flex: 1; background: rgba(0,0,0,0.3); border-radius: 12px; border: var(--glass-border); display: flex; flex-direction: column; }
-  .msgs-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-  .msg-bubble { max-width: 75%; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5; }
-  .msg-bubble.me { background: var(--brand-primary); align-self: flex-end; color: #fff; border-bottom-right-radius: 2px; }
-  .msg-bubble.crew { background: #333; align-self: flex-start; border-bottom-left-radius: 2px; border-left: 3px solid var(--brand-gold); }
-
-  /* --- 5. BOTTOM PLAYER BAR --- */
-  .player-bar {
-    position: absolute; bottom: 0; left: 0; width: 100%; height: var(--player-h);
-    background: rgba(10, 10, 10, 0.95); border-top: 1px solid #333;
-    display: flex; align-items: center; padding: 0 40px; z-index: 500;
-    backdrop-filter: blur(20px);
-  }
-  .track-visual { display: flex; align-items: flex-end; gap: 3px; height: 30px; margin-right: 20px; }
-  .bar { width: 4px; background: var(--brand-gold); animation: eq 1s infinite ease-in-out; }
-  .bar:nth-child(2) { animation-delay: 0.2s; }
-  .bar:nth-child(3) { animation-delay: 0.4s; }
-  .bar:nth-child(4) { animation-delay: 0.1s; }
-  @keyframes eq { 0%,100%{height:5px} 50%{height:25px} }
-
-  /* --- 6. WELCOME & BOARDING PASS --- */
-  #welcome_screen {
+/* =============================================================================
+   SECTION 3: BOOT SEQUENCE (AVIONICS SIMULATION)
+   =============================================================================
+*/
+#boot-layer {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
-    z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    transition: 0.8s ease;
-  }
-  #welcome_screen.off { transform: translateY(-100%); opacity: 0; pointer-events: none; }
-  
-  .b-pass {
-    width: 700px; height: 280px; background: #fff; border-radius: 20px; display: flex; overflow: hidden;
-    box-shadow: 0 50px 100px rgba(0,0,0,0.6); position: relative; color: #222;
-  }
-  .b-left { flex: 2; padding: 30px; border-right: 2px dashed #ddd; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
-  .b-right { flex: 1; padding: 30px; background: var(--brand-primary); color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; transition: 0.3s; }
-  .b-right:hover { background: var(--brand-sec); }
-  
-  .pass-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-  .pass-val { font-size: 22px; font-weight: 700; color: #000; }
-  .b-right .pass-val { color: #fff; }
-  .big-route { font-size: 48px; font-weight: 800; color: var(--brand-primary); letter-spacing: 2px; }
+    background: #000; z-index: 9999;
+    font-family: 'Share Tech Mono', monospace;
+    padding: 40px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+}
 
-  /* --- 7. OVERLAYS (SETTINGS/ZEN/VIDEO) --- */
-  .overlay { 
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-    background: rgba(0,0,0,0.9); z-index: 2000; display: none; 
-    justify-content: center; align-items: center; backdrop-filter: blur(10px);
-  }
-  
-  .zen-mode { background: #000; flex-direction: column; color: #444; }
-  .zen-time { font-size: 80px; font-weight: 200; color: #fff; margin-bottom: 20px; font-family: var(--font-disp); }
-  .zen-exit { padding: 15px 40px; border: 1px solid #333; border-radius: 50px; cursor: pointer; color: #666; transition: 0.3s; }
-  .zen-exit:hover { border-color: #fff; color: #fff; }
+.boot-log { color: var(--brand-teal); font-size: 14px; margin-bottom: 5px; opacity: 0.8; }
+.boot-progress {
+    width: 100%; height: 4px; background: #333; margin-top: 20px;
+}
+.boot-bar {
+    width: 0%; height: 100%; background: var(--brand-teal);
+    transition: width 0.2s linear;
+}
 
-  .settings-panel { width: 500px; background: #151515; border: 1px solid #333; padding: 40px; border-radius: 12px; }
-  .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #222; }
-  .toggle-switch { width: 50px; height: 26px; background: #333; border-radius: 20px; position: relative; cursor: pointer; transition: 0.3s; }
-  .toggle-switch::after { content:''; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.3s; }
-  .toggle-switch.on { background: var(--brand-primary); }
-  .toggle-switch.on::after { left: 27px; }
+/* =============================================================================
+   SECTION 4: WELCOME SCREEN
+   =============================================================================
+*/
+#welcome-layer {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #000;
+    z-index: 5000;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    transition: transform 1s cubic-bezier(0.7, 0, 0.3, 1);
+}
 
-  /* RESPONSIVE */
-  @media (max-width: 1024px) {
-    .sidebar { width: 70px; }
-    .hero-grid { grid-template-columns: 1fr; height: auto; }
-    .b-pass { width: 90%; flex-direction: column; height: auto; }
-    .b-left { border-right: none; border-bottom: 2px dashed #ddd; }
-  }
+.wc-bg {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-size: cover; background-position: center;
+    opacity: 0.5; filter: contrast(1.2);
+}
+
+.wc-container {
+    position: relative; z-index: 2;
+    text-align: center;
+    padding: 40px;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+
+.wc-logo { width: 100px; filter: brightness(0) invert(1); margin-bottom: 30px; }
+.wc-title { font-family: 'Oswald'; font-size: 4rem; letter-spacing: 0.2em; text-transform: uppercase; margin: 0; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.wc-subtitle { font-family: 'Inter'; font-size: 0.9rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--brand-gold); margin-top: 10px; }
+.wc-btn {
+    margin-top: 60px; padding: 18px 60px;
+    background: transparent; border: 1px solid rgba(255,255,255,0.3);
+    color: #fff; font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.3s ease;
+    position: relative; overflow: hidden;
+}
+.wc-btn:hover { background: #fff; color: var(--brand-teal); letter-spacing: 0.4em; }
+
+/* =============================================================================
+   SECTION 5: SIDEBAR NAVIGATION
+   =============================================================================
+*/
+.sidebar {
+    position: relative; z-index: 100;
+    width: 110px; height: 100%;
+    background: #000;
+    border-right: var(--border-subtle);
+    display: flex; flex-direction: column;
+}
+
+.sb-brand {
+    height: 130px;
+    background-color: var(--brand-teal);
+    display: flex; justify-content: center; align-items: center;
+    box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+    margin-bottom: 20px;
+    position: relative;
+}
+.sb-brand::after {
+    content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+    border-left: 10px solid transparent; border-right: 10px solid transparent;
+    border-top: 10px solid var(--brand-teal);
+}
+.sb-logo-img { width: 55px; height: 55px; object-fit: contain; filter: brightness(0) invert(1); }
+
+.sb-nav { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
+
+.nav-item {
+    height: 85px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    color: var(--text-secondary);
+    cursor: pointer; transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+.nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.nav-item.active {
+    color: var(--brand-teal);
+    border-left-color: var(--brand-teal);
+    background: linear-gradient(90deg, rgba(0,107,110,0.1), transparent);
+}
+.nav-item i { font-size: 20px; margin-bottom: 8px; }
+.nav-item span { font-size: 9px; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
+
+/* =============================================================================
+   SECTION 6: MAIN STAGE & TOP BAR
+   =============================================================================
+*/
+.stage { flex: 1; position: relative; z-index: 50; display: flex; flex-direction: column; }
+.bg-wallpaper {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-size: cover; background-position: center;
+    z-index: 0; opacity: 0.15; pointer-events: none;
+    transition: background-image 0.5s ease;
+}
+
+.top-bar {
+    height: 80px; padding: 0 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: var(--border-subtle);
+    background: linear-gradient(180deg, rgba(0,0,0,0.9), transparent);
+    z-index: 10;
+}
+
+.tb-flight { display: flex; align-items: center; gap: 20px; }
+.tb-code { font-family: 'Oswald'; font-size: 28px; letter-spacing: 2px; }
+.tb-plane { color: var(--brand-gold); transform: rotate(90deg); font-size: 18px; }
+
+.tb-user { display: flex; align-items: center; gap: 30px; }
+.tb-seat-badge {
+    border: 1px solid var(--brand-gold); color: var(--brand-gold);
+    padding: 5px 12px; font-family: 'Oswald'; font-size: 18px; border-radius: 4px;
+}
+.tb-clock { font-family: 'Share Tech Mono'; font-size: 22px; color: #fff; }
+
+/* =============================================================================
+   SECTION 7: PAGE ARCHITECTURE
+   =============================================================================
+*/
+.viewport { flex: 1; position: relative; overflow: hidden; }
+.page {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    padding: 40px; overflow-y: auto; opacity: 0; transform: translateY(20px);
+    transition: all 0.5s var(--anim-smooth); pointer-events: none;
+}
+.page.active { opacity: 1; transform: translateY(0); pointer-events: all; }
+
+h1 { font-family: 'Oswald'; font-weight: 300; font-size: 52px; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 5px 0; }
+h2 { font-size: 12px; color: var(--brand-gold); text-transform: uppercase; letter-spacing: 4px; margin: 0 0 40px 0; font-weight: 600; }
+h3 { font-family: 'Oswald'; font-size: 20px; color: #fff; margin-bottom: 15px; border-bottom: var(--border-subtle); padding-bottom: 10px; }
+
+/* =============================================================================
+   SECTION 8: HOME DASHBOARD WIDGETS
+   =============================================================================
+*/
+.dashboard-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px;
+    grid-template-rows: 250px 150px;
+}
+
+.widget {
+    background: var(--bg-panel-glass); border: var(--border-subtle);
+    border-radius: 8px; padding: 20px; position: relative; overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.widget.map-preview { grid-column: span 3; padding: 0; background: #000; }
+.widget.stat { display: flex; flex-direction: column; justify-content: space-between; }
+
+.stat-label { font-size: 10px; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 1px; }
+.stat-value { font-family: 'Oswald'; font-size: 36px; color: #fff; }
+.stat-unit { font-size: 14px; color: var(--brand-gold); margin-left: 5px; }
+
+#mini-map-canvas { width: 100%; height: 100%; }
+
+/* =============================================================================
+   SECTION 9: MEDIA & GAMES GRIDS
+   =============================================================================
+*/
+.media-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 30px;
+    padding-bottom: 60px;
+}
+
+.poster-card {
+    aspect-ratio: 2/3; background: #222; border-radius: 8px; overflow: hidden;
+    position: relative; transition: all 0.3s ease; cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+.poster-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.6); z-index: 5; }
+.poster-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: 0.3s; }
+.poster-card:hover img { opacity: 1; }
+.poster-meta {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,1), transparent);
+    padding: 20px 15px 15px 15px;
+}
+.pm-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pm-sub { font-size: 10px; color: #aaa; margin-top: 2px; }
+
+/* =============================================================================
+   SECTION 10: SETTINGS (GOD MODE) CMS
+   =============================================================================
+*/
+.settings-container {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+}
+.cfg-panel {
+    background: #151515; border: 1px solid #222; border-radius: 8px; padding: 30px;
+}
+.cfg-header {
+    font-size: 14px; color: var(--brand-teal); font-weight: bold; text-transform: uppercase;
+    letter-spacing: 2px; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 25px;
+}
+
+.form-group { margin-bottom: 20px; }
+.fg-label { display: block; font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
+.fg-input {
+    width: 100%; background: #080808; border: 1px solid #333; color: #fff;
+    padding: 12px; font-family: 'Inter'; font-size: 13px; border-radius: 4px;
+    transition: 0.2s;
+}
+.fg-input:focus { border-color: var(--brand-teal); }
+
+.btn-action {
+    width: 100%; padding: 15px; background: var(--brand-teal); border: none;
+    color: #fff; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
+    cursor: pointer; border-radius: 4px; transition: 0.2s; margin-top: 10px;
+}
+.btn-action:hover { background: #fff; color: #000; }
+.btn-danger { background: #5a1a1a; }
+.btn-danger:hover { background: #ff4444; color: #fff; }
+
+/* =============================================================================
+   SECTION 11: OVERLAYS (PLAYER & GAME)
+   =============================================================================
+*/
+#universal-player {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 6000;
+    background: #000; display: none; flex-direction: column;
+}
+.up-header {
+    height: 60px; background: #111; display: flex; justify-content: space-between; align-items: center;
+    padding: 0 30px; border-bottom: 1px solid #222;
+}
+.up-title { font-family: 'Oswald'; letter-spacing: 2px; }
+.up-close { font-size: 24px; cursor: pointer; color: #666; transition: 0.2s; }
+.up-close:hover { color: #fff; }
+
+.up-content { flex: 1; width: 100%; height: 100%; border: none; }
+
+/* SNAKE GAME SPECIFIC */
+#snake-canvas {
+    background: #000; border: 2px solid #333; display: block; margin: 0 auto;
+}
+#snake-score { text-align: center; font-family: 'Oswald'; font-size: 30px; margin-bottom: 20px; }
+
 </style>
 </head>
 <body>
 
-<div id="welcome_screen">
-  <div class="b-pass">
-    <div class="b-left">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/96/Cathay_Pacific_logo.svg/1200px-Cathay_Pacific_logo.svg.png" style="height:30px">
-        <span style="color:var(--brand-primary); font-weight:bold; font-size:12px;">BUSINESS</span>
-      </div>
-      <div style="margin: 30px 0;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div><div class="pass-label">Origin</div><div class="big-route" id="bp_og">HKG</div></div>
-          <i class="fas fa-plane" style="color:#ddd; font-size:30px;"></i>
-          <div style="text-align:right"><div class="pass-label">Destination</div><div class="big-route" id="bp_ds">LHR</div></div>
-        </div>
-      </div>
-      <div style="display:flex; gap: 40px;">
-        <div><div class="pass-label">Passenger</div><div class="pass-val">V15 GUEST</div></div>
-        <div><div class="pass-label">Flight</div><div class="pass-val">CX 255</div></div>
-        <div><div class="pass-label">Date</div><div class="pass-val" id="bp_date">--</div></div>
-      </div>
-      <div class="watermark" style="position:absolute; bottom:10px; right:20px; font-size:80px; opacity:0.05; font-weight:bold;">CX</div>
-    </div>
-    <div class="b-right" onclick="systemStart()">
-      <div class="pass-label" style="color:rgba(255,255,255,0.7)">SEAT ASSIGNMENT</div>
-      <div class="pass-val" style="font-size:40px; margin:10px 0;" id="bp_seat">--</div>
-      <div style="margin-top:20px; font-size:10px; border:1px solid #fff; padding:5px 15px; border-radius:20px;">TAP TO START</div>
-    </div>
-  </div>
+<div id="boot-layer">
+    <div id="boot-log-container"></div>
+    <div class="boot-progress"><div class="boot-bar" id="boot-bar"></div></div>
 </div>
 
-<div id="app_container">
-  <div id="bg_layer"></div>
-
-  <div class="sidebar">
-    <div class="brand-area"><img id="ui_logo" class="brand-logo" src=""></div>
-    
-    <div class="nav-btn active" onclick="nav('home', this)"><i class="fas fa-compass"></i><span>Home</span></div>
-    <div class="nav-btn" onclick="nav('ent', this)"><i class="fas fa-film"></i><span>Media</span></div>
-    <div class="nav-btn" onclick="nav('dine', this)"><i class="fas fa-utensils"></i><span>Dine</span></div>
-    <div class="nav-btn" onclick="nav('map', this)"><i class="fas fa-globe-americas"></i><span>Map</span></div>
-    <div class="nav-btn" onclick="nav('cam', this)"><i class="fas fa-camera"></i><span>Cam</span></div>
-    <div class="nav-btn" onclick="nav('connect', this)"><i class="fas fa-plane-arrival"></i><span>Conn</span></div>
-    <div class="nav-btn" onclick="nav('chat', this)"><i class="fas fa-concierge-bell"></i><span>Crew</span></div>
-    
-    <div style="margin-top:auto; margin-bottom:20px;">
-       <div class="nav-btn" onclick="toggleZen()"><i class="fas fa-moon"></i><span>Zen</span></div>
-       <div class="nav-btn" onclick="openSet()"><i class="fas fa-cog"></i><span>Set</span></div>
+<div id="welcome-layer">
+    <div class="wc-bg" id="wc_bg_img"></div>
+    <div class="wc-container">
+        <img id="wc_logo_img" src="" class="wc-logo">
+        <h1 class="wc-title" id="wc_txt_title">Welcome</h1>
+        <div class="wc-subtitle" id="wc_txt_msg"></div>
+        <button class="wc-btn" onclick="SYS.unlock()">Enter System</button>
     </div>
-  </div>
+</div>
 
-  <div class="main-stage">
+<div id="universal-player">
+    <div class="up-header">
+        <span class="up-title">ENTERTAINMENT SYSTEM</span>
+        <i class="fas fa-times up-close" onclick="SYS.closePlayer()"></i>
+    </div>
+    <iframe class="up-content" id="player-frame" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+<div class="sidebar">
+    <div class="sb-brand">
+        <img id="sb_logo_img" src="" class="sb-logo-img">
+    </div>
+    <div class="sb-nav">
+        <div class="nav-item active" onclick="SYS.nav('p_home', this)"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="SYS.nav('p_mov', this)"><i class="fas fa-film"></i><span>Movies</span></div>
+        <div class="nav-item" onclick="SYS.nav('p_music', this)"><i class="fas fa-music"></i><span>Audio</span></div>
+        <div class="nav-item" onclick="SYS.nav('p_map', this)"><i class="fas fa-map-marked-alt"></i><span>Flight</span></div>
+        <div class="nav-item" onclick="SYS.nav('p_dine', this)"><i class="fas fa-utensils"></i><span>Dining</span></div>
+        <div class="nav-item" onclick="SYS.nav('p_game', this)"><i class="fas fa-gamepad"></i><span>Games</span></div>
+        <div style="flex:1"></div>
+        <div class="nav-item" onclick="SYS.nav('p_set', this)"><i class="fas fa-cogs"></i><span>Settings</span></div>
+    </div>
+</div>
+
+<div class="stage">
+    <div class="bg-wallpaper" id="bg_wall"></div>
     
-    <div class="header">
-      <div class="route-info">
-        <span>Flight CX255</span>
-        <h1><span id="h_og" style="color:#fff; font-size:32px; letter-spacing:0">HKG</span> &mdash; <span id="h_ds" style="color:#fff; font-size:32px; letter-spacing:0">LHR</span></h1>
-      </div>
-      <div class="sys-status">
-        <div class="status-pill"><div class="blink"></div>LIVE DATA</div>
-        <div class="status-pill"><i class="fas fa-wifi"></i> CONNECTED</div>
-        <div style="text-align:right">
-          <div style="font-size:10px; color:#888;">LOCAL TIME</div>
-          <div style="font-size:24px; font-weight:300;" id="sys_clock">12:00</div>
+    <div class="top-bar">
+        <div class="tb-flight">
+            <span class="tb-code" id="lbl_og">HKG</span>
+            <i class="fas fa-plane tb-plane"></i>
+            <span class="tb-code" id="lbl_ds">LHR</span>
         </div>
-      </div>
+        <div class="tb-user">
+            <span class="tb-seat-badge" id="lbl_seat">1A</span>
+            <span class="tb-clock" id="sys_clock">00:00</span>
+        </div>
     </div>
 
     <div class="viewport">
-      
-      <div id="home" class="page active">
-        <div class="hero-grid">
-          <div class="card" style="padding:0;">
-            <div class="map-wrap">
-              <svg class="map-svg" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice">
-                <rect width="100%" height="100%" fill="#0a0a1a"/>
-                <path fill="#1a1a2e" d="M50,100 Q150,50 250,150 T450,100 T650,150 T800,50 V400 H0 V100 Z" />
-                <path id="svg_path" d="M100,250 Q400,50 700,250" class="path-line" />
-                <path id="svg_prog" d="M100,250 Q400,50 700,250" class="path-active" />
-                <circle cx="100" cy="250" r="4" fill="#fff"/>
-                <text x="100" y="275" fill="#aaa" font-size="10" text-anchor="middle" id="map_lbl_og">HKG</text>
-                <circle cx="700" cy="250" r="4" fill="#fff"/>
-                <text x="700" y="275" fill="#aaa" font-size="10" text-anchor="middle" id="map_lbl_ds">LHR</text>
-                <g id="svg_plane">
-                  <path d="M-10,0 L0,-10 L10,0 L0,20 Z" fill="var(--brand-gold)" transform="rotate(45)"/>
-                </g>
-              </svg>
-            </div>
-          </div>
-          <div style="display:flex; flex-direction:column; gap:20px;">
-            <div class="card" style="flex:1">
-              <div class="card-title">Time Remaining</div>
-              <div class="card-val" id="val_rem" style="color:var(--brand-gold)">--:--</div>
-              <div style="font-size:12px; margin-top:5px; color:#666">Arriving on Schedule</div>
-            </div>
-            <div class="card" style="flex:1">
-               <div class="card-title">Altitude</div>
-               <div class="card-val">38,000<span style="font-size:16px">ft</span></div>
-            </div>
-            <div class="card" style="flex:1">
-               <div class="card-title">Outside Air</div>
-               <div class="card-val">-54<span style="font-size:16px">&deg;C</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div id="ent" class="page">
-        <div class="media-row">
-          <div class="row-title">New Releases</div>
-          <div class="posters" id="mov_grid"></div>
-        </div>
-        <div class="media-row">
-          <div class="row-title">Kids Zone</div>
-          <div class="posters" id="kid_grid"></div>
-        </div>
-      </div>
+        <div id="p_home" class="page active">
+            <h1 id="lbl_greet">Hello</h1>
+            <h2>Flight Dashboard</h2>
+            
+            <div class="dashboard-grid">
+                <div class="widget map-preview">
+                    <canvas id="mini-map-canvas"></canvas>
+                    <div style="position:absolute; bottom:15px; left:20px; font-family:'Share Tech Mono'; font-size:12px; color:#0f0;">
+                        LAT: 22.3193 N | LON: 114.1694 E
+                    </div>
+                </div>
 
-      <div id="dine" class="page">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div class="row-title" style="border:none">In-Flight Dining</div>
-          <div style="background:#222; padding:10px 20px; border-radius:30px; border:1px solid #444;">
-            <i class="fas fa-shopping-cart"></i> Cart Total: <span id="cart_total" style="color:var(--brand-gold)">$0</span>
-          </div>
-        </div>
-        
-        <div class="menu-tabs">
-          <div class="m-tab active" onclick="filterMenu('all')">All</div>
-          <div class="m-tab" onclick="filterMenu('main')">Mains</div>
-          <div class="m-tab" onclick="filterMenu('bev')">Beverages</div>
-          <div class="m-tab" onclick="filterMenu('snack')">Snacks</div>
-        </div>
-        
-        <div id="menu_grid"></div>
-      </div>
+                <div class="widget stat">
+                    <div>
+                        <div class="stat-label">Altitude</div>
+                        <div style="display:flex; align-items:baseline;">
+                            <div class="stat-value">38,000</div><div class="stat-unit">FT</div>
+                        </div>
+                    </div>
+                    <div style="width:100%; height:2px; background:#333; margin:10px 0;">
+                        <div style="width:80%; height:100%; background:var(--brand-teal);"></div>
+                    </div>
+                </div>
 
-      <div id="cam" class="page">
-        <div class="row-title">External Cameras</div>
-        <div style="height:500px; width:100%; position:relative; border-radius:12px; overflow:hidden; border:var(--glass-border);">
-          <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2000&auto=format&fit=crop" class="cam-feed">
-          <div class="cam-overlay">CAM 2: TAIL FIN | ALT: 38000ft | SPD: 540kts</div>
-        </div>
-      </div>
-      
-      <div id="connect" class="page">
-        <div class="row-title">Arrival Information</div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
-           <div class="card">
-             <div class="card-title">Arrival Gate</div>
-             <div class="card-val">B24</div>
-             <div style="color:var(--brand-gold); margin-top:5px;">Terminal 5</div>
-           </div>
-           <div class="card">
-             <div class="card-title">Baggage Reclaim</div>
-             <div class="card-val">Belt 8</div>
-           </div>
-        </div>
-        <div style="margin-top:30px;">
-          <h3 style="margin-bottom:15px; font-weight:400; color:#888;">CONNECTING FLIGHTS</h3>
-          <div style="background:rgba(255,255,255,0.05); border-radius:8px; padding:20px; display:flex; justify-content:space-between; margin-bottom:10px;">
-             <div><b>BA 144</b> to Edinburgh</div>
-             <div style="color:#2ecc71">On Time (14:30)</div>
-             <div>Gate A12</div>
-          </div>
-           <div style="background:rgba(255,255,255,0.05); border-radius:8px; padding:20px; display:flex; justify-content:space-between;">
-             <div><b>AA 109</b> to New York</div>
-             <div style="color:#e74c3c">Delayed (16:15)</div>
-             <div>Gate C04</div>
-          </div>
-        </div>
-      </div>
+                <div class="widget stat">
+                    <div class="stat-label">Ground Speed</div>
+                    <div class="stat-value">594 <span class="stat-unit">MPH</span></div>
+                </div>
 
-      <div id="chat" class="page">
-        <div class="row-title">Cabin Service</div>
-        <div class="chat-layout">
-          <div class="chat-box">
-            <div class="msgs-area" id="chat_feed">
-              <div class="msg-bubble crew">Welcome aboard, <span id="chat_name">Guest</span>. How can we help you today?</div>
-            </div>
-            <div style="padding:15px; border-top:var(--glass-border); display:flex;">
-              <input id="chat_in" placeholder="Type request..." style="flex:1; background:transparent; border:none; color:#fff; padding:10px; outline:none;">
-              <button onclick="sendMsg()" style="background:var(--brand-gold); border:none; border-radius:50%; width:40px; height:40px; cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
-            </div>
-          </div>
-          <div style="width:250px; display:flex; flex-direction:column; gap:10px;">
-            <div class="card" onclick="quickReq('Water')" style="height:auto; padding:15px; cursor:pointer; align-items:center; flex-direction:row; gap:15px;">
-              <i class="fas fa-glass-water" style="color:var(--brand-gold)"></i> Water
-            </div>
-            <div class="card" onclick="quickReq('Coffee')" style="height:auto; padding:15px; cursor:pointer; align-items:center; flex-direction:row; gap:15px;">
-              <i class="fas fa-coffee" style="color:var(--brand-gold)"></i> Coffee
-            </div>
-            <div class="card" onclick="quickReq('Blanket')" style="height:auto; padding:15px; cursor:pointer; align-items:center; flex-direction:row; gap:15px;">
-              <i class="fas fa-bed" style="color:var(--brand-gold)"></i> Blanket
-            </div>
-          </div>
-        </div>
-      </div>
+                <div class="widget stat">
+                    <div class="stat-label">Outside Temp</div>
+                    <div class="stat-value">-54 <span class="stat-unit">°C</span></div>
+                </div>
 
-    </div> </div> <div class="player-bar">
-    <div class="track-visual" id="viz_bars" style="opacity:0.3">
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                <div class="widget stat">
+                    <div class="stat-label">Time To Dest</div>
+                    <div class="stat-value">09:14</div>
+                </div>
+
+                <div class="widget stat">
+                    <div class="stat-label">Distance Rem.</div>
+                    <div class="stat-value">5,432 <span class="stat-unit">KM</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="p_mov" class="page">
+            <h1>Cinema</h1>
+            <h2>New Releases</h2>
+            <div class="media-grid" id="grid_movies"></div>
+        </div>
+
+        <div id="p_music" class="page">
+            <h1>Audio Lounge</h1>
+            <h2>Curated Playlists</h2>
+            <div style="display:flex; gap:30px; align-items:center; background:#181818; padding:30px; border-radius:12px; border:1px solid #333;">
+                <div style="width:150px; height:150px; background:#333; border-radius:6px; overflow:hidden;">
+                    <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=300" style="width:100%; height:100%; object-fit:cover;">
+                </div>
+                <div style="flex:1;">
+                    <h3 style="border:none; font-size:24px; margin-bottom:5px;">Jazz in the Sky</h3>
+                    <div style="color:#888; margin-bottom:20px;">Miles Davis • Kind of Blue</div>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <i class="fas fa-step-backward" style="font-size:20px; cursor:pointer;"></i>
+                        <div style="width:50px; height:50px; background:var(--brand-teal); border-radius:50%; display:flex; justify-content:center; align-items:center; cursor:pointer;">
+                            <i class="fas fa-play" style="color:#fff;"></i>
+                        </div>
+                        <i class="fas fa-step-forward" style="font-size:20px; cursor:pointer;"></i>
+                        
+                        <div style="flex:1; height:4px; background:#333; margin:0 20px; border-radius:2px; overflow:hidden;">
+                            <div style="width:30%; height:100%; background:#fff;"></div>
+                        </div>
+                        <div style="font-family:'Share Tech Mono'; font-size:12px;">03:45</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 style="margin-top:40px;">Albums</h3>
+            <div class="media-grid" style="margin-top:20px;">
+                <div class="poster-card"><img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=300"><div class="poster-meta"><div class="pm-title">Chill Lo-Fi</div></div></div>
+                <div class="poster-card"><img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=300"><div class="poster-meta"><div class="pm-title">Classical Essentials</div></div></div>
+                <div class="poster-card"><img src="https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=300"><div class="poster-meta"><div class="pm-title">Acoustic Covers</div></div></div>
+            </div>
+        </div>
+
+        <div id="p_map" class="page">
+            <h1>Flight Path</h1>
+            <h2>Global Tracking</h2>
+            <div style="width:100%; height:600px; background:#050505; border:1px solid #333; position:relative;">
+                <canvas id="main-map-canvas" style="width:100%; height:100%;"></canvas>
+                <div style="position:absolute; top:20px; right:20px; background:rgba(0,0,0,0.8); padding:15px; border:1px solid #333; font-family:'Share Tech Mono'; font-size:12px; color:#fff;">
+                    <div>ALT: 38,000 FT</div>
+                    <div>SPD: 594 MPH</div>
+                    <div>HDG: 284 DEG</div>
+                    <div>WND: 45 KTS TB</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="p_dine" class="page">
+            <h1>In-Flight Dining</h1>
+            <h2>A La Carte</h2>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px;">
+                <div style="background:#151515; border-radius:8px; overflow:hidden;">
+                    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=600" style="width:100%; height:200px; object-fit:cover;">
+                    <div style="padding:20px;">
+                        <h3 style="border:none;">Signature Pizza</h3>
+                        <p style="color:#999; font-size:13px; line-height:1.5;">San Marzano tomato sauce, fresh mozzarella di bufala, basil, and extra virgin olive oil. Served with a side salad.</p>
+                        <button style="margin-top:15px; padding:10px 20px; border:1px solid var(--brand-teal); background:transparent; color:var(--brand-teal); cursor:pointer;">ORDER</button>
+                    </div>
+                </div>
+                <div style="background:#151515; border-radius:8px; overflow:hidden;">
+                    <img src="https://images.unsplash.com/photo-1600891964092-4316c288032e?q=80&w=600" style="width:100%; height:200px; object-fit:cover;">
+                    <div style="padding:20px;">
+                        <h3 style="border:none;">Wagyu Steak</h3>
+                        <p style="color:#999; font-size:13px; line-height:1.5;">Grilled Australian Wagyu beef tenderloin with truffle mashed potatoes, asparagus, and red wine jus.</p>
+                        <button style="margin-top:15px; padding:10px 20px; border:1px solid var(--brand-teal); background:transparent; color:var(--brand-teal); cursor:pointer;">ORDER</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="p_game" class="page">
+            <h1>Arcade</h1>
+            <h2>Interactive Entertainment</h2>
+            
+            <div style="background:#222; padding:30px; border-radius:8px; margin-bottom:40px; border-left:4px solid var(--brand-teal); display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h3 style="border:none; margin:0;">System Snake</h3>
+                    <div style="color:#888; font-size:12px; margin-top:5px;">Classic arcade action built into the OS.</div>
+                </div>
+                <button onclick="GAME_SNAKE.start()" style="padding:10px 25px; background:var(--brand-teal); border:none; color:#fff; cursor:pointer;">PLAY NOW</button>
+            </div>
+
+            <div class="media-grid" id="grid_games"></div>
+        </div>
+
+        <div id="p_set" class="page">
+            <h1>Settings</h1>
+            <h2>System Override (God Mode)</h2>
+            
+            <div class="settings-container">
+                <div class="cfg-panel">
+                    <div class="cfg-header">Identity & Visuals</div>
+                    
+                    <div class="form-group">
+                        <label class="fg-label">Passenger Name</label>
+                        <input id="in_name" class="fg-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="fg-label">Seat Number</label>
+                        <input id="in_seat" class="fg-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="fg-label">Welcome Message</label>
+                        <input id="in_w_msg" class="fg-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="fg-label">Logo URL</label>
+                        <input id="in_logo" class="fg-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="fg-label">Wallpaper URL</label>
+                        <input id="in_bg" class="fg-input">
+                    </div>
+                    
+                    <button class="btn-action" onclick="CMS.saveIdentity()">Save Identity</button>
+                </div>
+
+                <div class="cfg-panel">
+                    <div class="cfg-header">Content Injection</div>
+                    
+                    <div style="background:#080808; padding:15px; border-radius:4px; border:1px solid #333; margin-bottom:20px;">
+                        <label class="fg-label" style="color:var(--brand-teal);">ADD MOVIE</label>
+                        <input id="new_m_t" class="fg-input" placeholder="Title" style="margin-bottom:5px;">
+                        <input id="new_m_i" class="fg-input" placeholder="Poster URL" style="margin-bottom:5px;">
+                        <input id="new_m_u" class="fg-input" placeholder="YouTube/MP4 Link" style="margin-bottom:5px;">
+                        <button class="btn-action" onclick="CMS.addMedia('movie')">Add Movie</button>
+                    </div>
+
+                    <div style="background:#080808; padding:15px; border-radius:4px; border:1px solid #333;">
+                        <label class="fg-label" style="color:var(--brand-teal);">ADD GAME (Embed)</label>
+                        <input id="new_g_t" class="fg-input" placeholder="Title" style="margin-bottom:5px;">
+                        <input id="new_g_i" class="fg-input" placeholder="Thumbnail URL" style="margin-bottom:5px;">
+                        <input id="new_g_u" class="fg-input" placeholder="HTML5 Game URL" style="margin-bottom:5px;">
+                        <button class="btn-action" onclick="CMS.addMedia('game')">Add Game</button>
+                    </div>
+                    
+                    <button class="btn-action btn-danger" onclick="CMS.factoryReset()" style="margin-top:30px;">FACTORY RESET SYSTEM</button>
+                </div>
+            </div>
+        </div>
+
     </div>
-    <div style="margin-right:20px;">
-      <div style="font-weight:bold; font-size:14px;" id="m_title">System Audio</div>
-      <div style="font-size:11px; color:var(--brand-gold);" id="m_artist">Ready</div>
-    </div>
-    <div style="display:flex; gap:20px; font-size:20px; margin-left:auto;">
-      <i class="fas fa-backward" onclick="audCtrl('prev')"></i>
-      <i class="fas fa-play" id="play_btn" onclick="audCtrl('play')"></i>
-      <i class="fas fa-forward" onclick="audCtrl('next')"></i>
-    </div>
-  </div>
-
 </div>
 
-<div class="overlay zen-mode" id="zen_layer">
-  <div style="font-size:12px; letter-spacing:3px; color:#555; margin-bottom:10px;">TIME TO DESTINATION</div>
-  <div class="zen-time" id="zen_timer">04:20</div>
-  <div class="zen-exit" onclick="toggleZen()">WAKE SYSTEM</div>
-</div>
-
-<div class="overlay" id="set_layer" style="display:none;">
-  <div class="settings-panel">
-    <div class="row-title" style="margin-bottom:20px;">System Preferences</div>
-    
-    <div class="toggle-row">
-      <span>Kids Mode UI</span>
-      <div class="toggle-switch" id="t_kids" onclick="toggleSet('kids')"></div>
-    </div>
-    
-    <div class="toggle-row">
-      <span>Do Not Disturb</span>
-      <div class="toggle-switch" id="t_dnd" onclick="toggleSet('dnd')"></div>
-    </div>
-
-    <div style="margin-top:30px;">
-       <label style="font-size:10px; color:#666;">THEME COLOR</label>
-       <input type="color" id="set_col" style="width:100%; height:40px; border:none; background:transparent; cursor:pointer;" onchange="updateTheme(this.value)">
-    </div>
-
-    <button onclick="closeSet()" style="width:100%; padding:15px; background:#333; color:#fff; border:none; margin-top:20px; border-radius:6px; cursor:pointer;">CLOSE</button>
-  </div>
-</div>
-
-<div class="overlay" id="vid_layer" style="background:#000;">
-  <div onclick="closeVid()" style="position:absolute; top:30px; right:30px; font-size:40px; color:#fff; cursor:pointer; z-index:2001">&times;</div>
-  <iframe id="vid_frame" style="width:90%; height:80%; border:none; box-shadow:0 0 50px rgba(255,255,255,0.1);"></iframe>
+<div id="snake-overlay" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:7000; flex-direction:column; justify-content:center; align-items:center;">
+    <div style="position:absolute; top:20px; right:30px; color:#fff; font-size:30px; cursor:pointer;" onclick="GAME_SNAKE.stop()">&times;</div>
+    <div style="color:var(--brand-teal); font-family:'Oswald'; font-size:40px; margin-bottom:10px;">SYSTEM SNAKE</div>
+    <div id="snake-score" style="color:#fff;">SCORE: 0</div>
+    <canvas id="snake-canvas" width="400" height="400"></canvas>
+    <div style="color:#666; font-size:12px; margin-top:15px;">USE ARROW KEYS TO NAVIGATE</div>
 </div>
 
 <script>
-// --- CONFIG & STATE ---
-const C = { apiKey: "AIzaSyBiabDx61thAOm_A-_2x_mC9Nb9gArRCns", authDomain: "flight-ui.firebaseapp.com", projectId: "flight-ui", appId: "1:507585547506:web:a2f401ddda5055b59ed46b" };
-const DB = {
-  movies: [
-    {t:"Dune: Part Two", i:"https://upload.wikimedia.org/wikipedia/en/5/52/Dune_Part_Two_poster.jpg", u:"https://www.youtube.com/embed/Way9Dexny3w?autoplay=1"},
-    {t:"The Creator", i:"https://upload.wikimedia.org/wikipedia/en/0/02/The_Creator_poster.jpg", u:"https://www.youtube.com/embed/ex3C1-5Dhb8?autoplay=1"},
-    {t:"Interstellar", i:"https://upload.wikimedia.org/wikipedia/en/b/bc/Interstellar_film_poster.jpg", u:"https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1"},
-    {t:"Blade Runner 2049", i:"https://upload.wikimedia.org/wikipedia/en/9/9b/Blade_Runner_2049_poster.png", u:"https://www.youtube.com/embed/gCcx85zbxz4?autoplay=1"},
-    {t:"Gravity", i:"https://upload.wikimedia.org/wikipedia/en/f/f6/Gravity_Poster.jpg", u:"https://www.youtube.com/embed/OiTiKOy59o4?autoplay=1"}
-  ],
-  kids: [
-    {t:"Inside Out 2", i:"https://upload.wikimedia.org/wikipedia/en/f/f7/Inside_Out_2_poster.jpg", u:"https://www.youtube.com/embed/LEjhY15eCx0?autoplay=1"},
-    {t:"Kung Fu Panda 4", i:"https://upload.wikimedia.org/wikipedia/en/7/7f/Kung_Fu_Panda_4_poster.jpg", u:"https://www.youtube.com/embed/_inKs4eeHiI?autoplay=1"}
-  ],
-  menu: [
-    {n:"Wagyu Beef Burger", p:22, c:"main"}, {n:"Lobster Linguine", p:34, c:"main"},
-    {n:"Caesar Salad", p:14, c:"snack"}, {n:"Club Sandwich", p:18, c:"snack"},
-    {n:"Champagne Krug", p:45, c:"bev"}, {n:"Fresh Orange Juice", p:8, c:"bev"}
-  ]
+/**
+ * =============================================================================
+ * V27 TITAN OS - CORE JAVASCRIPT
+ * =============================================================================
+ */
+
+// --- 1. DEFAULT DATA STRUCTURES ---
+const DEFAULTS = {
+    identity: {
+        name: "Honored Guest",
+        seat: "1A",
+        og: "HKG", ds: "LHR",
+        wTitle: "Welcome",
+        wMsg: "The World's Best Business Class",
+        logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/96/Cathay_Pacific_logo.svg/1200px-Cathay_Pacific_logo.svg.png",
+        bg: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2000"
+    },
+    movies: [
+        { t: "Top Gun: Maverick", i: "https://upload.wikimedia.org/wikipedia/en/1/13/Top_Gun_Maverick_Poster.jpg", u: "https://www.youtube.com/embed/giXco2jaZ_4?autoplay=1" },
+        { t: "Oppenheimer", i: "https://upload.wikimedia.org/wikipedia/en/4/4a/Oppenheimer_%28film%29.jpg", u: "https://www.youtube.com/embed/uYPbbksJxIg?autoplay=1" },
+        { t: "Dune: Part Two", i: "https://upload.wikimedia.org/wikipedia/en/5/52/Dune_Part_Two_poster.jpeg", u: "https://www.youtube.com/embed/Way9Dexny3w?autoplay=1" },
+        { t: "Interstellar", i: "https://upload.wikimedia.org/wikipedia/en/b/bc/Interstellar_film_poster.jpg", u: "https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1" }
+    ],
+    games: [
+        { t: "2048", i: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/2048_logo.svg/1200px-2048_logo.svg.png", u: "https://play2048.co/" },
+        { t: "Hextris", i: "https://raw.githubusercontent.com/Hextris/hextris/gh-pages/images/icons/apple-touch-icon-120x120.png", u: "https://hextris.io/" }
+    ]
 };
 
-let db, ref, chatRef;
-let mySeat = "", cartTotal = 0;
-let isPlaying = false;
-let fltInterval;
-
-// --- INIT ---
-function init() {
-  firebase.initializeApp(C);
-  db = firebase.database();
-  ref = db.ref('v15_sys');
-  chatRef = db.ref('v15_chat');
-  
-  genSeat();
-  renderMedia();
-  renderMenu('all');
-  startTime();
-  
-  // Realtime Listeners
-  ref.on('value', d => { if(d.val()) applySys(d.val()) });
-  chatRef.limitToLast(10).on('child_added', d => addChat(d.val()));
-  
-  document.getElementById('bp_date').innerText = new Date().toLocaleDateString();
-}
-
-// --- SYSTEM LOGIC ---
-function systemStart() {
-  document.getElementById('welcome_screen').classList.add('off');
-  document.getElementById('app_container').classList.add('active');
-  // Start Flight Sim
-  let dur = 600; // default
-  let start = Date.now();
-  fltInterval = setInterval(() => {
-    let now = Date.now();
-    let el = (now - start) / (dur * 60000); // pct
-    if(el>1) el=1;
+// --- 2. SYSTEM CONTROLLER ---
+const SYS = {
+    state: {},
     
-    // SVG PATH ANIMATION
-    let len = document.getElementById('svg_path').getTotalLength();
-    let draw = len * el;
-    document.getElementById('svg_prog').style.strokeDashoffset = len - draw;
-    
-    // Plane Movement
-    let p = document.getElementById('svg_path').getPointAtLength(draw);
-    let pNext = document.getElementById('svg_path').getPointAtLength(draw + 1);
-    let ang = Math.atan2(pNext.y - p.y, pNext.x - p.x) * 180 / Math.PI;
-    document.getElementById('svg_plane').setAttribute("transform", `translate(${p.x},${p.y}) rotate(${ang})`);
-    
-    // Time Text
-    let minLeft = Math.floor(dur * (1-el));
-    let txt = `${Math.floor(minLeft/60)}h ${minLeft%60}m`;
-    document.getElementById('val_rem').innerText = txt;
-    document.getElementById('zen_timer').innerText = txt;
-    
-  }, 1000);
-}
+    init: function() {
+        BOOT.sequence(() => {
+            this.loadState();
+            this.applyVisuals();
+            this.renderMedia();
+            this.startClock();
+            MAP.init();
+        });
+    },
 
-function applySys(d) {
-  let r = document.documentElement.style;
-  if(d.c1) r.setProperty('--brand-primary', d.c1);
-  if(d.c2) r.setProperty('--brand-gold', d.c2);
-  if(d.lg) document.getElementById('ui_logo').src = d.lg;
-  if(d.bg) document.getElementById('bg_layer').style.backgroundImage = `url('${d.bg}')`;
-  if(d.og) { 
-    document.getElementById('h_og').innerText = d.og; document.getElementById('map_lbl_og').innerText = d.og;
-    document.getElementById('bp_og').innerText = d.og;
-  }
-  if(d.ds) {
-    document.getElementById('h_ds').innerText = d.ds; document.getElementById('map_lbl_ds').innerText = d.ds;
-    document.getElementById('bp_ds').innerText = d.ds;
-  }
-}
+    loadState: function() {
+        const id = localStorage.getItem('cx_v27_id');
+        const mov = localStorage.getItem('cx_v27_mov');
+        const gam = localStorage.getItem('cx_v27_gam');
 
-// --- NAVIGATION ---
-function nav(id, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
-  if(el) el.classList.add('active');
-}
+        this.state.identity = id ? JSON.parse(id) : {...DEFAULTS.identity};
+        this.state.movies = mov ? JSON.parse(mov) : [...DEFAULTS.movies];
+        this.state.games = gam ? JSON.parse(gam) : [...DEFAULTS.games];
+    },
 
-// --- RENDERERS ---
-function renderMedia() {
-  const mkCard = (m) => `
-    <div class="poster-card" onclick="playVid('${m.u}')">
-      <img src="${m.i}">
-      <i class="fas fa-play-circle play-icon"></i>
-    </div>`;
-  document.getElementById('mov_grid').innerHTML = DB.movies.map(mkCard).join('');
-  document.getElementById('kid_grid').innerHTML = DB.kids.map(mkCard).join('');
-}
+    applyVisuals: function() {
+        const id = this.state.identity;
+        // Text
+        document.getElementById('wc_txt_title').innerText = id.wTitle;
+        document.getElementById('wc_txt_msg').innerText = id.wMsg;
+        document.getElementById('lbl_greet').innerText = `Hello, ${id.name}`;
+        document.getElementById('lbl_seat').innerText = id.seat;
+        document.getElementById('lbl_og').innerText = id.og;
+        document.getElementById('lbl_ds').innerText = id.ds;
+        
+        // Images
+        document.getElementById('wc_bg_img').style.backgroundImage = `url('${id.bg}')`;
+        document.getElementById('bg_wall').style.backgroundImage = `url('${id.bg}')`;
+        document.getElementById('wc_logo_img').src = id.logo;
+        document.getElementById('sb_logo_img').src = id.logo;
 
-function renderMenu(cat) {
-  let items = cat === 'all' ? DB.menu : DB.menu.filter(x => x.c === cat);
-  document.getElementById('menu_grid').innerHTML = items.map(i => `
-    <div class="dish-card">
-      <div>
-        <div style="font-weight:bold; font-size:16px;">${i.n}</div>
-        <div style="font-size:12px; color:#888; margin-top:5px;">Served with sides</div>
-        <div style="color:var(--brand-gold); margin-top:5px;">$${i.p}</div>
-      </div>
-      <button class="dish-btn" onclick="addToCart(${i.p})">ADD</button>
-    </div>
-  `).join('');
-}
+        // Settings Inputs
+        document.getElementById('in_name').value = id.name;
+        document.getElementById('in_seat').value = id.seat;
+        document.getElementById('in_w_msg').value = id.wMsg;
+        document.getElementById('in_logo').value = id.logo;
+        document.getElementById('in_bg').value = id.bg;
+    },
 
-function filterMenu(c) {
-  document.querySelectorAll('.m-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
-  renderMenu(c);
-}
+    renderMedia: function() {
+        // Movies
+        const mg = document.getElementById('grid_movies');
+        mg.innerHTML = this.state.movies.map(m => `
+            <div class="poster-card" onclick="SYS.play('${m.u}')">
+                <img src="${m.i}">
+                <div class="poster-meta"><div class="pm-title">${m.t}</div><div class="pm-sub">Movie</div></div>
+            </div>
+        `).join('');
 
-function addToCart(p) {
-  cartTotal += p;
-  document.getElementById('cart_total').innerText = "$" + cartTotal;
-}
+        // Games
+        const gg = document.getElementById('grid_games');
+        gg.innerHTML = this.state.games.map(g => `
+            <div class="poster-card" onclick="SYS.play('${g.u}')">
+                <img src="${g.i}">
+                <div class="poster-meta"><div class="pm-title">${g.t}</div><div class="pm-sub">HTML5 Game</div></div>
+            </div>
+        `).join('');
+    },
 
-// --- UTILS ---
-function genSeat() {
-  if(!localStorage.getItem("v15_seat")) localStorage.setItem("v15_seat", "1" + ["A","K"][Math.floor(Math.random()*2)]);
-  mySeat = localStorage.getItem("v15_seat");
-  document.getElementById('bp_seat').innerText = mySeat;
-  document.getElementById('chat_name').innerText = "Seat " + mySeat;
-}
+    nav: function(pid, btn) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pid).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    },
 
-function startTime() {
-  setInterval(() => {
-    let d = new Date();
-    document.getElementById('sys_clock').innerText = d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
-  }, 1000);
-}
+    unlock: function() {
+        document.getElementById('welcome-layer').style.transform = "translateY(-100%)";
+    },
 
-// --- FEATURES ---
-function toggleZen() {
-  let z = document.getElementById('zen_layer');
-  z.style.display = z.style.display === 'flex' ? 'none' : 'flex';
-}
+    play: function(url) {
+        // Simple YouTube Embed Fixer
+        if(url.includes('youtube.com/watch?v=')) {
+            url = url.replace('watch?v=', 'embed/') + "?autoplay=1";
+        }
+        document.getElementById('player-frame').src = url;
+        document.getElementById('universal-player').style.display = 'flex';
+    },
 
-function playVid(u) {
-  document.getElementById('vid_layer').style.display = 'flex';
-  document.getElementById('vid_frame').src = u;
-}
-function closeVid() {
-  document.getElementById('vid_layer').style.display = 'none';
-  document.getElementById('vid_frame').src = "";
-}
+    closePlayer: function() {
+        document.getElementById('player-frame').src = "";
+        document.getElementById('universal-player').style.display = 'none';
+    },
 
-// --- SETTINGS ---
-function openSet() { document.getElementById('set_layer').style.display = 'flex'; }
-function closeSet() { document.getElementById('set_layer').style.display = 'none'; }
-function toggleSet(type) {
-  let el = document.getElementById('t_' + type);
-  el.classList.toggle('on');
-  if(type === 'kids') document.body.classList.toggle('kids-mode');
-}
-function updateTheme(c) {
-  document.documentElement.style.setProperty('--brand-primary', c);
-}
+    startClock: function() {
+        setInterval(() => {
+            const d = new Date();
+            document.getElementById('sys_clock').innerText = 
+                d.getHours().toString().padStart(2,'0') + ":" + 
+                d.getMinutes().toString().padStart(2,'0');
+        }, 1000);
+    }
+};
 
-// --- AUDIO PLAYER ---
-function audCtrl(a) {
-  let viz = document.getElementById('viz_bars');
-  let btn = document.getElementById('play_btn');
-  if(a === 'play') {
-    isPlaying = !isPlaying;
-    btn.className = isPlaying ? "fas fa-pause" : "fas fa-play";
-    viz.style.opacity = isPlaying ? 1 : 0.3;
-  }
-}
+// --- 3. BOOT SEQUENCE SIMULATION ---
+const BOOT = {
+    logs: [
+        "INITIALIZING KERNEL...", "LOADING DRIVERS: AVIONICS_V2", 
+        "CHECKING NETWORK...", "SATELLITE LINK: OK", 
+        "LOADING UI ASSETS...", "MOUNTING FILESYSTEM...", "SYSTEM READY"
+    ],
+    sequence: function(cb) {
+        const bar = document.getElementById('boot-bar');
+        const logContainer = document.getElementById('boot-log-container');
+        let step = 0;
 
-// --- CHAT ---
-function sendMsg() {
-  let i = document.getElementById('chat_in');
-  if(!i.value) return;
-  chatRef.push({ u: mySeat, m: i.value, t: Date.now() });
-  i.value = "";
-}
-function quickReq(type) {
-  chatRef.push({ u: mySeat, m: `[REQUEST] ${type}`, t: Date.now() });
-}
-function addChat(d) {
-  let b = document.getElementById('chat_feed');
-  let isMe = d.u === mySeat;
-  b.innerHTML += `<div class="msg-bubble ${isMe?'me':'crew'}">${d.m}</div>`;
-  b.scrollTop = b.scrollHeight;
-}
+        const interval = setInterval(() => {
+            if (step >= this.logs.length) {
+                clearInterval(interval);
+                bar.style.width = "100%";
+                setTimeout(() => {
+                    document.getElementById('boot-layer').classList.add('hidden');
+                    cb();
+                }, 500);
+                return;
+            }
+            
+            // Add Log
+            const div = document.createElement('div');
+            div.className = "boot-log";
+            div.innerText = "> " + this.logs[step];
+            logContainer.appendChild(div);
+            
+            // Move Bar
+            bar.style.width = ((step + 1) / this.logs.length * 100) + "%";
+            step++;
+        }, 300);
+    }
+};
 
-window.onload = init;
+// --- 4. CONTENT MANAGEMENT SYSTEM (CMS) ---
+const CMS = {
+    saveIdentity: function() {
+        SYS.state.identity.name = document.getElementById('in_name').value;
+        SYS.state.identity.seat = document.getElementById('in_seat').value;
+        SYS.state.identity.wMsg = document.getElementById('in_w_msg').value;
+        SYS.state.identity.logo = document.getElementById('in_logo').value;
+        SYS.state.identity.bg = document.getElementById('in_bg').value;
+
+        localStorage.setItem('cx_v27_id', JSON.stringify(SYS.state.identity));
+        alert("Identity Saved! Reloading...");
+        location.reload();
+    },
+
+    addMedia: function(type) {
+        if(type === 'movie') {
+            const t = document.getElementById('new_m_t').value;
+            const i = document.getElementById('new_m_i').value;
+            const u = document.getElementById('new_m_u').value;
+            if(!t || !i || !u) return alert("Missing Fields");
+            
+            SYS.state.movies.push({t, i, u});
+            localStorage.setItem('cx_v27_mov', JSON.stringify(SYS.state.movies));
+        } else {
+            const t = document.getElementById('new_g_t').value;
+            const i = document.getElementById('new_g_i').value;
+            const u = document.getElementById('new_g_u').value;
+            if(!t || !i || !u) return alert("Missing Fields");
+
+            SYS.state.games.push({t, i, u});
+            localStorage.setItem('cx_v27_gam', JSON.stringify(SYS.state.games));
+        }
+        
+        alert("Added!");
+        SYS.renderMedia();
+    },
+
+    factoryReset: function() {
+        if(confirm("FULL SYSTEM RESET. ARE YOU SURE?")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+};
+
+// --- 5. SNAKE GAME ENGINE ---
+const GAME_SNAKE = {
+    canvas: null, ctx: null, interval: null,
+    grid: 20, count: 0,
+    snake: { x: 160, y: 160, dx: 20, dy: 0, cells: [], maxCells: 4 },
+    apple: { x: 320, y: 320 },
+    score: 0,
+
+    start: function() {
+        document.getElementById('snake-overlay').style.display = 'flex';
+        this.canvas = document.getElementById('snake-canvas');
+        this.ctx = this.canvas.getContext('2d');
+        
+        // Reset
+        this.snake = { x: 160, y: 160, dx: 20, dy: 0, cells: [], maxCells: 4 };
+        this.score = 0;
+        document.getElementById('snake-score').innerText = "SCORE: 0";
+        
+        document.addEventListener('keydown', this.handleKey);
+        this.interval = requestAnimationFrame(() => this.loop());
+    },
+
+    stop: function() {
+        cancelAnimationFrame(this.interval);
+        document.removeEventListener('keydown', this.handleKey);
+        document.getElementById('snake-overlay').style.display = 'none';
+    },
+
+    handleKey: function(e) {
+        // Prevent reversing
+        const s = GAME_SNAKE.snake;
+        if (e.which === 37 && s.dx === 0) { s.dx = -20; s.dy = 0; }
+        else if (e.which === 38 && s.dy === 0) { s.dy = -20; s.dx = 0; }
+        else if (e.which === 39 && s.dx === 0) { s.dx = 20; s.dy = 0; }
+        else if (e.which === 40 && s.dy === 0) { s.dy = 20; s.dx = 0; }
+    },
+
+    loop: function() {
+        this.interval = requestAnimationFrame(() => this.loop());
+        // Slow game loop to 15fps
+        if (++this.count < 6) return;
+        this.count = 0;
+
+        const ctx = this.ctx;
+        const cvs = this.canvas;
+        ctx.clearRect(0,0,cvs.width,cvs.height);
+
+        // Move Snake
+        this.snake.x += this.snake.dx;
+        this.snake.y += this.snake.dy;
+
+        // Wrap walls
+        if (this.snake.x < 0) this.snake.x = cvs.width - this.grid;
+        else if (this.snake.x >= cvs.width) this.snake.x = 0;
+        if (this.snake.y < 0) this.snake.y = cvs.height - this.grid;
+        else if (this.snake.y >= cvs.height) this.snake.y = 0;
+
+        // Keep track of snake trail
+        this.snake.cells.unshift({x: this.snake.x, y: this.snake.y});
+        if (this.snake.cells.length > this.snake.maxCells) {
+            this.snake.cells.pop();
+        }
+
+        // Draw Apple
+        ctx.fillStyle = '#C3A676'; // Gold
+        ctx.fillRect(this.apple.x, this.apple.y, this.grid-1, this.grid-1);
+
+        // Draw Snake
+        ctx.fillStyle = '#006B6E'; // Teal
+        this.snake.cells.forEach((cell, index) => {
+            ctx.fillRect(cell.x, cell.y, this.grid-1, this.grid-1);
+
+            // Eat Apple
+            if (cell.x === this.apple.x && cell.y === this.apple.y) {
+                this.snake.maxCells++;
+                this.score += 10;
+                document.getElementById('snake-score').innerText = "SCORE: " + this.score;
+                this.apple.x = this.getRandomInt(0, 25) * this.grid;
+                this.apple.y = this.getRandomInt(0, 25) * this.grid;
+            }
+
+            // Death check (ignore head)
+            for (let i = index + 1; i < this.snake.cells.length; i++) {
+                if (cell.x === this.snake.cells[i].x && cell.y === this.snake.cells[i].y) {
+                    this.snake.x = 160; this.snake.y = 160;
+                    this.snake.cells = [];
+                    this.snake.maxCells = 4;
+                    this.score = 0;
+                    document.getElementById('snake-score').innerText = "GAME OVER";
+                }
+            }
+        });
+    },
+
+    getRandomInt: function(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+};
+
+// --- 6. FLIGHT MAP ENGINE (CANVAS) ---
+const MAP = {
+    init: function() {
+        this.drawMini();
+        this.drawMain();
+        window.addEventListener('resize', () => { this.drawMini(); this.drawMain(); });
+    },
+
+    drawMini: function() {
+        const c = document.getElementById('mini-map-canvas');
+        if(!c) return;
+        // Fix DPI
+        const rect = c.parentElement.getBoundingClientRect();
+        c.width = rect.width; c.height = rect.height;
+        const ctx = c.getContext('2d');
+
+        // Dark BG
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0,0,c.width,c.height);
+
+        // Draw Curve
+        ctx.beginPath();
+        ctx.moveTo(20, c.height-20);
+        ctx.quadraticCurveTo(c.width/2, 20, c.width-20, 50);
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5,5]);
+        ctx.stroke();
+
+        // Active Path
+        ctx.beginPath();
+        ctx.moveTo(20, c.height-20);
+        ctx.quadraticCurveTo(c.width/3, c.height/1.5, c.width/2, c.height/2);
+        ctx.strokeStyle = '#006B6E';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([]);
+        ctx.stroke();
+
+        // Plane Dot
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(c.width/2, c.height/2, 4, 0, Math.PI*2);
+        ctx.fill();
+    },
+
+    drawMain: function() {
+        const c = document.getElementById('main-map-canvas');
+        if(!c) return;
+        const rect = c.parentElement.getBoundingClientRect();
+        c.width = rect.width; c.height = rect.height;
+        const ctx = c.getContext('2d');
+
+        // Background (Grid)
+        ctx.fillStyle = '#050505';
+        ctx.fillRect(0,0,c.width,c.height);
+        
+        ctx.strokeStyle = '#111';
+        ctx.lineWidth = 1;
+        for(let i=0; i<c.width; i+=50) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,c.height); ctx.stroke(); }
+        for(let i=0; i<c.height; i+=50) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(c.width,i); ctx.stroke(); }
+
+        // Continents (Simulated Abstract Shapes)
+        ctx.fillStyle = '#111';
+        ctx.beginPath();
+        ctx.arc(c.width*0.2, c.height*0.6, 100, 0, Math.PI*2); // Asia sim
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(c.width*0.8, c.height*0.3, 80, 0, Math.PI*2); // Europe sim
+        ctx.fill();
+
+        // Flight Path
+        const startX = c.width * 0.2;
+        const startY = c.height * 0.6;
+        const endX = c.width * 0.8;
+        const endY = c.height * 0.3;
+        const cpX = c.width * 0.5;
+        const cpY = c.height * 0.1; // Curvature
+
+        // Full Path Line
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.quadraticCurveTo(cpX, cpY, endX, endY);
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Progress Line
+        ctx.beginPath();
+        // Just drawing half for simulation
+        ctx.moveTo(startX, startY);
+        ctx.quadraticCurveTo(startX + (cpX-startX)*0.6, startY + (cpY-startY)*0.6, c.width*0.5, c.height*0.38);
+        ctx.strokeStyle = '#006B6E'; // Teal
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        // Plane Icon
+        ctx.save();
+        ctx.translate(c.width*0.5, c.height*0.38);
+        ctx.rotate(-Math.PI/4);
+        ctx.fillStyle = '#C3A676'; // Gold
+        ctx.beginPath();
+        ctx.moveTo(10, 0); ctx.lineTo(-10, 7); ctx.lineTo(-5, 0); ctx.lineTo(-10, -7); ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+
+        // Pulse Effect
+        ctx.beginPath();
+        ctx.arc(c.width*0.5, c.height*0.38, 20, 0, Math.PI*2);
+        ctx.strokeStyle = 'rgba(0, 107, 110, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+};
+
+// --- START SYSTEM ---
+window.onload = () => SYS.init();
+
 </script>
 </body>
 </html>
