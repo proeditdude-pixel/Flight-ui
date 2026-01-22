@@ -3,772 +3,718 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>CX_IFE_V14_ULTIMATE</title>
+<title>CX_IFE_V15_ZENITH</title>
+
 <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
 
 <style>
-  /* --- 1. GLOBAL VARIABLES & RESET --- */
+  /* --- 1. CORE VARIABLES & THEME --- */
   :root {
-    /* IDENTITY - Overwritten by Settings */
-    --primary: #006564;  
-    --accent: #C3A676;
+    /* Brand Identity */
+    --brand-primary: #006564;
+    --brand-sec: #004d4d;
+    --brand-gold: #C3A676;
     
-    /* SYSTEM PALETTE */
-    --bg-dark: #050505;
-    --bg-panel: #121212;
-    --bg-card: #1a1a1a;
-    --border: #333;
-    --text-main: #f0f0f0;
-    --text-muted: #888;
+    /* Glassmorphism Palette */
+    --glass-bg: rgba(20, 20, 20, 0.75);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+    --glass-shine: rgba(255, 255, 255, 0.05);
     
-    /* FONTS */
-    --sans: 'Outfit', sans-serif;
-    --serif: 'Playfair Display', serif;
+    /* Text */
+    --txt-main: #ffffff;
+    --txt-muted: #9ca3af;
     
-    /* DIMENSIONS */
-    --sidebar-w: 90px;
-    --player-h: 70px;
+    /* Layout */
+    --nav-w: 96px;
+    --player-h: 80px;
+    
+    /* Font */
+    --font-ui: 'Inter', sans-serif;
+    --font-disp: 'DM Serif Display', serif;
+  }
+
+  /* KIDS MODE OVERRIDES */
+  body.kids-mode {
+    --brand-primary: #FF6B6B;
+    --brand-gold: #FFD93D;
+    --font-disp: 'Inter', sans-serif; /* Simplified font */
+    --glass-bg: rgba(40, 40, 100, 0.9);
   }
 
   * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
   
-  body { 
-    margin: 0; background: var(--bg-dark); color: var(--text-main); 
-    font-family: var(--sans); height: 100vh; overflow: hidden; 
+  body {
+    margin: 0; background: #000; color: var(--txt-main);
+    font-family: var(--font-ui); height: 100vh; overflow: hidden;
   }
 
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: #111; }
-  ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+  /* SCROLLBARS */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-thumb { background: var(--brand-gold); border-radius: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
 
-  /* --- 2. WELCOME / BOARDING PASS SCREEN --- */
-  #welcome_layer {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at center, #222 0%, #000 100%);
-    z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center;
-    transition: 0.8s ease-in-out;
-  }
-  #welcome_layer.off { opacity: 0; pointer-events: none; transform: scale(1.05); }
-
-  .pass-card {
-    width: 340px; background: #fff; color: #000; border-radius: 20px; overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative;
-    transform: rotate(-2deg); transition: 0.5s; cursor: pointer;
-  }
-  .pass-card:hover { transform: rotate(0deg) scale(1.02); }
-  .pass-header { background: var(--primary); padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-  .pass-logo { height: 30px; filter: brightness(0) invert(1); }
-  .pass-body { padding: 25px; }
-  .pass-row { display: flex; justify-content: space-between; margin-bottom: 20px; }
-  .pass-label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
-  .pass-val { font-size: 20px; font-weight: 700; color: #222; font-family: var(--sans); }
-  .pass-route { font-size: 32px; font-weight: 800; color: var(--primary); letter-spacing: 2px; }
-  .pass-footer { background: #f4f4f4; padding: 15px; text-align: center; font-size: 11px; color: #888; letter-spacing: 2px; border-top: 1px dashed #ccc; }
-  
-  .tap-hint { margin-top: 40px; color: #666; animation: pulse 2s infinite; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; }
-  @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
-
-  /* --- 3. APP STRUCTURE --- */
+  /* --- 2. BACKGROUND & LAYOUT --- */
   #app_container {
-    display: flex; height: 100%; width: 100%; opacity: 0; 
-    transform: scale(0.98); transition: 1s ease; pointer-events: none;
+    display: flex; height: 100%; width: 100%; opacity: 0;
+    transition: opacity 1s ease, transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform: scale(0.95); pointer-events: none;
   }
-  #app_container.on { opacity: 1; transform: scale(1); pointer-events: all; }
+  #app_container.active { opacity: 1; transform: scale(1); pointer-events: all; }
 
-  #app_bg {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-size: cover; background-position: center; opacity: 0.2; z-index: -1;
-    transition: background-image 0.5s;
+  #bg_layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+    background-size: cover; background-position: center;
+    transition: background-image 1s ease; opacity: 0.4;
+    animation: bgPan 60s infinite alternate linear;
   }
+  @keyframes bgPan { from{transform:scale(1);} to{transform:scale(1.1);} }
 
-  /* SIDEBAR */
+  /* --- 3. SIDEBAR NAVIGATION --- */
   .sidebar {
-    width: var(--sidebar-w); background: rgba(10,10,10,0.9); border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; align-items: center; backdrop-filter: blur(15px); z-index: 100;
+    width: var(--nav-w); height: 100%;
+    background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(20px);
+    border-right: var(--glass-border); display: flex; flex-direction: column;
+    z-index: 100;
   }
-  .brand-box { 
-    width: 100%; height: 90px; display: flex; justify-content: center; align-items: center;
-    background: var(--primary); margin-bottom: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  
+  .brand-area {
+    height: 100px; display: flex; justify-content: center; align-items: center;
+    border-bottom: var(--glass-border); margin-bottom: 20px;
+    background: linear-gradient(180deg, var(--brand-primary), transparent);
   }
-  .brand-logo { width: 50px; object-fit: contain; filter: brightness(0) invert(1); }
+  .brand-logo { width: 48px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
 
-  .nav-item {
-    width: 100%; padding: 18px 0; text-align: center; color: #666; cursor: pointer;
-    border-left: 3px solid transparent; transition: 0.2s; position: relative;
+  .nav-btn {
+    padding: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: var(--txt-muted); cursor: pointer; transition: 0.3s; position: relative;
+    opacity: 0.7;
   }
-  .nav-item i { font-size: 20px; margin-bottom: 5px; display: block; transition: 0.2s; }
-  .nav-item span { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-  .nav-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
-  .nav-item.active { 
-    color: var(--accent); border-left-color: var(--accent); 
-    background: linear-gradient(90deg, rgba(255,255,255,0.08), transparent); 
+  .nav-btn i { font-size: 22px; margin-bottom: 6px; transition: 0.3s; }
+  .nav-btn span { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+  
+  .nav-btn:hover { opacity: 1; color: #fff; background: rgba(255,255,255,0.05); }
+  .nav-btn.active { opacity: 1; color: var(--brand-gold); }
+  .nav-btn.active::before {
+    content: ''; position: absolute; left: 0; top: 15%; height: 70%; width: 3px;
+    background: var(--brand-gold); box-shadow: 0 0 15px var(--brand-gold); border-radius: 0 4px 4px 0;
   }
-  .nav-item.active i { transform: scale(1.1); text-shadow: 0 0 10px var(--accent); }
 
-  /* MAIN AREA */
-  .main-content { flex: 1; display: flex; flex-direction: column; position: relative; }
+  /* --- 4. MAIN CONTENT AREA --- */
+  .main-stage { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
 
   /* HEADER */
-  .top-bar {
-    height: 80px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+  .header {
+    height: 90px; padding: 0 40px; display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
   }
-  .flight-route { font-family: var(--serif); font-size: 24px; font-style: italic; }
-  .flight-route b { color: var(--accent); font-family: var(--sans); font-style: normal; margin: 0 10px; }
-  .flight-timer { text-align: right; }
-  .flight-timer div:first-child { font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
-  .flight-timer div:last-child { font-size: 20px; font-weight: 300; color: #fff; }
-
-  /* VIEWS CONTAINER */
-  .viewport { flex: 1; position: relative; overflow-y: auto; padding: 20px 40px 100px 40px; }
-  .view { display: none; animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
-  .view.active { display: block; }
-  @keyframes slideUp { from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
-
-  /* TYPOGRAPHY */
-  h1 { font-family: var(--serif); font-weight: 400; font-size: 38px; color: var(--accent); margin: 0 0 5px 0; }
-  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin: 0 0 30px 0; border-bottom: 1px solid #333; padding-bottom: 10px; display: inline-block; }
-
-  /* --- VIEW: HOME (DASHBOARD) --- */
-  .dash-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 20px; height: 400px; }
   
-  .card-3d-map {
-    grid-column: 1 / 2; grid-row: 1 / 3; background: #000; border-radius: 12px; border: 1px solid #333;
-    position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;
+  .route-info h1 { font-family: var(--font-disp); font-weight: 400; font-size: 32px; margin: 0; letter-spacing: 1px; }
+  .route-info span { font-size: 11px; color: var(--brand-gold); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
+  
+  .sys-status { display: flex; gap: 20px; align-items: center; }
+  .status-pill { 
+    background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 30px; 
+    font-size: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); 
+    display: flex; align-items: center; gap: 8px;
   }
-  /* Pure CSS Globe */
-  .globe { width: 280px; height: 280px; border-radius: 50%; background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Earthmap1000x500compac.jpg/1000px-Earthmap1000x500compac.jpg'); background-size: cover; box-shadow: inset -40px -40px 80px rgba(0,0,0,0.9); animation: rotate 60s linear infinite; position: relative; }
-  @keyframes rotate { from{background-position: 0 0;} to{background-position: -400% 0;} }
-  .globe-shadow { position: absolute; width: 100%; height: 100%; border-radius: 50%; box-shadow: inset 0 0 40px rgba(0,0,0,0.8); z-index: 2; }
-  .plane-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: var(--accent); font-size: 40px; z-index: 5; text-shadow: 0 10px 20px black; }
+  .blink { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; animation: blink 2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-  .card-stat { background: var(--bg-card); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: center; border-left: 3px solid var(--primary); }
-  .stat-val { font-size: 32px; font-weight: 300; }
-  .stat-lbl { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
-
-  /* --- VIEW: MAP (SVG) --- */
-  .map-container { width: 100%; height: 500px; background: #0d131a; border-radius: 16px; border: 1px solid #333; position: relative; overflow: hidden; }
-  .svg-map { width: 100%; height: 100%; opacity: 0.6; }
-  .city-dot { fill: #fff; }
-  .city-label { fill: #888; font-size: 10px; font-family: var(--sans); }
-  .route-path { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 2; }
-  .route-progress { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 1000; stroke-dashoffset: 1000; transition: stroke-dashoffset 1s linear; filter: drop-shadow(0 0 5px var(--accent)); }
-  .map-plane-svg { font-size: 20px; fill: #fff; filter: drop-shadow(0 0 10px var(--accent)); transition: all 1s linear; }
-
-  /* --- VIEW: ENTERTAINMENT & SHOP --- */
-  .tabs { display: flex; gap: 20px; margin-bottom: 20px; border-bottom: 1px solid #333; }
-  .tab { padding: 10px 0; color: #666; cursor: pointer; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
-  .tab.active { color: #fff; border-bottom: 2px solid var(--accent); }
-
-  .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
-  .media-item { 
-    background: #111; border-radius: 6px; overflow: hidden; transition: 0.3s; 
-    cursor: pointer; position: relative;
+  /* VIEWPORT */
+  .viewport { flex: 1; position: relative; padding: 0 40px 100px 40px; overflow-y: auto; scroll-behavior: smooth; }
+  
+  .page { 
+    display: none; animation: fadeSlide 0.6s cubic-bezier(0.16, 1, 0.3, 1); 
   }
-  .media-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-  .media-poster { width: 100%; height: 220px; object-fit: cover; opacity: 0.8; }
-  .media-info { padding: 10px; }
-  .media-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .media-genre { font-size: 10px; color: var(--accent); text-transform: uppercase; margin-top: 3px; }
+  .page.active { display: block; }
+  @keyframes fadeSlide { from{opacity:0; transform:translateY(30px)} to{opacity:1; transform:translateY(0)} }
 
-  .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-  .shop-item { background: #fff; color: #000; border-radius: 8px; overflow: hidden; padding-bottom: 10px; }
-  .shop-img { width: 100%; height: 180px; object-fit: contain; padding: 20px; background: #fff; }
-  .shop-details { padding: 0 15px; }
-  .shop-name { font-weight: 700; font-size: 14px; margin-bottom: 5px; }
-  .shop-price { color: var(--primary); font-weight: 600; }
-  .shop-btn { width: 90%; margin: 10px auto 0; display: block; padding: 8px; background: #000; color: #fff; border: none; cursor: pointer; font-size: 11px; text-transform: uppercase; }
-  .shop-btn:hover { background: var(--accent); }
-
-  /* --- VIEW: DINE --- */
-  .menu-section { margin-bottom: 40px; }
-  .menu-head { font-family: var(--serif); font-size: 22px; color: #fff; font-style: italic; border-bottom: 1px solid #333; margin-bottom: 15px; padding-bottom: 5px; }
-  .dish { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-  .dish:last-child { border: none; }
-  .dish-info h4 { margin: 0; font-size: 16px; font-weight: 500; }
-  .dish-info p { margin: 5px 0 0 0; color: #888; font-size: 12px; }
-  .add-btn { background: transparent; border: 1px solid #444; color: #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; transition: 0.2s; }
-  .add-btn:hover { background: var(--accent); border-color: var(--accent); color: #000; }
-
-  /* --- VIEW: CHAT & CREW --- */
-  .chat-ui { display: flex; height: 500px; border: 1px solid #333; border-radius: 10px; overflow: hidden; background: rgba(0,0,0,0.5); }
-  .chat-window { flex: 2; display: flex; flex-direction: column; border-right: 1px solid #333; }
-  .chat-msgs { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-  .bubble { padding: 10px 15px; border-radius: 10px; max-width: 70%; font-size: 13px; line-height: 1.4; }
-  .bubble.them { background: #222; align-self: flex-start; }
-  .bubble.me { background: var(--primary); align-self: flex-end; color: #fff; }
-  .bubble.cpt { background: #fff; color: #000; align-self: center; text-align: center; border: 2px solid var(--accent); width: 80%; font-family: var(--serif); font-style: italic; }
+  /* SECTIONS STYLING */
+  .hero-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; height: 450px; }
   
-  .chat-input-area { padding: 15px; background: #111; display: flex; border-top: 1px solid #333; }
-  .chat-input { flex: 1; background: #222; border: none; color: #fff; padding: 10px; border-radius: 4px; outline: none; }
-  .send-btn { background: var(--accent); color: #000; border: none; padding: 0 20px; margin-left: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; }
-
-  .quick-actions { flex: 1; padding: 20px; background: #0a0a0a; display: flex; flex-direction: column; gap: 10px; }
-  .q-btn { padding: 15px; background: #1a1a1a; border: 1px solid #333; color: #ccc; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
-  .q-btn:hover { border-color: var(--accent); color: #fff; background: #222; }
-
-  /* --- 4. PERSISTENT MUSIC PLAYER --- */
-  .music-bar {
-    position: absolute; bottom: 0; left: var(--sidebar-w); width: calc(100% - var(--sidebar-w));
-    height: var(--player-h); background: #111; border-top: 1px solid #333;
-    display: flex; align-items: center; padding: 0 20px; z-index: 500;
+  .card {
+    background: var(--glass-bg); border: var(--glass-border); border-radius: 16px;
+    padding: 25px; backdrop-filter: blur(12px); box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    display: flex; flex-direction: column; position: relative; overflow: hidden;
   }
-  .track-info { display: flex; align-items: center; width: 300px; }
-  .track-art { width: 40px; height: 40px; background: #333; margin-right: 15px; background-size: cover; }
-  .track-meta div:first-child { font-size: 13px; font-weight: bold; color: #fff; }
-  .track-meta div:last-child { font-size: 11px; color: var(--accent); }
-  .player-ctrls { flex: 1; display: flex; justify-content: center; gap: 20px; font-size: 18px; color: #ccc; }
-  .player-ctrls i { cursor: pointer; transition: 0.2s; }
-  .player-ctrls i:hover { color: #fff; }
+  .card-title { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--txt-muted); margin-bottom: 10px; }
+  .card-val { font-size: 36px; font-weight: 300; margin-top: auto; }
+
+  /* MAP SVG */
+  .map-wrap { width: 100%; height: 100%; position: relative; }
+  .map-svg { width: 100%; height: 100%; }
+  .path-line { fill: none; stroke: rgba(255,255,255,0.2); stroke-width: 2; }
+  .path-active { fill: none; stroke: var(--brand-gold); stroke-width: 2; stroke-dasharray: 600; stroke-dashoffset: 600; filter: drop-shadow(0 0 8px var(--brand-gold)); }
   
-  /* --- 5. SETTINGS OVERLAY --- */
-  .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; display:none; justify-content:center; align-items:center; backdrop-filter:blur(5px); }
-  .modal-box { width:500px; background:#111; border:1px solid var(--primary); padding:30px; border-radius:10px; max-height:90vh; overflow-y:auto; }
-  .st-group { margin-bottom: 20px; }
-  .st-label { font-size:10px; color:var(--accent); text-transform:uppercase; display:block; margin-bottom:5px; font-weight:bold; letter-spacing:1px; }
-  .st-input { width:100%; background:#000; border:1px solid #333; color:#fff; padding:10px; margin-bottom:5px; border-radius:4px; }
+  /* CAMERA FEED */
+  .cam-feed { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; border-radius: 12px; }
+  .cam-overlay { position: absolute; bottom: 20px; left: 20px; font-family: monospace; color: #0f0; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 4px; font-size: 12px; }
+
+  /* ENTERTAINMENT GRID */
+  .media-row { margin-bottom: 40px; }
+  .row-title { font-family: var(--font-disp); font-size: 24px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+  .posters { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 25px; }
   
-  /* --- 6. TOAST NOTIFICATION --- */
-  .toast { position: fixed; bottom: 90px; right: 20px; background: #fff; color: #000; padding: 15px 25px; border-radius: 50px; transform: translateY(100px); transition: 0.3s; z-index: 3000; font-weight: bold; box-shadow: 0 5px 20px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; }
-  .toast.show { transform: translateY(0); }
-  .toast i { color: var(--primary); }
+  .poster-card { 
+    aspect-ratio: 2/3; background: #222; border-radius: 12px; overflow: hidden; 
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; position: relative;
+    border: 1px solid transparent;
+  }
+  .poster-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
+  .poster-card:hover { transform: scale(1.05) translateY(-10px); border-color: var(--brand-gold); z-index: 10; box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
+  .poster-card:hover img { opacity: 0.6; }
+  .play-icon { 
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); 
+    font-size: 40px; color: #fff; transition: 0.3s; 
+  }
+  .poster-card:hover .play-icon { transform: translate(-50%, -50%) scale(1); }
+
+  /* DINING & CART */
+  .menu-tabs { display: flex; gap: 10px; margin-bottom: 30px; }
+  .m-tab { padding: 10px 25px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: 0.3s; font-size: 13px; text-transform: uppercase; }
+  .m-tab.active, .m-tab:hover { background: var(--brand-gold); color: #000; border-color: var(--brand-gold); font-weight: bold; }
+
+  .dish-card { 
+    display: flex; gap: 20px; padding: 20px; background: rgba(255,255,255,0.03); 
+    border-radius: 12px; margin-bottom: 15px; border: 1px solid transparent; transition: 0.3s;
+  }
+  .dish-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+  .dish-btn { margin-left: auto; padding: 10px 20px; background: transparent; border: 1px solid var(--brand-gold); color: var(--brand-gold); border-radius: 6px; cursor: pointer; transition: 0.2s; }
+  .dish-btn:hover { background: var(--brand-gold); color: #000; }
+
+  /* CHAT / CREW */
+  .chat-layout { display: flex; height: 500px; gap: 20px; }
+  .chat-box { flex: 1; background: rgba(0,0,0,0.3); border-radius: 12px; border: var(--glass-border); display: flex; flex-direction: column; }
+  .msgs-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+  .msg-bubble { max-width: 75%; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5; }
+  .msg-bubble.me { background: var(--brand-primary); align-self: flex-end; color: #fff; border-bottom-right-radius: 2px; }
+  .msg-bubble.crew { background: #333; align-self: flex-start; border-bottom-left-radius: 2px; border-left: 3px solid var(--brand-gold); }
+
+  /* --- 5. BOTTOM PLAYER BAR --- */
+  .player-bar {
+    position: absolute; bottom: 0; left: 0; width: 100%; height: var(--player-h);
+    background: rgba(10, 10, 10, 0.95); border-top: 1px solid #333;
+    display: flex; align-items: center; padding: 0 40px; z-index: 500;
+    backdrop-filter: blur(20px);
+  }
+  .track-visual { display: flex; align-items: flex-end; gap: 3px; height: 30px; margin-right: 20px; }
+  .bar { width: 4px; background: var(--brand-gold); animation: eq 1s infinite ease-in-out; }
+  .bar:nth-child(2) { animation-delay: 0.2s; }
+  .bar:nth-child(3) { animation-delay: 0.4s; }
+  .bar:nth-child(4) { animation-delay: 0.1s; }
+  @keyframes eq { 0%,100%{height:5px} 50%{height:25px} }
+
+  /* --- 6. WELCOME & BOARDING PASS --- */
+  #welcome_screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+    z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: 0.8s ease;
+  }
+  #welcome_screen.off { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+  
+  .b-pass {
+    width: 700px; height: 280px; background: #fff; border-radius: 20px; display: flex; overflow: hidden;
+    box-shadow: 0 50px 100px rgba(0,0,0,0.6); position: relative; color: #222;
+  }
+  .b-left { flex: 2; padding: 30px; border-right: 2px dashed #ddd; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+  .b-right { flex: 1; padding: 30px; background: var(--brand-primary); color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; transition: 0.3s; }
+  .b-right:hover { background: var(--brand-sec); }
+  
+  .pass-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .pass-val { font-size: 22px; font-weight: 700; color: #000; }
+  .b-right .pass-val { color: #fff; }
+  .big-route { font-size: 48px; font-weight: 800; color: var(--brand-primary); letter-spacing: 2px; }
+
+  /* --- 7. OVERLAYS (SETTINGS/ZEN/VIDEO) --- */
+  .overlay { 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.9); z-index: 2000; display: none; 
+    justify-content: center; align-items: center; backdrop-filter: blur(10px);
+  }
+  
+  .zen-mode { background: #000; flex-direction: column; color: #444; }
+  .zen-time { font-size: 80px; font-weight: 200; color: #fff; margin-bottom: 20px; font-family: var(--font-disp); }
+  .zen-exit { padding: 15px 40px; border: 1px solid #333; border-radius: 50px; cursor: pointer; color: #666; transition: 0.3s; }
+  .zen-exit:hover { border-color: #fff; color: #fff; }
+
+  .settings-panel { width: 500px; background: #151515; border: 1px solid #333; padding: 40px; border-radius: 12px; }
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #222; }
+  .toggle-switch { width: 50px; height: 26px; background: #333; border-radius: 20px; position: relative; cursor: pointer; transition: 0.3s; }
+  .toggle-switch::after { content:''; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.3s; }
+  .toggle-switch.on { background: var(--brand-primary); }
+  .toggle-switch.on::after { left: 27px; }
 
   /* RESPONSIVE */
-  @media (max-width: 768px) {
-    #app_container { flex-direction: column-reverse; }
-    .sidebar { width: 100%; height: 60px; flex-direction: row; justify-content: space-around; border-right: none; border-top: 1px solid #333; }
-    .brand-box { display: none; }
-    .nav-item { border-left: none; border-top: 2px solid transparent; padding: 0; display: flex; flex-direction: column; justify-content: center; height: 100%; }
-    .nav-item.active { border-top-color: var(--accent); background: transparent; }
-    .music-bar { bottom: 60px; left: 0; width: 100%; height: 50px; }
-    .top-bar { padding: 0 20px; }
-    .dash-grid { grid-template-columns: 1fr; height: auto; }
-    .card-3d-map { grid-column: auto; height: 300px; }
-    .viewport { padding: 20px; padding-bottom: 120px; }
+  @media (max-width: 1024px) {
+    .sidebar { width: 70px; }
+    .hero-grid { grid-template-columns: 1fr; height: auto; }
+    .b-pass { width: 90%; flex-direction: column; height: auto; }
+    .b-left { border-right: none; border-bottom: 2px dashed #ddd; }
   }
 </style>
 </head>
 <body>
 
-<div id="welcome_layer" onclick="bootSystem()">
-  <div class="pass-card">
-    <div class="pass-header">
-      <img id="pass_logo" class="pass-logo" src="">
-      <span style="font-size:10px; color:rgba(255,255,255,0.7); text-transform:uppercase">Business Class</span>
+<div id="welcome_screen">
+  <div class="b-pass">
+    <div class="b-left">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/96/Cathay_Pacific_logo.svg/1200px-Cathay_Pacific_logo.svg.png" style="height:30px">
+        <span style="color:var(--brand-primary); font-weight:bold; font-size:12px;">BUSINESS</span>
+      </div>
+      <div style="margin: 30px 0;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div><div class="pass-label">Origin</div><div class="big-route" id="bp_og">HKG</div></div>
+          <i class="fas fa-plane" style="color:#ddd; font-size:30px;"></i>
+          <div style="text-align:right"><div class="pass-label">Destination</div><div class="big-route" id="bp_ds">LHR</div></div>
+        </div>
+      </div>
+      <div style="display:flex; gap: 40px;">
+        <div><div class="pass-label">Passenger</div><div class="pass-val">V15 GUEST</div></div>
+        <div><div class="pass-label">Flight</div><div class="pass-val">CX 255</div></div>
+        <div><div class="pass-label">Date</div><div class="pass-val" id="bp_date">--</div></div>
+      </div>
+      <div class="watermark" style="position:absolute; bottom:10px; right:20px; font-size:80px; opacity:0.05; font-weight:bold;">CX</div>
     </div>
-    <div class="pass-body">
-      <div class="pass-row">
-        <div>
-          <div class="pass-label">Passenger</div>
-          <div class="pass-val">V14 GUEST</div>
-        </div>
-        <div style="text-align:right">
-          <div class="pass-label">Seat</div>
-          <div class="pass-val" id="pass_seat">--</div>
-        </div>
-      </div>
-      <div class="pass-row">
-        <div>
-          <div class="pass-label">From</div>
-          <div class="pass-route" id="pass_og">HKG</div>
-        </div>
-        <div style="display:flex; align-items:center; color:#ccc"><i class="fas fa-plane"></i></div>
-        <div style="text-align:right">
-          <div class="pass-label">To</div>
-          <div class="pass-route" id="pass_ds">LHR</div>
-        </div>
-      </div>
-      <div class="pass-row" style="margin-bottom:0">
-         <div>
-          <div class="pass-label">Flight</div>
-          <div class="pass-val">CX 255</div>
-        </div>
-        <div style="text-align:right">
-          <div class="pass-label">Date</div>
-          <div class="pass-val" id="pass_date">--</div>
-        </div>
-      </div>
+    <div class="b-right" onclick="systemStart()">
+      <div class="pass-label" style="color:rgba(255,255,255,0.7)">SEAT ASSIGNMENT</div>
+      <div class="pass-val" style="font-size:40px; margin:10px 0;" id="bp_seat">--</div>
+      <div style="margin-top:20px; font-size:10px; border:1px solid #fff; padding:5px 15px; border-radius:20px;">TAP TO START</div>
     </div>
-    <div class="pass-footer">TOUCH TO INITIALIZE SEAT SYSTEM</div>
   </div>
-  <div class="tap-hint">System Standby</div>
 </div>
 
 <div id="app_container">
-  <div id="app_bg"></div>
+  <div id="bg_layer"></div>
 
   <div class="sidebar">
-    <div class="brand-box"><img id="ui_logo" class="brand-logo" src=""></div>
-    <div class="nav-item active" onclick="nav('view_home', this)"><i class="fas fa-home"></i><span>Home</span></div>
-    <div class="nav-item" onclick="nav('view_map', this)"><i class="fas fa-map-marked-alt"></i><span>Map</span></div>
-    <div class="nav-item" onclick="nav('view_media', this)"><i class="fas fa-play"></i><span>Ent</span></div>
-    <div class="nav-item" onclick="nav('view_dine', this)"><i class="fas fa-utensils"></i><span>Dine</span></div>
-    <div class="nav-item" onclick="nav('view_shop', this)"><i class="fas fa-shopping-bag"></i><span>Shop</span></div>
-    <div class="nav-item" onclick="nav('view_chat', this)"><i class="fas fa-comment-dots"></i><span>Crew</span></div>
-    <div class="nav-item" onclick="openSettings()"><i class="fas fa-sliders-h"></i><span>Set</span></div>
+    <div class="brand-area"><img id="ui_logo" class="brand-logo" src=""></div>
+    
+    <div class="nav-btn active" onclick="nav('home', this)"><i class="fas fa-compass"></i><span>Home</span></div>
+    <div class="nav-btn" onclick="nav('ent', this)"><i class="fas fa-film"></i><span>Media</span></div>
+    <div class="nav-btn" onclick="nav('dine', this)"><i class="fas fa-utensils"></i><span>Dine</span></div>
+    <div class="nav-btn" onclick="nav('map', this)"><i class="fas fa-globe-americas"></i><span>Map</span></div>
+    <div class="nav-btn" onclick="nav('cam', this)"><i class="fas fa-camera"></i><span>Cam</span></div>
+    <div class="nav-btn" onclick="nav('connect', this)"><i class="fas fa-plane-arrival"></i><span>Conn</span></div>
+    <div class="nav-btn" onclick="nav('chat', this)"><i class="fas fa-concierge-bell"></i><span>Crew</span></div>
+    
+    <div style="margin-top:auto; margin-bottom:20px;">
+       <div class="nav-btn" onclick="toggleZen()"><i class="fas fa-moon"></i><span>Zen</span></div>
+       <div class="nav-btn" onclick="openSet()"><i class="fas fa-cog"></i><span>Set</span></div>
+    </div>
   </div>
 
-  <div class="main-content">
-    <div class="top-bar">
-      <div class="flight-route"><span id="top_og">HKG</span> <b>&mdash;</b> <span id="top_ds">LHR</span></div>
-      <div class="flight-timer">
-        <div>TIME TO DESTINATION</div>
-        <div id="top_rem">--:--</div>
+  <div class="main-stage">
+    
+    <div class="header">
+      <div class="route-info">
+        <span>Flight CX255</span>
+        <h1><span id="h_og" style="color:#fff; font-size:32px; letter-spacing:0">HKG</span> &mdash; <span id="h_ds" style="color:#fff; font-size:32px; letter-spacing:0">LHR</span></h1>
+      </div>
+      <div class="sys-status">
+        <div class="status-pill"><div class="blink"></div>LIVE DATA</div>
+        <div class="status-pill"><i class="fas fa-wifi"></i> CONNECTED</div>
+        <div style="text-align:right">
+          <div style="font-size:10px; color:#888;">LOCAL TIME</div>
+          <div style="font-size:24px; font-weight:300;" id="sys_clock">12:00</div>
+        </div>
       </div>
     </div>
 
     <div class="viewport">
       
-      <div id="view_home" class="view active">
-        <h1>Flight Dashboard</h1>
-        <h2>Live Telemetry</h2>
-        <div class="dash-grid">
-          <div class="card-3d-map">
-            <div class="globe"><div class="globe-shadow"></div></div>
-            <i class="fas fa-plane plane-icon"></i>
-          </div>
-          <div class="card-stat">
-            <div class="stat-val">912 <span style="font-size:16px">km/h</span></div>
-            <div class="stat-lbl">Ground Speed</div>
-          </div>
-          <div class="card-stat">
-            <div class="stat-val">34,000 <span style="font-size:16px">ft</span></div>
-            <div class="stat-lbl">Altitude</div>
-          </div>
-          <div class="card-stat">
-            <div class="stat-val">-51 &deg;C</div>
-            <div class="stat-lbl">Outside Temp</div>
-          </div>
-           <div class="card-stat">
-            <div class="stat-val" id="stat_dist">--</div>
-            <div class="stat-lbl">Distance Left</div>
-          </div>
-        </div>
-      </div>
-
-      <div id="view_map" class="view">
-        <h1>Flight Path</h1>
-        <h2>Global Positioning</h2>
-        <div class="map-container">
-          <svg class="svg-map" viewBox="0 0 1000 500">
-             <path fill="#2c3e50" d="M150,100 Q200,50 250,100 T350,150 T500,100 T700,150 T900,100 V400 H100 V100 Z" opacity="0.5"/> 
-             <path id="route_path" d="M200,250 Q500,100 800,250" class="route-path" />
-             <path id="route_prog" d="M200,250 Q500,100 800,250" class="route-progress" />
-             <circle cx="200" cy="250" r="3" class="city-dot"/><text x="200" y="270" text-anchor="middle" class="city-label" id="svg_og">ORG</text>
-             <circle cx="800" cy="250" r="3" class="city-dot"/><text x="800" y="270" text-anchor="middle" class="city-label" id="svg_ds">DST</text>
-             <g id="svg_plane"><path d="M0,0 L10,-5 L10,5 Z" class="map-plane-svg" transform="scale(1.5)"/></g>
-          </svg>
-        </div>
-      </div>
-
-      <div id="view_media" class="view">
-        <h1>Entertainment</h1>
-        <h2>StudioCX On Demand</h2>
-        <div class="tabs">
-          <div class="tab active" onclick="tab('mov')">Movies</div>
-          <div class="tab" onclick="tab('tv')">TV Shows</div>
-          <div class="tab" onclick="tab('aud')">Audio</div>
-          <div class="tab" onclick="tab('game')">Games</div>
-        </div>
-        
-        <div id="tab_mov" class="media-grid"></div> </div>
-
-      <div id="view_dine" class="view">
-        <h1>In-flight Dining</h1>
-        <h2>A La Carte</h2>
-        
-        <div class="menu-section">
-          <div class="menu-head">Starters</div>
-          <div id="menu_starters"></div>
-        </div>
-        <div class="menu-section">
-          <div class="menu-head">Main Course</div>
-          <div id="menu_mains"></div>
-        </div>
-        <div class="menu-section">
-          <div class="menu-head">Beverages</div>
-          <div id="menu_drinks"></div>
-        </div>
-      </div>
-
-      <div id="view_shop" class="view">
-        <h1>Duty Free</h1>
-        <h2>Shopping Collection</h2>
-        <div class="shop-grid" id="shop_container"></div>
-      </div>
-
-      <div id="view_chat" class="view">
-        <h1>Crew Connect</h1>
-        <h2>Seat <span id="chat_seat_id">--</span></h2>
-        <div class="chat-ui">
-          <div class="chat-window">
-            <div class="chat-msgs" id="chat_box"></div>
-            <div class="chat-input-area">
-              <input class="chat-input" id="msg_in" placeholder="Message crew...">
-              <button class="send-btn" onclick="sendMsg()">SEND</button>
+      <div id="home" class="page active">
+        <div class="hero-grid">
+          <div class="card" style="padding:0;">
+            <div class="map-wrap">
+              <svg class="map-svg" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice">
+                <rect width="100%" height="100%" fill="#0a0a1a"/>
+                <path fill="#1a1a2e" d="M50,100 Q150,50 250,150 T450,100 T650,150 T800,50 V400 H0 V100 Z" />
+                <path id="svg_path" d="M100,250 Q400,50 700,250" class="path-line" />
+                <path id="svg_prog" d="M100,250 Q400,50 700,250" class="path-active" />
+                <circle cx="100" cy="250" r="4" fill="#fff"/>
+                <text x="100" y="275" fill="#aaa" font-size="10" text-anchor="middle" id="map_lbl_og">HKG</text>
+                <circle cx="700" cy="250" r="4" fill="#fff"/>
+                <text x="700" y="275" fill="#aaa" font-size="10" text-anchor="middle" id="map_lbl_ds">LHR</text>
+                <g id="svg_plane">
+                  <path d="M-10,0 L0,-10 L10,0 L0,20 Z" fill="var(--brand-gold)" transform="rotate(45)"/>
+                </g>
+              </svg>
             </div>
           </div>
-          <div class="quick-actions">
-            <div class="q-btn" onclick="req('Water')"><i class="fas fa-glass-water"></i> Water</div>
-            <div class="q-btn" onclick="req('Coffee')"><i class="fas fa-coffee"></i> Coffee</div>
-            <div class="q-btn" onclick="req('Duty Free')"><i class="fas fa-shopping-bag"></i> Shop Help</div>
-            <div class="q-btn" onclick="req('Medical')"><i class="fas fa-briefcase-medical"></i> Medical</div>
+          <div style="display:flex; flex-direction:column; gap:20px;">
+            <div class="card" style="flex:1">
+              <div class="card-title">Time Remaining</div>
+              <div class="card-val" id="val_rem" style="color:var(--brand-gold)">--:--</div>
+              <div style="font-size:12px; margin-top:5px; color:#666">Arriving on Schedule</div>
+            </div>
+            <div class="card" style="flex:1">
+               <div class="card-title">Altitude</div>
+               <div class="card-val">38,000<span style="font-size:16px">ft</span></div>
+            </div>
+            <div class="card" style="flex:1">
+               <div class="card-title">Outside Air</div>
+               <div class="card-val">-54<span style="font-size:16px">&deg;C</span></div>
+            </div>
           </div>
         </div>
       </div>
 
-    </div> </div> <div class="music-bar">
-    <div class="track-info">
-      <div class="track-art" id="m_art"></div>
-      <div class="track-meta">
-        <div id="m_title">Select Track</div>
-        <div id="m_artist">StudioCX</div>
+      <div id="ent" class="page">
+        <div class="media-row">
+          <div class="row-title">New Releases</div>
+          <div class="posters" id="mov_grid"></div>
+        </div>
+        <div class="media-row">
+          <div class="row-title">Kids Zone</div>
+          <div class="posters" id="kid_grid"></div>
+        </div>
       </div>
+
+      <div id="dine" class="page">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="row-title" style="border:none">In-Flight Dining</div>
+          <div style="background:#222; padding:10px 20px; border-radius:30px; border:1px solid #444;">
+            <i class="fas fa-shopping-cart"></i> Cart Total: <span id="cart_total" style="color:var(--brand-gold)">$0</span>
+          </div>
+        </div>
+        
+        <div class="menu-tabs">
+          <div class="m-tab active" onclick="filterMenu('all')">All</div>
+          <div class="m-tab" onclick="filterMenu('main')">Mains</div>
+          <div class="m-tab" onclick="filterMenu('bev')">Beverages</div>
+          <div class="m-tab" onclick="filterMenu('snack')">Snacks</div>
+        </div>
+        
+        <div id="menu_grid"></div>
+      </div>
+
+      <div id="cam" class="page">
+        <div class="row-title">External Cameras</div>
+        <div style="height:500px; width:100%; position:relative; border-radius:12px; overflow:hidden; border:var(--glass-border);">
+          <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2000&auto=format&fit=crop" class="cam-feed">
+          <div class="cam-overlay">CAM 2: TAIL FIN | ALT: 38000ft | SPD: 540kts</div>
+        </div>
+      </div>
+      
+      <div id="connect" class="page">
+        <div class="row-title">Arrival Information</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+           <div class="card">
+             <div class="card-title">Arrival Gate</div>
+             <div class="card-val">B24</div>
+             <div style="color:var(--brand-gold); margin-top:5px;">Terminal 5</div>
+           </div>
+           <div class="card">
+             <div class="card-title">Baggage Reclaim</div>
+             <div class="card-val">Belt 8</div>
+           </div>
+        </div>
+        <div style="margin-top:30px;">
+          <h3 style="margin-bottom:15px; font-weight:400; color:#888;">CONNECTING FLIGHTS</h3>
+          <div style="background:rgba(255,255,255,0.05); border-radius:8px; padding:20px; display:flex; justify-content:space-between; margin-bottom:10px;">
+             <div><b>BA 144</b> to Edinburgh</div>
+             <div style="color:#2ecc71">On Time (14:30)</div>
+             <div>Gate A12</div>
+          </div>
+           <div style="background:rgba(255,255,255,0.05); border-radius:8px; padding:20px; display:flex; justify-content:space-between;">
+             <div><b>AA 109</b> to New York</div>
+             <div style="color:#e74c3c">Delayed (16:15)</div>
+             <div>Gate C04</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="chat" class="page">
+        <div class="row-title">Cabin Service</div>
+        <div class="chat-layout">
+          <div class="chat-box">
+            <div class="msgs-area" id="chat_feed">
+              <div class="msg-bubble crew">Welcome aboard, <span id="chat_name">Guest</span>. How can we help you today?</div>
+            </div>
+            <div style="padding:15px; border-top:var(--glass-border); display:flex;">
+              <input id="chat_in" placeholder="Type request..." style="flex:1; background:transparent; border:none; color:#fff; padding:10px; outline:none;">
+              <button onclick="sendMsg()" style="background:var(--brand-gold); border:none; border-radius:50%; width:40px; height:40px; cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
+            </div>
+          </div>
+          <div style="width:250px; display:flex; flex-direction:column; gap:10px;">
+            <div class="card" onclick="quickReq('Water')" style="height:auto; padding:15px; cursor:pointer; align-items:center; flex-direction:row; gap:15px;">
+              <i class="fas fa-glass-water" style="color:var(--brand-gold)"></i> Water
+            </div>
+            <div class="card" onclick="quickReq('Coffee')" style="height:auto; padding:15px; cursor:pointer; align-items:center; flex-direction:row; gap:15px;">
+              <i class="fas fa-coffee" style="color:var(--brand-gold)"></i> Coffee
+            </div>
+            <div class="card" onclick="quickReq('Blanket')" style="height:auto; padding:15px; cursor:pointer; align-items:center; flex-direction:row; gap:15px;">
+              <i class="fas fa-bed" style="color:var(--brand-gold)"></i> Blanket
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div> </div> <div class="player-bar">
+    <div class="track-visual" id="viz_bars" style="opacity:0.3">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
     </div>
-    <div class="player-ctrls">
-      <i class="fas fa-step-backward" onclick="prevTrack()"></i>
-      <i class="fas fa-play" id="play_btn" onclick="togglePlay()"></i>
-      <i class="fas fa-step-forward" onclick="nextTrack()"></i>
+    <div style="margin-right:20px;">
+      <div style="font-weight:bold; font-size:14px;" id="m_title">System Audio</div>
+      <div style="font-size:11px; color:var(--brand-gold);" id="m_artist">Ready</div>
     </div>
-    <div style="width:100px; text-align:right; color:#666; font-size:11px">AUDIO ON</div>
+    <div style="display:flex; gap:20px; font-size:20px; margin-left:auto;">
+      <i class="fas fa-backward" onclick="audCtrl('prev')"></i>
+      <i class="fas fa-play" id="play_btn" onclick="audCtrl('play')"></i>
+      <i class="fas fa-forward" onclick="audCtrl('next')"></i>
+    </div>
   </div>
 
 </div>
 
-<div class="modal-overlay" id="set_modal">
-  <div class="modal-box">
-    <h3 style="color:var(--accent); border-bottom:1px solid #333; padding-bottom:10px;">SYSTEM CONTROL</h3>
+<div class="overlay zen-mode" id="zen_layer">
+  <div style="font-size:12px; letter-spacing:3px; color:#555; margin-bottom:10px;">TIME TO DESTINATION</div>
+  <div class="zen-time" id="zen_timer">04:20</div>
+  <div class="zen-exit" onclick="toggleZen()">WAKE SYSTEM</div>
+</div>
+
+<div class="overlay" id="set_layer" style="display:none;">
+  <div class="settings-panel">
+    <div class="row-title" style="margin-bottom:20px;">System Preferences</div>
     
-    <div class="st-group">
-      <span class="st-label">Visual Theme</span>
-      <div style="display:flex; gap:10px">
-        <input type="color" id="set_c1" class="st-input" style="padding:0; height:40px; cursor:pointer">
-        <input type="color" id="set_c2" class="st-input" style="padding:0; height:40px; cursor:pointer">
-      </div>
-    </div>
-
-    <div class="st-group">
-      <span class="st-label">Airline Branding</span>
-      <input id="set_lg" class="st-input" placeholder="Logo URL">
-      <input id="set_bg" class="st-input" placeholder="Background URL">
-    </div>
-
-    <div class="st-group">
-      <span class="st-label">Flight Data</span>
-      <div style="display:flex; gap:10px">
-        <input id="set_og" class="st-input" placeholder="ORG">
-        <input id="set_ds" class="st-input" placeholder="DST">
-      </div>
-      <input id="set_dur" class="st-input" type="number" placeholder="Duration (min)">
+    <div class="toggle-row">
+      <span>Kids Mode UI</span>
+      <div class="toggle-switch" id="t_kids" onclick="toggleSet('kids')"></div>
     </div>
     
-    <div class="st-group">
-      <span class="st-label">Captain's Announcement</span>
-      <input id="set_anno" class="st-input" placeholder="Send message to all screens...">
-      <button class="shop-btn" style="width:100%; margin-top:5px" onclick="sendCaptainMsg()">BROADCAST</button>
+    <div class="toggle-row">
+      <span>Do Not Disturb</span>
+      <div class="toggle-switch" id="t_dnd" onclick="toggleSet('dnd')"></div>
     </div>
 
-    <button class="shop-btn" style="width:100%; padding:15px; background:var(--primary); font-size:14px;" onclick="saveConfig()">APPLY & RESTART</button>
-    <button class="shop-btn" style="width:100%; background:#333; margin-top:10px" onclick="closeSettings()">CLOSE</button>
+    <div style="margin-top:30px;">
+       <label style="font-size:10px; color:#666;">THEME COLOR</label>
+       <input type="color" id="set_col" style="width:100%; height:40px; border:none; background:transparent; cursor:pointer;" onchange="updateTheme(this.value)">
+    </div>
+
+    <button onclick="closeSet()" style="width:100%; padding:15px; background:#333; color:#fff; border:none; margin-top:20px; border-radius:6px; cursor:pointer;">CLOSE</button>
   </div>
 </div>
 
-<div class="modal-overlay" id="vid_modal" style="background:#000;">
-  <div style="position:absolute; top:20px; right:20px; color:#fff; font-size:40px; cursor:pointer; z-index:99" onclick="closeVid()">&times;</div>
-  <iframe id="vid_frame" style="width:100%; height:100%; border:none" allow="autoplay"></iframe>
+<div class="overlay" id="vid_layer" style="background:#000;">
+  <div onclick="closeVid()" style="position:absolute; top:30px; right:30px; font-size:40px; color:#fff; cursor:pointer; z-index:2001">&times;</div>
+  <iframe id="vid_frame" style="width:90%; height:80%; border:none; box-shadow:0 0 50px rgba(255,255,255,0.1);"></iframe>
 </div>
-
-<div class="toast" id="toast"><i class="fas fa-check-circle"></i> <span id="toast_msg">Action Success</span></div>
 
 <script>
-// --- CONFIGURATION ---
+// --- CONFIG & STATE ---
 const C = { apiKey: "AIzaSyBiabDx61thAOm_A-_2x_mC9Nb9gArRCns", authDomain: "flight-ui.firebaseapp.com", projectId: "flight-ui", appId: "1:507585547506:web:a2f401ddda5055b59ed46b" };
-
-// --- DATASETS ---
-const DB_MOVIES = [
-  {t:"Top Gun: Maverick", g:"Action", i:"https://upload.wikimedia.org/wikipedia/en/1/13/Top_Gun_Maverick_Poster.jpg", u:"https://www.youtube.com/embed/qSqVVzvW13s?autoplay=1"},
-  {t:"Avatar: The Way of Water", g:"Sci-Fi", i:"https://upload.wikimedia.org/wikipedia/en/5/54/Avatar_The_Way_of_Water_poster.jpg", u:"https://www.youtube.com/embed/d9MyqF3bPhI?autoplay=1"},
-  {t:"Oppenheimer", g:"Drama", i:"https://upload.wikimedia.org/wikipedia/en/4/4a/Oppenheimer_%28film%29.jpg", u:"https://www.youtube.com/embed/uYPbbksJxIg?autoplay=1"},
-  {t:"The Super Mario Bros", g:"Family", i:"https://upload.wikimedia.org/wikipedia/en/4/44/The_Super_Mario_Bros._Movie_poster.jpg", u:"https://www.youtube.com/embed/TnGl01FkMMo?autoplay=1"}
-];
-
-const DB_MENU = {
-  starters: [
-    {n:"Smoked Salmon", d:"Served with capers, lemon and rye bread.", p:"$12"},
-    {n:"Truffle Soup", d:"Wild mushroom with truffle oil.", p:"$10"}
+const DB = {
+  movies: [
+    {t:"Dune: Part Two", i:"https://upload.wikimedia.org/wikipedia/en/5/52/Dune_Part_Two_poster.jpg", u:"https://www.youtube.com/embed/Way9Dexny3w?autoplay=1"},
+    {t:"The Creator", i:"https://upload.wikimedia.org/wikipedia/en/0/02/The_Creator_poster.jpg", u:"https://www.youtube.com/embed/ex3C1-5Dhb8?autoplay=1"},
+    {t:"Interstellar", i:"https://upload.wikimedia.org/wikipedia/en/b/bc/Interstellar_film_poster.jpg", u:"https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1"},
+    {t:"Blade Runner 2049", i:"https://upload.wikimedia.org/wikipedia/en/9/9b/Blade_Runner_2049_poster.png", u:"https://www.youtube.com/embed/gCcx85zbxz4?autoplay=1"},
+    {t:"Gravity", i:"https://upload.wikimedia.org/wikipedia/en/f/f6/Gravity_Poster.jpg", u:"https://www.youtube.com/embed/OiTiKOy59o4?autoplay=1"}
   ],
-  mains: [
-    {n:"Wagyu Beef Burger", d:"Brioche bun, aged cheddar, fries.", p:"$24"},
-    {n:"Lobster Thermidor", d:"Creamy cheese sauce, asparagus.", p:"$38"},
-    {n:"Miso Cod", d:"Japanese style black cod with rice.", p:"$32"}
+  kids: [
+    {t:"Inside Out 2", i:"https://upload.wikimedia.org/wikipedia/en/f/f7/Inside_Out_2_poster.jpg", u:"https://www.youtube.com/embed/LEjhY15eCx0?autoplay=1"},
+    {t:"Kung Fu Panda 4", i:"https://upload.wikimedia.org/wikipedia/en/7/7f/Kung_Fu_Panda_4_poster.jpg", u:"https://www.youtube.com/embed/_inKs4eeHiI?autoplay=1"}
   ],
-  drinks: [
-    {n:"Champagne", d:"Krug Grande Cuvée", p:"$25"},
-    {n:"Signature Cocktail", d:"Gin, Basil, Lemon", p:"$15"}
+  menu: [
+    {n:"Wagyu Beef Burger", p:22, c:"main"}, {n:"Lobster Linguine", p:34, c:"main"},
+    {n:"Caesar Salad", p:14, c:"snack"}, {n:"Club Sandwich", p:18, c:"snack"},
+    {n:"Champagne Krug", p:45, c:"bev"}, {n:"Fresh Orange Juice", p:8, c:"bev"}
   ]
 };
 
-const DB_SHOP = [
-  {n:"Chanel No. 5", p:"$145", i:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Chanel_No_5_parfum.jpg/440px-Chanel_No_5_parfum.jpg"},
-  {n:"Ray-Ban Aviator", p:"$180", i:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Ray_Ban_Aviator_Sunglasses.jpg/500px-Ray_Ban_Aviator_Sunglasses.jpg"},
-  {n:"Johnnie Walker Blue", p:"$220", i:"https://upload.wikimedia.org/wikipedia/commons/e/e0/Johnnie_Walker_Blue_Label.jpg"}
-];
-
-const DB_AUDIO = [
-  {t:"Lofi Study", a:"Chillhop", c:"#55efc4"},
-  {t:"Jazz Vibes", a:"Blue Note", c:"#ffeaa7"},
-  {t:"Ambient Sky", a:"Brian Eno", c:"#74b9ff"}
-];
-
-const DEF = {
-  c1: "#006564", c2: "#C3A676",
-  lg: "https://upload.wikimedia.org/wikipedia/en/thumb/9/96/Cathay_Pacific_logo.svg/1200px-Cathay_Pacific_logo.svg.png",
-  bg: "https://images.unsplash.com/photo-1542296332-2e44a996aa0b?q=80&w=2000&auto=format&fit=crop",
-  og: "HKG", ds: "LHR"
-};
-
 let db, ref, chatRef;
-let mySeat = "";
-let simTimer;
-let currentTrack = 0;
+let mySeat = "", cartTotal = 0;
 let isPlaying = false;
+let fltInterval;
 
-// --- INITIALIZATION ---
+// --- INIT ---
 function init() {
   firebase.initializeApp(C);
   db = firebase.database();
-  ref = db.ref('v14_sys');
-  chatRef = db.ref('v14_chat');
+  ref = db.ref('v15_sys');
+  chatRef = db.ref('v15_chat');
   
   genSeat();
-  renderContent();
-  setupListeners();
+  renderMedia();
+  renderMenu('all');
+  startTime();
   
-  document.getElementById('pass_date').innerText = new Date().toLocaleDateString();
-}
-
-// --- RENDERING CONTENT ---
-function renderContent() {
-  // Movies
-  document.getElementById('tab_mov').innerHTML = DB_MOVIES.map(m => `
-    <div class="media-item" onclick="playVid('${m.u}')">
-      <img src="${m.i}" class="media-poster">
-      <div class="media-info"><div class="media-title">${m.t}</div><div class="media-genre">${m.g}</div></div>
-    </div>
-  `).join('');
+  // Realtime Listeners
+  ref.on('value', d => { if(d.val()) applySys(d.val()) });
+  chatRef.limitToLast(10).on('child_added', d => addChat(d.val()));
   
-  // Menu
-  const mkDish = (i) => `<div class="dish"><div class="dish-info"><h4>${i.n}</h4><p>${i.d}</p></div><button class="add-btn" onclick="order('${i.n}')">+</button></div>`;
-  document.getElementById('menu_starters').innerHTML = DB_MENU.starters.map(mkDish).join('');
-  document.getElementById('menu_mains').innerHTML = DB_MENU.mains.map(mkDish).join('');
-  document.getElementById('menu_drinks').innerHTML = DB_MENU.drinks.map(mkDish).join('');
-  
-  // Shop
-  document.getElementById('shop_container').innerHTML = DB_SHOP.map(s => `
-    <div class="shop-item">
-      <img src="${s.i}" class="shop-img">
-      <div class="shop-details">
-        <div class="shop-name">${s.n}</div>
-        <div class="shop-price">${s.p}</div>
-        <button class="shop-btn" onclick="order('Duty Free: ${s.n}')">ADD TO CART</button>
-      </div>
-    </div>
-  `).join('');
+  document.getElementById('bp_date').innerText = new Date().toLocaleDateString();
 }
 
 // --- SYSTEM LOGIC ---
-function setupListeners() {
-  ref.on('value', snap => {
-    const d = snap.val();
-    if(d) applyConfig(d);
-  });
-  
-  chatRef.limitToLast(20).on('child_added', snap => {
-    const v = snap.val();
-    const box = document.getElementById('chat_box');
-    const isMe = v.u === mySeat;
-    const isCpt = v.type === 'cpt';
-    let cls = isCpt ? 'cpt' : (isMe ? 'me' : 'them');
+function systemStart() {
+  document.getElementById('welcome_screen').classList.add('off');
+  document.getElementById('app_container').classList.add('active');
+  // Start Flight Sim
+  let dur = 600; // default
+  let start = Date.now();
+  fltInterval = setInterval(() => {
+    let now = Date.now();
+    let el = (now - start) / (dur * 60000); // pct
+    if(el>1) el=1;
     
-    box.innerHTML += `<div class="bubble ${cls}">${isCpt?'<b>CAPTAIN SPEAKING</b><br>':''} ${v.m}</div>`;
-    box.scrollTop = box.scrollHeight;
+    // SVG PATH ANIMATION
+    let len = document.getElementById('svg_path').getTotalLength();
+    let draw = len * el;
+    document.getElementById('svg_prog').style.strokeDashoffset = len - draw;
     
-    if(isCpt) showToast("Captain Announcement Received");
-  });
-}
-
-function applyConfig(d) {
-  // Colors
-  const r = document.documentElement;
-  r.style.setProperty('--primary', d.c1 || DEF.c1);
-  r.style.setProperty('--accent', d.c2 || DEF.c2);
-  
-  // Images
-  document.getElementById('ui_logo').src = d.lg || DEF.lg;
-  document.getElementById('pass_logo').src = d.lg || DEF.lg;
-  document.getElementById('app_bg').style.backgroundImage = `url('${d.bg || DEF.bg}')`;
-  
-  // Text
-  document.getElementById('pass_og').innerText = d.og || DEF.og; document.getElementById('top_og').innerText = d.og || DEF.og; document.getElementById('svg_og').innerText = d.og || DEF.og;
-  document.getElementById('pass_ds').innerText = d.ds || DEF.ds; document.getElementById('top_ds').innerText = d.ds || DEF.ds; document.getElementById('svg_ds').innerText = d.ds || DEF.ds;
-
-  // Settings Sync
-  document.getElementById('set_c1').value = d.c1 || DEF.c1;
-  document.getElementById('set_c2').value = d.c2 || DEF.c2;
-  document.getElementById('set_lg').value = d.lg || "";
-  document.getElementById('set_bg').value = d.bg || "";
-  document.getElementById('set_og').value = d.og || "";
-  document.getElementById('set_ds').value = d.ds || "";
-  document.getElementById('set_dur').value = d.dur || 60;
-
-  if(d.start && d.dur) runSim(d.start, d.dur);
-}
-
-function runSim(start, dur) {
-  if(simTimer) clearInterval(simTimer);
-  simTimer = setInterval(() => {
-    const now = Date.now();
-    const elapsed = now - start;
-    const total = dur * 60000;
-    let pct = elapsed / total;
-    if(pct > 1) pct = 1;
-    if(pct < 0) pct = 0;
+    // Plane Movement
+    let p = document.getElementById('svg_path').getPointAtLength(draw);
+    let pNext = document.getElementById('svg_path').getPointAtLength(draw + 1);
+    let ang = Math.atan2(pNext.y - p.y, pNext.x - p.x) * 180 / Math.PI;
+    document.getElementById('svg_plane').setAttribute("transform", `translate(${p.x},${p.y}) rotate(${ang})`);
     
-    // SVG Path Animation
-    const len = document.getElementById('route_path').getTotalLength();
-    const draw = len * pct;
-    document.getElementById('route_prog').style.strokeDashoffset = len - draw;
-    
-    // Plane on Path Logic (simplified bezier estimate)
-    const p = document.getElementById('route_path').getPointAtLength(draw);
-    const plane = document.getElementById('svg_plane');
-    // Basic rotation logic: look ahead 1px
-    const pNext = document.getElementById('route_path').getPointAtLength(draw + 1);
-    const angle = Math.atan2(pNext.y - p.y, pNext.x - p.x) * 180 / Math.PI;
-    
-    plane.setAttribute("transform", `translate(${p.x},${p.y}) rotate(${angle}) scale(1.5)`);
-    
-    // Data Stats
-    const minLeft = Math.ceil((total - elapsed)/60000);
-    document.getElementById('top_rem').innerText = `${Math.floor(minLeft/60)}h ${minLeft%60}m`;
-    document.getElementById('stat_dist').innerText = Math.floor(9000 * (1-pct)) + " km";
+    // Time Text
+    let minLeft = Math.floor(dur * (1-el));
+    let txt = `${Math.floor(minLeft/60)}h ${minLeft%60}m`;
+    document.getElementById('val_rem').innerText = txt;
+    document.getElementById('zen_timer').innerText = txt;
     
   }, 1000);
 }
 
-// --- USER ACTIONS ---
-function genSeat() {
-  if(!localStorage.getItem('v14_seat')) {
-    const r = Math.floor(Math.random()*50)+1;
-    const c = ['A','K','D','G'][Math.floor(Math.random()*4)];
-    localStorage.setItem('v14_seat', r+c);
+function applySys(d) {
+  let r = document.documentElement.style;
+  if(d.c1) r.setProperty('--brand-primary', d.c1);
+  if(d.c2) r.setProperty('--brand-gold', d.c2);
+  if(d.lg) document.getElementById('ui_logo').src = d.lg;
+  if(d.bg) document.getElementById('bg_layer').style.backgroundImage = `url('${d.bg}')`;
+  if(d.og) { 
+    document.getElementById('h_og').innerText = d.og; document.getElementById('map_lbl_og').innerText = d.og;
+    document.getElementById('bp_og').innerText = d.og;
   }
-  mySeat = localStorage.getItem('v14_seat');
-  document.getElementById('pass_seat').innerText = mySeat;
-  document.getElementById('chat_seat_id').innerText = mySeat;
+  if(d.ds) {
+    document.getElementById('h_ds').innerText = d.ds; document.getElementById('map_lbl_ds').innerText = d.ds;
+    document.getElementById('bp_ds').innerText = d.ds;
+  }
 }
 
-function bootSystem() {
-  document.getElementById('welcome_layer').classList.add('off');
-  document.getElementById('app_container').classList.add('on');
-}
-
+// --- NAVIGATION ---
 function nav(id, el) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
   if(el) el.classList.add('active');
 }
 
+// --- RENDERERS ---
+function renderMedia() {
+  const mkCard = (m) => `
+    <div class="poster-card" onclick="playVid('${m.u}')">
+      <img src="${m.i}">
+      <i class="fas fa-play-circle play-icon"></i>
+    </div>`;
+  document.getElementById('mov_grid').innerHTML = DB.movies.map(mkCard).join('');
+  document.getElementById('kid_grid').innerHTML = DB.kids.map(mkCard).join('');
+}
+
+function renderMenu(cat) {
+  let items = cat === 'all' ? DB.menu : DB.menu.filter(x => x.c === cat);
+  document.getElementById('menu_grid').innerHTML = items.map(i => `
+    <div class="dish-card">
+      <div>
+        <div style="font-weight:bold; font-size:16px;">${i.n}</div>
+        <div style="font-size:12px; color:#888; margin-top:5px;">Served with sides</div>
+        <div style="color:var(--brand-gold); margin-top:5px;">$${i.p}</div>
+      </div>
+      <button class="dish-btn" onclick="addToCart(${i.p})">ADD</button>
+    </div>
+  `).join('');
+}
+
+function filterMenu(c) {
+  document.querySelectorAll('.m-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  renderMenu(c);
+}
+
+function addToCart(p) {
+  cartTotal += p;
+  document.getElementById('cart_total').innerText = "$" + cartTotal;
+}
+
+// --- UTILS ---
+function genSeat() {
+  if(!localStorage.getItem("v15_seat")) localStorage.setItem("v15_seat", "1" + ["A","K"][Math.floor(Math.random()*2)]);
+  mySeat = localStorage.getItem("v15_seat");
+  document.getElementById('bp_seat').innerText = mySeat;
+  document.getElementById('chat_name').innerText = "Seat " + mySeat;
+}
+
+function startTime() {
+  setInterval(() => {
+    let d = new Date();
+    document.getElementById('sys_clock').innerText = d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
+  }, 1000);
+}
+
+// --- FEATURES ---
+function toggleZen() {
+  let z = document.getElementById('zen_layer');
+  z.style.display = z.style.display === 'flex' ? 'none' : 'flex';
+}
+
 function playVid(u) {
-  document.getElementById('vid_modal').style.display = 'block';
+  document.getElementById('vid_layer').style.display = 'flex';
   document.getElementById('vid_frame').src = u;
 }
 function closeVid() {
-  document.getElementById('vid_modal').style.display = 'none';
+  document.getElementById('vid_layer').style.display = 'none';
   document.getElementById('vid_frame').src = "";
 }
 
-function order(item) {
-  chatRef.push({ u: mySeat, m: `[ORDER] ${item}` });
-  showToast("Order Sent to Galley");
+// --- SETTINGS ---
+function openSet() { document.getElementById('set_layer').style.display = 'flex'; }
+function closeSet() { document.getElementById('set_layer').style.display = 'none'; }
+function toggleSet(type) {
+  let el = document.getElementById('t_' + type);
+  el.classList.toggle('on');
+  if(type === 'kids') document.body.classList.toggle('kids-mode');
 }
-
-function req(type) {
-  chatRef.push({ u: mySeat, m: `[REQUEST] ${type}` });
-  showToast("Crew Notified: " + type);
-}
-
-function sendMsg() {
-  const i = document.getElementById('msg_in');
-  if(i.value) {
-    chatRef.push({ u: mySeat, m: i.value });
-    i.value = "";
-  }
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  document.getElementById('toast_msg').innerText = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+function updateTheme(c) {
+  document.documentElement.style.setProperty('--brand-primary', c);
 }
 
 // --- AUDIO PLAYER ---
-function togglePlay() {
-  const btn = document.getElementById('play_btn');
-  if(isPlaying) {
-    btn.classList.remove('fa-pause'); btn.classList.add('fa-play');
-    isPlaying = false;
-  } else {
-    btn.classList.remove('fa-play'); btn.classList.add('fa-pause');
-    isPlaying = true;
-    updateTrackDisplay();
+function audCtrl(a) {
+  let viz = document.getElementById('viz_bars');
+  let btn = document.getElementById('play_btn');
+  if(a === 'play') {
+    isPlaying = !isPlaying;
+    btn.className = isPlaying ? "fas fa-pause" : "fas fa-play";
+    viz.style.opacity = isPlaying ? 1 : 0.3;
   }
 }
-function nextTrack() {
-  currentTrack = (currentTrack + 1) % DB_AUDIO.length;
-  updateTrackDisplay();
+
+// --- CHAT ---
+function sendMsg() {
+  let i = document.getElementById('chat_in');
+  if(!i.value) return;
+  chatRef.push({ u: mySeat, m: i.value, t: Date.now() });
+  i.value = "";
 }
-function prevTrack() {
-  currentTrack = (currentTrack - 1 + DB_AUDIO.length) % DB_AUDIO.length;
-  updateTrackDisplay();
+function quickReq(type) {
+  chatRef.push({ u: mySeat, m: `[REQUEST] ${type}`, t: Date.now() });
 }
-function updateTrackDisplay() {
-  const t = DB_AUDIO[currentTrack];
-  document.getElementById('m_title').innerText = t.t;
-  document.getElementById('m_artist').innerText = t.a;
-  document.getElementById('m_art').style.background = t.c;
+function addChat(d) {
+  let b = document.getElementById('chat_feed');
+  let isMe = d.u === mySeat;
+  b.innerHTML += `<div class="msg-bubble ${isMe?'me':'crew'}">${d.m}</div>`;
+  b.scrollTop = b.scrollHeight;
 }
 
-// --- SETTINGS ADMIN ---
-function openSettings() { document.getElementById('set_modal').style.display = 'flex'; }
-function closeSettings() { document.getElementById('set_modal').style.display = 'none'; }
-function saveConfig() {
-  ref.set({
-    c1: document.getElementById('set_c1').value,
-    c2: document.getElementById('set_c2').value,
-    lg: document.getElementById('set_lg').value,
-    bg: document.getElementById('set_bg').value,
-    og: document.getElementById('set_og').value,
-    ds: document.getElementById('set_ds').value,
-    dur: document.getElementById('set_dur').value,
-    start: Date.now()
-  });
-  closeSettings();
-}
-function sendCaptainMsg() {
-  const m = document.getElementById('set_anno').value;
-  if(m) chatRef.push({ u: "CAPTAIN", m: m, type: "cpt" });
-  document.getElementById('set_anno').value = "";
-  showToast("Broadcast Sent");
-}
-
-// Start
 window.onload = init;
 </script>
 </body>
