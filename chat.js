@@ -1,14 +1,15 @@
-// api/chat.js
 import OpenAI from 'openai';
 
-// Connect to DeepSeek
+// ⚠️ SECURITY WARNING: 
+// Ideally, use process.env.DEEPSEEK_API_KEY and set it in your Vercel/Netlify settings.
+// For now, to make it work, wrap the key in quotes:
+
 const openai = new OpenAI({
-  apiKey: process.env.sk-7bc1f0e60e1d4ff5928844dd2ea5a0f6, 
-  baseURL: "https://api.deepseek.com", // Points to DeepSeek servers
+  apiKey: "sk-7bc1f0e60e1d4ff5928844dd2ea5a0f6", // <--- MUST HAVE QUOTES ""
+  baseURL: "https://api.deepseek.com",
 });
 
 export default async function handler(req, res) {
-  // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -16,24 +17,22 @@ export default async function handler(req, res) {
   try {
     const { message } = req.body;
 
-    // Send message to DeepSeek V3
     const completion = await openai.chat.completions.create({
       model: "deepseek-chat",
       messages: [
         { 
           role: "system", 
-          content: "You are the sophisticated cabin concierge of a flight. Keep answers brief (max 3 sentences), polite, and helpful." 
+          content: "You are an airline concierge. Keep answers short (max 2 sentences) and professional." 
         },
         { role: "user", content: message },
       ],
     });
 
-    // Send answer back to frontend
     const aiReply = completion.choices[0].message.content;
     res.status(200).json({ reply: aiReply });
 
   } catch (error) {
     console.error("DeepSeek Error:", error);
-    res.status(500).json({ reply: "I am currently offline (API Error)." });
+    res.status(500).json({ reply: "Service currently unavailable." });
   }
 }
