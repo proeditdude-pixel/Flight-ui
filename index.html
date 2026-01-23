@@ -3,894 +3,748 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#000000">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>InFlight OS V36 | Ultimate Edition</title>
-    
+    <title>InFlight OS V40</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
 
     <style>
         /* ==========================================================================
-           AEROCSS FRAMEWORK V1.0
+           1. CSS VARIABLES & THEME ENGINE
            ========================================================================== */
-        
         :root {
-            /* --- PALETTE: BRAND --- */
-            --brand-hue: 180; /* Teal default */
-            --brand-sat: 100%;
-            --brand-lit: 25%;
+            /* CX THEME DEFAULTS */
+            --hue: 178; 
+            --primary: #005E63; /* CX Teal */
+            --primary-dark: #004C50;
+            --accent: #B4A480; /* Gold/Beige Accent */
             
-            --c-brand-50:  hsl(var(--brand-hue), var(--brand-sat), 95%);
-            --c-brand-100: hsl(var(--brand-hue), var(--brand-sat), 90%);
-            --c-brand-200: hsl(var(--brand-hue), var(--brand-sat), 80%);
-            --c-brand-300: hsl(var(--brand-hue), var(--brand-sat), 70%);
-            --c-brand-400: hsl(var(--brand-hue), var(--brand-sat), 60%);
-            --c-brand-500: hsl(var(--brand-hue), var(--brand-sat), 40%); /* Main */
-            --c-brand-600: hsl(var(--brand-hue), var(--brand-sat), 35%);
-            --c-brand-700: hsl(var(--brand-hue), var(--brand-sat), 30%);
-            --c-brand-800: hsl(var(--brand-hue), var(--brand-sat), 20%);
-            --c-brand-900: hsl(var(--brand-hue), var(--brand-sat), 10%);
-
-            /* --- PALETTE: NEUTRALS --- */
-            --c-white: #ffffff;
-            --c-black: #000000;
-            --c-gray-50:  #f9fafb;
-            --c-gray-100: #f3f4f6;
-            --c-gray-200: #e5e7eb;
-            --c-gray-300: #d1d5db;
-            --c-gray-400: #9ca3af;
-            --c-gray-500: #6b7280;
-            --c-gray-600: #4b5563;
-            --c-gray-700: #374151;
-            --c-gray-800: #1f2937;
-            --c-gray-900: #111827;
-
-            /* --- PALETTE: SEMANTIC --- */
-            --c-success: #10b981;
-            --c-warning: #f59e0b;
-            --c-danger:  #ef4444;
-            --c-info:    #3b82f6;
-
-            /* --- SURFACES (Light Mode Default) --- */
-            --bg-app: var(--c-gray-50);
-            --bg-panel: var(--c-white);
-            --bg-card: var(--c-white);
-            --bg-input: var(--c-gray-50);
+            /* LAYOUT */
+            --bar-h: 80px; /* Bottom Bar Height */
+            --nav-w: 260px; /* Sidebar Width */
+            --head-h: 70px; /* Top Header Height */
             
-            --border-light: rgba(0,0,0,0.08);
-            --border-focus: var(--c-brand-500);
-
-            --text-main: var(--c-gray-900);
-            --text-dim: var(--c-gray-500);
-            --text-inverse: var(--c-white);
-
-            /* --- METRICS --- */
-            --nav-width: 280px;
-            --header-height: 80px;
-            --radius-sm: 6px;
-            --radius-md: 12px;
-            --radius-lg: 20px;
-            --radius-full: 9999px;
+            /* SURFACES */
+            --bg-body: #F2F4F6;
+            --bg-glass: rgba(255, 255, 255, 0.85);
+            --bg-card: #FFFFFF;
+            --bg-input: #F0F2F5;
             
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
-            --shadow-float: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-            
-            /* --- ANIMATION --- */
-            --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
-            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            /* TEXT */
+            --tx-main: #1D1D1F;
+            --tx-dim: #86868B;
+            --tx-inv: #FFFFFF;
+
+            /* UTILS */
+            --shadow: 0 8px 30px rgba(0,0,0,0.08);
+            --border: 1px solid rgba(0,0,0,0.06);
+            --radius: 16px;
         }
 
-        /* --- DARK MODE OVERRIDES --- */
+        /* DARK MODE */
         body.dark-mode {
-            --bg-app: #050505;
-            --bg-panel: #121212;
+            --bg-body: #0a0a0a;
+            --bg-glass: rgba(20, 20, 20, 0.85);
             --bg-card: #1c1c1e;
             --bg-input: #2c2c2e;
-            
-            --border-light: rgba(255,255,255,0.1);
-            
-            --text-main: #f5f5f7;
-            --text-dim: #a1a1a6;
+            --tx-main: #f5f5f7;
+            --tx-dim: #a1a1a6;
+            --border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* --- GLOBAL RESET --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.3); border-radius: 10px; }
+        /* ==========================================================================
+           2. GLOBAL RESET & UTILITIES
+           ========================================================================== */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-app);
-            color: var(--text-main);
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            transition: background 0.4s var(--ease-out), color 0.4s;
-            user-select: none;
+            margin: 0; padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-body); color: var(--tx-main);
+            width: 100vw; height: 100vh; overflow: hidden;
+            transition: background 0.5s ease, color 0.5s ease;
         }
 
-        /* --- TYPOGRAPHY --- */
+        /* TYPOGRAPHY */
         .f-serif { font-family: 'Playfair Display', serif; }
         .f-mono { font-family: 'JetBrains Mono', monospace; }
-        .text-xl { font-size: 2.5rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
-        .text-lg { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; }
-        .text-md { font-size: 1.1rem; font-weight: 500; }
-        .text-sm { font-size: 0.9rem; font-weight: 400; }
-        .text-xs { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-        .text-dim { color: var(--text-dim); }
-        .text-brand { color: var(--c-brand-500); }
+        h1 { font-size: 36px; font-weight: 700; margin: 0 0 10px 0; }
+        h2 { font-size: 24px; font-weight: 600; margin: 0 0 15px 0; }
+        p { line-height: 1.6; color: var(--tx-dim); margin: 0; }
 
-        /* --- LAYOUT UTILITIES --- */
-        .flex { display: flex; }
-        .flex-col { flex-direction: column; }
-        .flex-center { align-items: center; justify-content: center; }
-        .flex-between { align-items: center; justify-content: space-between; }
-        .gap-1 { gap: 5px; }
-        .gap-2 { gap: 10px; }
-        .gap-4 { gap: 20px; }
-        .w-full { width: 100%; }
-        .h-full { height: 100%; }
+        /* FLEX UTILS */
+        .flex { display: flex; align-items: center; }
+        .flex-c { display: flex; align-items: center; justify-content: center; }
+        .flex-col { display: flex; flex-direction: column; }
+        .flex-sb { display: flex; align-items: center; justify-content: space-between; }
+        .gap-1 { gap: 10px; } .gap-2 { gap: 20px; } .w-full { width: 100%; }
         .hidden { display: none !important; }
 
-        /* --- COMPONENTS: BUTTONS --- */
+        /* ==========================================================================
+           3. UI COMPONENTS
+           ========================================================================== */
+        
+        /* BUTTONS */
         .btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            padding: 12px 24px; border-radius: var(--radius-sm); border: none; cursor: pointer;
-            font-weight: 600; font-size: 0.9rem; transition: all 0.2s;
+            padding: 12px 24px; border-radius: 8px; border: none; font-size: 14px;
+            font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex;
+            align-items: center; gap: 8px; letter-spacing: 0.5px;
         }
-        .btn-primary { background: var(--c-brand-500); color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); filter: brightness(110%); }
-        .btn-primary:active { transform: translateY(0); }
-        
-        .btn-secondary { background: rgba(128,128,128,0.1); color: var(--text-main); }
-        .btn-secondary:hover { background: rgba(128,128,128,0.2); }
-        
-        .btn-ghost { background: transparent; color: var(--text-dim); }
-        .btn-ghost:hover { color: var(--c-brand-500); background: rgba(var(--brand-hue), 50%, 50%, 0.05); }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .btn-primary:hover { filter: brightness(110%); transform: translateY(-1px); }
+        .btn-sec { background: var(--bg-input); color: var(--tx-main); }
+        .btn-danger { background: rgba(255, 59, 48, 0.1); color: #FF3B30; }
+        .btn-danger:hover { background: #FF3B30; color: white; }
 
-        .btn-icon { width: 40px; height: 40px; border-radius: 50%; padding: 0; }
-
-        /* --- COMPONENTS: CARDS --- */
-        .card {
-            background: var(--bg-card); border-radius: var(--radius-md); 
-            border: 1px solid var(--border-light);
-            box-shadow: var(--shadow-sm); overflow: hidden;
-            transition: 0.3s var(--ease-out);
-        }
-        .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-        .card-cover { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #000; }
-        .card-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: #222; }
-        .card-body { padding: 16px; }
-
-        /* --- COMPONENTS: INPUTS --- */
+        /* INPUTS */
         .input-group { margin-bottom: 20px; }
-        .label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; }
+        .label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--tx-dim); margin-bottom: 8px; letter-spacing: 1px; }
         .input {
-            width: 100%; padding: 12px 16px; background: var(--bg-input); 
-            border: 1px solid var(--border-light); border-radius: var(--radius-sm);
-            color: var(--text-main); font-family: inherit; font-size: 1rem;
-            transition: 0.2s;
+            width: 100%; padding: 14px; border-radius: 8px;
+            background: var(--bg-input); border: var(--border);
+            color: var(--tx-main); font-family: inherit; font-size: 15px;
         }
-        .input:focus { border-color: var(--c-brand-500); box-shadow: 0 0 0 3px rgba(var(--brand-hue), 100%, 50%, 0.1); }
+        .file-drop {
+            border: 2px dashed var(--primary); background: rgba(0, 94, 99, 0.05);
+            border-radius: 8px; height: 80px; display: flex; align-items: center;
+            justify-content: center; color: var(--primary); font-weight: 600;
+            cursor: pointer; position: relative;
+        }
+        .file-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 
-        /* --- APP STRUCTURE --- */
-        #app { display: flex; width: 100vw; height: 100vh; opacity: 0; transition: opacity 1s; }
+        /* CARDS */
+        .card {
+            background: var(--bg-card); border-radius: var(--radius);
+            padding: 25px; box-shadow: var(--shadow); border: var(--border);
+            margin-bottom: 25px; position: relative; overflow: hidden;
+        }
+
+        /* ==========================================================================
+           4. LAYOUT STRUCTURE
+           ========================================================================== */
+        
+        #app { display: flex; width: 100%; height: 100%; opacity: 0; transition: opacity 1s; }
         #app.loaded { opacity: 1; }
 
-        /* --- SIDEBAR --- */
+        /* SIDEBAR (CONTENT) */
         #sidebar {
-            width: var(--nav-width); height: 100%; background: var(--bg-panel);
-            border-right: 1px solid var(--border-light); z-index: 50;
-            display: flex; flex-direction: column;
+            width: var(--nav-w); background: var(--bg-card); border-right: var(--border);
+            display: flex; flex-direction: column; z-index: 20; padding-bottom: var(--bar-h);
         }
-        .brand-area { height: 100px; display: flex; align-items: center; padding: 0 30px; gap: 12px; }
-        .brand-logo { width: 32px; height: 32px; fill: var(--c-brand-500); }
-        .brand-text { font-size: 1.25rem; font-weight: 700; color: var(--text-main); letter-spacing: -0.03em; }
+        .brand { height: 100px; display: flex; align-items: center; padding: 0 30px; gap: 15px; border-bottom: var(--border); }
+        .logo-box { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
+        .logo-img { width: 100%; height: 100%; object-fit: contain; }
+        .brand-txt { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--primary); }
 
-        .nav-menu { flex: 1; padding: 20px 15px; overflow-y: auto; }
+        .nav-list { flex: 1; padding: 30px 20px; overflow-y: auto; }
         .nav-item {
-            display: flex; align-items: center; gap: 15px; padding: 14px 20px;
-            margin-bottom: 5px; border-radius: var(--radius-md); cursor: pointer;
-            color: var(--text-dim); font-weight: 500; transition: 0.2s;
+            display: flex; align-items: center; gap: 15px; padding: 16px 20px;
+            border-radius: 10px; margin-bottom: 8px; cursor: pointer;
+            color: var(--tx-dim); font-weight: 500; transition: 0.2s;
         }
-        .nav-item:hover { background: var(--bg-app); color: var(--text-main); }
-        .nav-item.active { background: var(--c-brand-500); color: white; box-shadow: var(--shadow-md); }
+        .nav-item:hover { background: var(--bg-input); color: var(--tx-main); }
+        .nav-item.active { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .nav-item svg { width: 20px; height: 20px; fill: currentColor; }
 
-        /* --- MAIN STAGE --- */
-        #stage { flex: 1; display: flex; flex-direction: column; position: relative; background: var(--bg-app); }
+        /* MAIN STAGE */
+        #stage { flex: 1; display: flex; flex-direction: column; position: relative; background: var(--bg-body); }
         
         /* HEADER */
         #header {
-            height: var(--header-height); display: flex; align-items: center; justify-content: space-between;
-            padding: 0 40px; background: rgba(255,255,255,0.01); backdrop-filter: blur(10px);
-            z-index: 40; border-bottom: 1px solid transparent;
+            height: var(--head-h); padding: 0 40px; display: flex; align-items: center;
+            justify-content: space-between; background: transparent; z-index: 10;
         }
-        .route-pill {
-            background: var(--bg-card); padding: 8px 16px; border-radius: 30px;
-            border: 1px solid var(--border-light); display: flex; align-items: center; gap: 15px;
-            box-shadow: var(--shadow-sm);
-        }
-        .route-line { width: 40px; height: 2px; background: var(--border-light); position: relative; }
-        .route-plane { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            width: 14px; height: 14px; fill: var(--c-brand-500); 
+        .flight-path {
+            background: var(--bg-card); padding: 8px 20px; border-radius: 30px;
+            box-shadow: var(--shadow); display: flex; align-items: center; gap: 15px; border: var(--border);
         }
 
         /* VIEWPORT */
-        #viewport { flex: 1; position: relative; overflow: hidden; }
-        
+        #viewport {
+            flex: 1; position: relative; overflow: hidden;
+            padding-bottom: var(--bar-h); /* Space for bottom bar */
+        }
         .page {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            padding: 20px 40px 100px 40px; overflow-y: auto; overflow-x: hidden;
-            opacity: 0; transform: translateY(30px) scale(0.98); pointer-events: none;
-            transition: 0.5s var(--ease-bounce);
+            position: absolute; inset: 0; padding: 0 40px 120px 40px; /* Extra padding for scroll */
+            overflow-y: auto; opacity: 0; transform: translateY(15px); pointer-events: none;
+            transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        .page.active { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+        .page.active { opacity: 1; transform: translateY(0); pointer-events: all; }
 
-        /* --- CUSTOM MODULES --- */
+        /* ==========================================================================
+           5. BOTTOM BAR (NEW FEATURE)
+           ========================================================================== */
+        #bottom-bar {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: var(--bar-h);
+            background: var(--bg-glass); backdrop-filter: blur(20px);
+            border-top: var(--border); z-index: 100;
+            display: flex; align-items: center; justify-content: center; gap: 60px;
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.05);
+        }
+
+        .bar-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            background: none; border: none; cursor: pointer; color: var(--tx-dim);
+            transition: 0.3s; width: 80px;
+        }
+        .bar-btn svg { width: 24px; height: 24px; fill: currentColor; transition: 0.3s; }
+        .bar-btn span { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
         
-        /* FLIGHT SIMULATOR */
-        .sim-container {
-            width: 100%; height: 350px; background: #0b1120; border-radius: var(--radius-lg);
-            position: relative; overflow: hidden; box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
-        }
-        #sim-canvas { width: 100%; height: 100%; display: block; }
-        .sim-hud {
-            position: absolute; bottom: 20px; left: 20px; right: 20px;
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;
-        }
-        .hud-metric {
-            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-            padding: 15px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.1);
-            color: white; text-align: center;
-        }
-        .hud-val { font-size: 1.5rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-        .hud-label { font-size: 0.7rem; opacity: 0.7; letter-spacing: 1px; margin-top: 5px; }
+        .bar-btn:hover { color: var(--primary); }
+        .bar-btn.active { color: var(--primary); }
+        .bar-btn:active svg { transform: scale(0.9); }
+        
+        /* Central Home Button needs to be prominent */
+        .bar-btn.home svg { width: 28px; height: 28px; }
 
-        /* MUSIC PLAYER */
-        .music-bar {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 90px;
-            background: var(--bg-panel); border-top: 1px solid var(--border-light);
-            display: flex; align-items: center; justify-content: space-between; padding: 0 40px;
-            z-index: 60; transform: translateY(100%); transition: 0.3s;
+        /* ==========================================================================
+           6. SCREENS (BOOT, LOCK, OFF)
+           ========================================================================== */
+        .overlay {
+            position: fixed; inset: 0; z-index: 9000; background: #000; color: #fff;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .music-bar.active { transform: translateY(0); }
-        .track-info { display: flex; align-items: center; gap: 15px; width: 250px; }
-        .track-art { width: 50px; height: 50px; border-radius: 6px; background: #333; }
-        .track-controls { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; max-width: 500px; }
-        .ctrl-btns { display: flex; align-items: center; gap: 20px; }
-        .progress-rail { width: 100%; height: 4px; background: var(--border-light); border-radius: 2px; position: relative; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--c-brand-500); width: 30%; }
-
-        /* SEAT MAP */
-        .seat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; max-width: 400px; margin: 0 auto; }
-        .seat {
-            height: 60px; border-radius: 8px; border: 2px solid var(--border-light);
-            display: flex; align-items: center; justify-content: center; font-weight: 700;
-            cursor: pointer; position: relative; transition: 0.2s;
-        }
-        .seat.available { background: var(--bg-card); color: var(--text-main); }
-        .seat.occupied { background: rgba(128,128,128,0.1); color: var(--text-dim); opacity: 0.5; cursor: not-allowed; }
-        .seat.selected { background: var(--c-brand-500); color: white; border-color: var(--c-brand-500); }
-        .seat::before { content: ''; position: absolute; top: -5px; width: 40%; height: 5px; background: inherit; border-radius: 4px; }
-
-        /* GAMES CANVAS */
-        #game-stage {
-            width: 100%; max-width: 800px; aspect-ratio: 16/9; background: #000;
-            border-radius: var(--radius-md); margin: 0 auto; display: block;
-            border: 4px solid #333;
-        }
+        
+        /* BOOT SCREEN */
+        #boot-screen { align-items: flex-start; padding: 40px; font-family: 'JetBrains Mono', monospace; font-size: 14px; z-index: 9999; }
+        .boot-line { margin-bottom: 5px; opacity: 0; animation: fadeIn 0.1s forwards; }
+        .boot-ok { color: #00ff00; margin-right: 10px; }
+        @keyframes fadeIn { to { opacity: 1; } }
 
         /* LOCK SCREEN */
         #lock-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-size: cover; background-position: center;
-            z-index: 9999; display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            color: white; transition: 1s cubic-bezier(0.7, 0, 0.3, 1);
+            background-size: cover; background-position: center; transition: transform 0.8s cubic-bezier(0.8, 0, 0.2, 1);
+            z-index: 5000;
         }
-        #lock-screen::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); z-index: -1;
+        #lock-screen.unlocked { transform: translateY(-100%); }
+        .glass-panel {
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(15px);
+            padding: 40px 60px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);
+            text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
-        .slide-unlock {
-            margin-top: 50px; width: 280px; height: 60px; border-radius: 30px;
-            background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.3); position: relative; cursor: pointer;
-            overflow: hidden;
+        
+        /* OFF SCREEN */
+        #off-screen { background: #000; opacity: 0; pointer-events: none; transition: 1s; z-index: 6000; }
+        #off-screen.active { opacity: 1; pointer-events: all; }
+        
+        /* TOAST */
+        #toast {
+            position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: var(--tx-main); color: var(--bg-card); padding: 12px 30px;
+            border-radius: 30px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 2000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px;
         }
-        .slide-thumb {
-            width: 54px; height: 54px; background: white; border-radius: 50%;
-            position: absolute; top: 2px; left: 2px; display: flex; align-items: center; justify-content: center;
-            color: var(--c-brand-500); transition: 0.3s;
-        }
-        .slide-text {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;
-            padding-left: 20px; pointer-events: none; opacity: 0.8;
-        }
+        #toast.show { transform: translateX(-50%) translateY(0); }
 
-        /* RESPONSIVE */
+        /* ==========================================================================
+           7. CONTENT STYLES
+           ========================================================================== */
+        
+        /* WELCOME DASHBOARD */
+        .welcome-hero {
+            height: 200px; border-radius: 20px; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white; padding: 40px; display: flex; flex-direction: column; justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); margin-bottom: 30px; position: relative; overflow: hidden;
+        }
+        .hero-bg-icon { position: absolute; right: -20px; bottom: -40px; width: 200px; height: 200px; fill: rgba(255,255,255,0.1); transform: rotate(-15deg); }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .stat-card { background: var(--bg-card); padding: 20px; border-radius: 16px; border: var(--border); text-align: center; }
+        .stat-val { font-size: 28px; font-weight: 700; color: var(--primary); margin: 5px 0; }
+        .stat-lbl { font-size: 11px; text-transform: uppercase; color: var(--tx-dim); font-weight: 700; }
+
+        /* MOVIES */
+        .movie-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; }
+        .poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: 12px; transition: 0.3s; }
+        .poster:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+
+        /* GAMES */
+        .game-canvas-box { width: 100%; height: 400px; background: #111; border-radius: 16px; position: relative; border: 4px solid #333; }
+        
+        /* MOBILE OVERRIDES */
         @media (max-width: 900px) {
-            :root { --nav-width: 80px; }
-            .brand-text, .nav-item span { display: none; }
-            .nav-item { justify-content: center; padding: 20px; }
-            .route-pill span { display: none; }
-            .grid-media { grid-template-columns: repeat(2, 1fr); }
+            :root { --nav-w: 0px; }
+            #sidebar { display: none; } /* Hide sidebar on mobile, rely on bottom bar + internal nav */
+            #header { padding: 0 20px; }
+            .page { padding: 20px; }
+            .grid-3 { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
 <svg style="display: none;">
-    <defs>
-        <symbol id="icon-plane" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></symbol>
-        <symbol id="icon-home" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></symbol>
-        <symbol id="icon-movie" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></symbol>
-        <symbol id="icon-game" viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.77-1.5-1.5S14.67 12 15.5 12s1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.77-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></symbol>
-        <symbol id="icon-music" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></symbol>
-        <symbol id="icon-shop" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></symbol>
-        <symbol id="icon-map" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></symbol>
-        <symbol id="icon-settings" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.04.24.24.41.48.41h3.84c.24 0 .43-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.08-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></symbol>
-        <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M9 21c7.5 0 13.5-6 13.5-13.5 0-.5-.03-1.01-.08-1.5-.78 1.05-1.9 1.83-3.21 2.16-3.56.9-7.25-1.35-8.15-4.91-.33-1.31.45-2.43 1.5-3.21-.49-.05-1-.08-1.5-.08C3.6 0-2.4 6 9 21z"/></symbol>
-        <symbol id="icon-sun" viewBox="0 0 24 24"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.79 1.41-1.41-1.79-1.79-1.41 1.41zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></symbol>
-    </defs>
+    <symbol id="i-plane" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></symbol>
+    <symbol id="i-movie" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></symbol>
+    <symbol id="i-game" viewBox="0 0 24 24"><path d="M20 6H4V4h16v2zM7 18h2v-2H7v2zm0-4h2v-2H7v2zm4 4h2v-2h-2v2zm0-4h2v-2h-2v2zm4 4h2v-2h-2v2zm0-4h2v-2h-2v2zM4 20h16v-8H4v8zM4 8v2h16V8H4z"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></symbol>
+    <symbol id="i-cog" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0 .59-.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.04.24.24.41.48.41h3.84c.24 0 .43-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.08-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></symbol>
+    <symbol id="i-light" viewBox="0 0 24 24"><path d="M9 21c7.5 0 13.5-6 13.5-13.5 0-.5-.03-1.01-.08-1.5-.78 1.05-1.9 1.83-3.21 2.16-3.56.9-7.25-1.35-8.15-4.91-.33-1.31.45-2.43 1.5-3.21-.49-.05-1-.08-1.5-.08C3.6 0-2.4 6 9 21z"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></symbol>
+    <symbol id="i-power" viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></symbol>
 </svg>
 
-<div id="lock-screen" style="background-image: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2000&auto=format&fit=crop');">
-    <div class="f-serif" style="font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase;">Welcome Aboard</div>
-    <div class="f-serif" id="lock-airline" style="font-size: 4rem; font-weight: 700; margin: 10px 0;">CATHAY</div>
-    <div class="f-mono" style="font-size: 1.2rem; opacity: 0.8;">CX 888 &bull; BOEING 777-300ER</div>
-    
-    <div class="slide-unlock" onclick="OS.unlock()">
-        <div class="slide-text">Touch to Start</div>
-        <div class="slide-thumb"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg></div>
+<div id="boot-screen" class="overlay"></div>
+
+<div id="off-screen" class="overlay">
+    <div style="text-align:center;">
+        <div id="off-logo" style="width:60px; height:60px; margin:0 auto 20px auto;"></div>
+        <h2 class="f-serif" style="opacity:0.6;">System Offline</h2>
+        <button class="btn btn-icon" onclick="SYS.boot(true)" style="margin-top:30px; border:2px solid #333; width:60px; height:60px; border-radius:50%; color:white;"><svg><use href="#i-power"></use></svg></button>
     </div>
+</div>
+
+<div id="lock-screen" class="overlay">
+    <div class="glass-panel">
+        <div id="lock-logo" style="width:60px; height:60px; margin:0 auto 10px auto;"></div>
+        <h1 class="f-serif" id="lock-title">Airline</h1>
+        <p class="f-mono" style="font-size:12px; opacity:0.7; letter-spacing:2px; margin-bottom:30px;">V40 FLIGHT OS</p>
+        <button class="btn btn-primary" onclick="SYS.unlock()">TOUCH TO START</button>
+    </div>
+</div>
+
+<div id="toast">
+    <svg style="width:20px; height:20px; fill:currentColor"><use href="#i-bell"></use></svg>
+    <span>Crew has been notified.</span>
 </div>
 
 <div id="app">
     
     <nav id="sidebar">
-        <div class="brand-area">
-            <svg class="brand-logo"><use href="#icon-plane"></use></svg>
-            <div class="brand-text" id="sb-brand-text">Cathay</div>
+        <div class="brand">
+            <div class="logo-box" id="sb-logo"></div>
+            <span class="brand-txt" id="sb-title">Airline</span>
         </div>
-        
-        <div class="nav-menu">
-            <div class="nav-item active" onclick="NAV.go('p-home', this)">
-                <svg><use href="#icon-home"></use></svg> <span>Home</span>
-            </div>
-            <div class="nav-item" onclick="NAV.go('p-movies', this)">
-                <svg><use href="#icon-movie"></use></svg> <span>Entertainment</span>
-            </div>
-            <div class="nav-item" onclick="NAV.go('p-map', this)">
-                <svg><use href="#icon-map"></use></svg> <span>Flight Map</span>
-            </div>
-            <div class="nav-item" onclick="NAV.go('p-games', this)">
-                <svg><use href="#icon-game"></use></svg> <span>Arcade</span>
-            </div>
-            <div class="nav-item" onclick="NAV.go('p-shop', this)">
-                <svg><use href="#icon-shop"></use></svg> <span>Duty Free</span>
-            </div>
-            <div class="nav-item" onclick="NAV.go('p-settings', this)">
-                <svg><use href="#icon-settings"></use></svg> <span>Settings</span>
-            </div>
+        <div class="nav-list">
+            <div class="label" style="padding:0 20px 10px 20px;">Entertainment</div>
+            <div class="nav-item" onclick="NAV.go('p-movies', this)"><svg><use href="#i-movie"></use></svg> <span>Cinema</span></div>
+            <div class="nav-item" onclick="NAV.go('p-games', this)"><svg><use href="#i-game"></use></svg> <span>Arcade</span></div>
+            
+            <div class="label" style="padding:20px 20px 10px 20px;">Concierge</div>
+            <div class="nav-item" onclick="NAV.go('p-chat', this)"><svg><use href="#i-chat"></use></svg> <span>Assistant</span></div>
+            
+            <div class="label" style="padding:20px 20px 10px 20px;">System</div>
+            <div class="nav-item" onclick="NAV.go('p-settings', this)"><svg><use href="#i-cog"></use></svg> <span>Settings</span></div>
+            <div class="nav-item" style="color:#ef4444;" onclick="SYS.shutdown()"><svg><use href="#i-power"></use></svg> <span>Turn Off</span></div>
         </div>
     </nav>
 
     <main id="stage">
         
         <header id="header">
-            <div class="text-xs text-dim" id="clock">12:30 PM</div>
+            <div class="f-mono" style="color:var(--tx-dim); font-size:14px;" id="clock-display">12:00</div>
             
-            <div class="route-pill">
-                <span class="text-xs" id="head-origin">HKG</span>
-                <div class="route-line"><svg class="route-plane"><use href="#icon-plane"></use></svg></div>
-                <span class="text-xs" id="head-dest">LHR</span>
-            </div>
-            
-            <div class="flex gap-2">
-                <button class="btn btn-icon btn-ghost" onclick="THEME.toggle()">
-                    <svg style="width:20px;height:20px;"><use href="#icon-moon"></use></svg>
-                </button>
+            <div class="flight-path">
+                <span class="f-mono" style="font-weight:700;" id="hdr-from">HKG</span>
+                <svg style="width:14px; height:14px; fill:var(--primary); transform:rotate(90deg);"><use href="#i-plane"></use></svg>
+                <span class="f-mono" style="font-weight:700;" id="hdr-to">LHR</span>
             </div>
         </header>
 
         <div id="viewport">
-            
-            <div id="p-home" class="page active">
-                <div class="f-serif text-xl" style="margin-bottom: 30px;">Good Afternoon,<br>Passenger</div>
-                
-                <div class="sim-container" style="margin-bottom: 40px;">
-                    <canvas id="sim-canvas"></canvas>
-                    <div class="sim-hud">
-                        <div class="hud-metric">
-                            <div class="hud-val" id="hud-alt">32,000</div>
-                            <div class="hud-label">ALTITUDE (FT)</div>
+
+            <div id="p-welcome" class="page active">
+                <div class="welcome-hero">
+                    <svg class="hero-bg-icon"><use href="#i-plane"></use></svg>
+                    <h1 class="f-serif" style="margin-bottom:5px;">Welcome Aboard</h1>
+                    <p style="color:rgba(255,255,255,0.8); font-size:18px;">Mr. Anderson &bull; Seat 42A</p>
+                    <div style="margin-top:20px;">
+                        <button class="btn" style="background:rgba(255,255,255,0.2); color:white; backdrop-filter:blur(5px);" onclick="NAV.go('p-movies')">Watch Movie</button>
+                    </div>
+                </div>
+
+                <div class="card" style="padding:0; height:250px;">
+                    <canvas id="sim-canvas" style="width:100%; height:100%; display:block;"></canvas>
+                    <div class="abs-fill" style="pointer-events:none; padding:20px; display:flex; justify-content:space-between; align-items:flex-end;">
+                        <div style="color:white; text-shadow:0 2px 4px rgba(0,0,0,0.5);">
+                            <div class="f-mono" style="font-size:24px;">38,000 <span style="font-size:12px;">FT</span></div>
+                            <div class="f-mono" style="font-size:10px; opacity:0.8;">ALTITUDE</div>
                         </div>
-                        <div class="hud-metric">
-                            <div class="hud-val" id="hud-spd">580</div>
-                            <div class="hud-label">SPEED (MPH)</div>
-                        </div>
-                        <div class="hud-metric">
-                            <div class="hud-val" id="hud-tmp">-48°</div>
-                            <div class="hud-label">OUTSIDE (°C)</div>
-                        </div>
-                        <div class="hud-metric">
-                            <div class="hud-val" id="hud-rem">6:20</div>
-                            <div class="hud-label">REMAINING</div>
+                        <div style="color:white; text-align:right; text-shadow:0 2px 4px rgba(0,0,0,0.5);">
+                            <div class="f-mono" style="font-size:24px;">580 <span style="font-size:12px;">MPH</span></div>
+                            <div class="f-mono" style="font-size:10px; opacity:0.8;">SPEED</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="text-lg" style="margin-bottom: 20px;">Recommended for You</div>
-                <div class="flex" style="gap: 20px; overflow-x: auto; padding-bottom: 20px;">
-                    <div class="card" style="min-width: 200px;">
-                        <img src="https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg" class="card-poster">
-                        <div class="card-body">
-                            <div class="text-md" style="font-weight:700;">Dune: Part Two</div>
-                            <div class="text-xs text-dim">Sci-Fi</div>
-                        </div>
+                <div class="grid-3">
+                    <div class="stat-card">
+                        <div class="stat-val">7:30</div>
+                        <div class="stat-lbl">Time Remaining</div>
                     </div>
-                    <div class="card" style="min-width: 200px;">
-                        <img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" class="card-poster">
-                        <div class="card-body">
-                            <div class="text-md" style="font-weight:700;">Oppenheimer</div>
-                            <div class="text-xs text-dim">Drama</div>
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-val">22°C</div>
+                        <div class="stat-lbl">Cabin Temp</div>
                     </div>
-                     <div class="card" style="min-width: 200px;">
-                        <img src="https://image.tmdb.org/t/p/w500/kDp1vUBnMpe8ak4rjgl3cLELqjU.jpg" class="card-poster">
-                        <div class="card-body">
-                            <div class="text-md" style="font-weight:700;">Kung Fu Panda 4</div>
-                            <div class="text-xs text-dim">Family</div>
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-val">Dinner</div>
+                        <div class="stat-lbl">Next Service</div>
                     </div>
                 </div>
             </div>
 
             <div id="p-movies" class="page">
-                <div class="flex-between" style="margin-bottom: 30px;">
-                    <div class="f-serif text-xl">Cinema</div>
-                    <div class="flex gap-2">
-                        <button class="btn btn-secondary text-xs">Action</button>
-                        <button class="btn btn-secondary text-xs">Comedy</button>
-                        <button class="btn btn-secondary text-xs">Drama</button>
-                    </div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px;" id="movie-grid">
-                    </div>
-            </div>
-
-            <div id="p-map" class="page">
-                 <div class="f-serif text-xl" style="margin-bottom: 20px;">Flight Path</div>
-                 <div class="card" style="height: 60vh; background: #000; position: relative;">
-                     <canvas id="map-full-canvas" style="width:100%; height:100%;"></canvas>
-                 </div>
-                 <div class="flex-between" style="margin-top: 20px;">
-                     <div>
-                         <div class="text-xs text-dim">ORIGIN</div>
-                         <div class="text-lg">Hong Kong</div>
-                         <div class="text-md text-dim">14:00</div>
-                     </div>
-                     <div style="text-align: right;">
-                         <div class="text-xs text-dim">DESTINATION</div>
-                         <div class="text-lg">London</div>
-                         <div class="text-md text-dim">20:20</div>
-                     </div>
-                 </div>
+                <h2 class="f-serif">Cinema Selection</h2>
+                <div class="movie-grid" id="movie-list"></div>
             </div>
 
             <div id="p-games" class="page">
-                <div class="flex-between" style="margin-bottom: 30px;">
-                    <div class="f-serif text-xl">Arcade</div>
-                    <div class="flex gap-2">
-                        <button class="btn btn-primary" onclick="ARCADE.load('snake')">Play Snake</button>
-                        <button class="btn btn-secondary" onclick="ARCADE.load('pong')">Play Pong</button>
+                <h2 class="f-serif">Arcade</h2>
+                <div class="flex gap-1" style="margin-bottom:20px;">
+                    <button class="btn btn-primary" onclick="ARCADE.start('snake')">Snake</button>
+                    <button class="btn btn-sec" onclick="ARCADE.start('breakout')">Breakout</button>
+                </div>
+                <div class="game-canvas-box">
+                    <canvas id="game-cvs"></canvas>
+                    <div id="game-ui" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; background:rgba(0,0,0,0.8);">
+                        <h3>PRESS GAME TO START</h3>
+                        <p class="f-mono" style="font-size:12px;">USE ARROW KEYS</p>
                     </div>
                 </div>
-
-                <canvas id="game-stage" width="800" height="450"></canvas>
-                <div class="text-center text-dim text-xs" style="margin-top: 10px;">KEYBOARD: ARROWS TO MOVE</div>
             </div>
 
-            <div id="p-shop" class="page">
-                <div class="f-serif text-xl" style="margin-bottom: 30px;">Duty Free Boutique</div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px;">
-                    
-                    <div class="card">
-                        <img src="https://images.unsplash.com/photo-1541963463532-d68292c34b19?q=80&w=600" class="card-cover">
-                        <div class="card-body">
-                            <div class="flex-between">
-                                <div class="text-md" style="font-weight:700;">Aesop Essentials</div>
-                                <div class="text-brand">$85</div>
-                            </div>
-                            <div class="text-sm text-dim" style="margin-top: 5px;">Travel skincare kit.</div>
-                            <button class="btn btn-primary w-full" style="margin-top: 15px;">Add to Cart</button>
+            <div id="p-chat" class="page">
+                <div class="card" style="height:500px; display:flex; flex-direction:column; padding:0;">
+                    <div id="chat-feed" style="flex:1; padding:20px; overflow-y:auto; background:var(--bg-input); display:flex; flex-direction:column; gap:10px;">
+                        <div style="align-self:flex-start; background:white; padding:10px 15px; border-radius:15px; max-width:80%; font-size:14px; box-shadow:var(--shadow);">
+                            Hello. I am your concierge. How may I assist you?
                         </div>
                     </div>
-
-                    <div class="card">
-                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=600" class="card-cover">
-                        <div class="card-body">
-                            <div class="flex-between">
-                                <div class="text-md" style="font-weight:700;">Sony WH-1000XM5</div>
-                                <div class="text-brand">$349</div>
-                            </div>
-                            <div class="text-sm text-dim" style="margin-top: 5px;">Noise cancelling headphones.</div>
-                            <button class="btn btn-primary w-full" style="margin-top: 15px;">Add to Cart</button>
-                        </div>
+                    <div style="padding:15px; border-top:var(--border); display:flex; gap:10px; background:var(--bg-card);">
+                        <input type="text" id="chat-in" class="input" placeholder="Ask for drinks, wifi..." onkeydown="if(event.key==='Enter')CHAT.send()">
+                        <button class="btn btn-primary" onclick="CHAT.send()">SEND</button>
                     </div>
-
                 </div>
             </div>
 
             <div id="p-settings" class="page">
-                <div class="f-serif text-xl" style="margin-bottom: 30px;">System Configuration</div>
+                <h2 class="f-serif">System Configuration</h2>
                 
-                <div style="max-width: 800px;">
-                    
-                    <div class="card" style="margin-bottom: 30px;">
-                        <div class="card-body">
-                            <div class="text-xs text-brand" style="margin-bottom: 15px;">IDENTITY</div>
-                            
-                            <div class="input-group">
-                                <label class="label">Airline Name</label>
-                                <input type="text" class="input" id="set-name" value="Cathay Pacific">
-                            </div>
-
-                            <div class="flex gap-4">
-                                <div class="input-group w-full">
-                                    <label class="label">Brand Color</label>
-                                    <input type="color" class="input" id="set-color" style="height: 50px;">
-                                </div>
-                                <div class="input-group w-full">
-                                    <label class="label">Wallpaper URL</label>
-                                    <input type="text" class="input" id="set-bg">
-                                </div>
-                            </div>
+                <div class="card">
+                    <h3 style="font-size:16px;">Identity</h3>
+                    <div class="input-group">
+                        <label class="label">Airline Name</label>
+                        <input type="text" id="set-name" class="input">
+                    </div>
+                    <div class="grid-3">
+                        <div class="file-drop">
+                            <input type="file" onchange="SET.preview(this,'set-logo-prev', 'logo')">
+                            <span>Upload Logo</span>
+                        </div>
+                        <div class="file-drop">
+                            <input type="file" onchange="SET.preview(this,'set-bg-prev', 'bg')">
+                            <span>Upload Wallpaper</span>
+                        </div>
+                        <div style="display:flex; flex-direction:column;">
+                             <label class="label">Color</label>
+                             <input type="color" id="set-color" class="input" style="height:50px; padding:2px;">
                         </div>
                     </div>
+                </div>
 
-                    <div class="card" style="margin-bottom: 30px;">
-                        <div class="card-body">
-                            <div class="text-xs text-brand" style="margin-bottom: 15px;">FLIGHT PARAMETERS</div>
-                            <div class="flex gap-4">
-                                <div class="input-group w-full">
-                                    <label class="label">Origin Code</label>
-                                    <input type="text" class="input" id="set-origin">
-                                </div>
-                                <div class="input-group w-full">
-                                    <label class="label">Dest Code</label>
-                                    <input type="text" class="input" id="set-dest">
-                                </div>
-                            </div>
+                <div class="card">
+                    <h3 style="font-size:16px;">Flight Route</h3>
+                    <div class="grid-3">
+                        <div>
+                            <label class="label">Origin</label>
+                            <input type="text" id="set-from" class="input">
+                        </div>
+                        <div>
+                            <label class="label">Destination</label>
+                            <input type="text" id="set-to" class="input">
+                        </div>
+                        <div style="display:flex; align-items:flex-end;">
+                            <button class="btn btn-primary w-full" onclick="SET.save()">Save & Restart</button>
                         </div>
                     </div>
-
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="text-xs text-danger" style="color: var(--c-danger); margin-bottom: 15px;">GOD MODE ACTIONS</div>
-                            <div class="flex gap-2">
-                                <button class="btn btn-primary" onclick="SETTINGS.save()">Save Configuration</button>
-                                <button class="btn btn-secondary" style="background: var(--c-danger); color: white;" onclick="SETTINGS.reset()">Factory Reset</button>
-                            </div>
-                        </div>
-                    </div>
-
+                    <button class="btn btn-danger" style="margin-top:20px;" onclick="SET.reset()">Factory Reset</button>
                 </div>
             </div>
 
-        </div> <div class="music-bar" id="music-player">
-            <div class="track-info">
-                <div class="track-art"></div>
-                <div>
-                    <div class="text-sm" style="font-weight: 700;">Sky Full of Stars</div>
-                    <div class="text-xs text-dim">Coldplay</div>
-                </div>
-            </div>
-            <div class="track-controls">
-                <div class="ctrl-btns">
-                    <button class="btn btn-icon btn-ghost"><i class="fas fa-backward"></i></button>
-                    <button class="btn btn-icon btn-primary" style="width: 45px; height: 45px;"><i class="fas fa-play"></i></button>
-                    <button class="btn btn-icon btn-ghost"><i class="fas fa-forward"></i></button>
-                </div>
-                <div class="progress-rail">
-                    <div class="progress-fill"></div>
-                </div>
-            </div>
-            <div style="width: 250px;"></div> </div>
+        </div> </main>
 
-    </main>
+    <div id="bottom-bar">
+        <button class="bar-btn" onclick="SYS.toggleLight()">
+            <svg><use href="#i-light"></use></svg>
+            <span>Light</span>
+        </button>
+        
+        <button class="bar-btn home active" onclick="NAV.go('p-welcome')">
+            <svg><use href="#i-home"></use></svg>
+            <span>Home</span>
+        </button>
+        
+        <button class="bar-btn" onclick="SYS.callCrew()">
+            <svg><use href="#i-bell"></use></svg>
+            <span>Call Crew</span>
+        </button>
+    </div>
+
 </div>
 
 <script>
-/** * ============================================================================
- * ENGINE CORE V36
- * ============================================================================
- */
-
-/* --- 1. DATABASE & STATE --- */
-const DB = {
+// --- CONFIGURATION ---
+const DEFAULTS = {
+    name: "Cathay Pacific",
+    color: "#005E63", // Brushwing Teal
+    hue: 178,
+    from: "HKG", to: "LHR",
+    bg: "https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?q=80&w=2000",
+    logo: null, // Use SVG if null
     movies: [
-        { title: "Dune: Part Two", genre: "Sci-Fi", year: 2024, img: "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg" },
-        { title: "Oppenheimer", genre: "Drama", year: 2023, img: "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" },
-        { title: "The Batman", genre: "Action", year: 2022, img: "https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg" },
-        { title: "Top Gun: Maverick", genre: "Action", year: 2022, img: "https://image.tmdb.org/t/p/w500/62HCnUTziyWcpDaBO2i1DX17ljH.jpg" },
-        { title: "Avatar: Way of Water", genre: "Sci-Fi", year: 2022, img: "https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg" },
-        { title: "Spider-Man: Across", genre: "Animation", year: 2023, img: "https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg" },
-        { title: "Interstellar", genre: "Sci-Fi", year: 2014, img: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg" },
-        { title: "Inception", genre: "Sci-Fi", year: 2010, img: "https://image.tmdb.org/t/p/w500/9gk7admal4WlE4J8C58CwhPROtN.jpg" }
-    ],
-    defaults: {
-        airline: "CATHAY",
-        color: "#006B6E",
-        bg: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2000",
-        origin: "HKG",
-        dest: "LHR"
-    }
+        {t:"Dune: Part Two", i:"https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg"},
+        {t:"Oppenheimer", i:"https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg"},
+        {t:"Top Gun: Maverick", i:"https://image.tmdb.org/t/p/w500/62HCnUTziyWcpDaBO2i1DX17ljH.jpg"}
+    ]
 };
+let CFG = JSON.parse(localStorage.getItem('v40_os')) || DEFAULTS;
 
-let CONFIG = JSON.parse(localStorage.getItem('v36_config')) || DB.defaults;
-
-/* --- 2. SYSTEM CONTROLLER --- */
-const OS = {
+// --- SYSTEM CONTROLLER ---
+const SYS = {
     init: () => {
-        OS.loadConfig();
-        OS.renderMovies();
-        FLIGHT_SIM.start('sim-canvas');
-        FLIGHT_SIM.start('map-full-canvas'); // Reuse logic for big map
-        setInterval(OS.updateClock, 1000);
+        SYS.bootSequence();
+    },
+
+    bootSequence: () => {
+        const scr = document.getElementById('boot-screen');
+        const lines = [
+            "Initializing kernel...",
+            "Mounting V40 filesystem...",
+            "Loading CX UI Framework...",
+            "Connecting to Cabin Network...",
+            "System Ready."
+        ];
         
-        // Initial animation
-        setTimeout(() => document.getElementById('app').classList.add('loaded'), 500);
+        let d = 0;
+        lines.forEach((l, i) => {
+            setTimeout(() => {
+                scr.innerHTML += `<div class="boot-line"><span class="boot-ok">[OK]</span> ${l}</div>`;
+            }, d);
+            d += 400 + Math.random()*300;
+        });
+
+        setTimeout(() => {
+            scr.style.display = 'none';
+            SYS.startOS();
+        }, d + 500);
+    },
+
+    startOS: () => {
+        SYS.applyTheme();
+        SYS.clock();
+        SIM.init();
+        
+        // Render Movies
+        document.getElementById('movie-list').innerHTML = CFG.movies.map(m => `
+            <div class="card" style="padding:0; margin:0; cursor:pointer; border:none; box-shadow:none;">
+                <img src="${m.i}" class="poster">
+                <div style="padding-top:10px; font-weight:600; font-size:13px;">${m.t}</div>
+            </div>
+        `).join('');
+
+        document.getElementById('app').classList.add('loaded');
+    },
+
+    applyTheme: () => {
+        document.documentElement.style.setProperty('--primary', CFG.color);
+        document.documentElement.style.setProperty('--hue', CFG.hue);
+        
+        // Text
+        ['sb-title', 'lock-title'].forEach(id => document.getElementById(id).innerText = CFG.name);
+        document.getElementById('hdr-from').innerText = CFG.from;
+        document.getElementById('hdr-to').innerText = CFG.to;
+        
+        // Images
+        document.getElementById('lock-screen').style.backgroundImage = `url('${CFG.bg}')`;
+        const logo = CFG.logo ? `<img src="${CFG.logo}" class="logo-img">` : `<svg style="width:24px;fill:var(--primary)"><use href="#i-plane"></use></svg>`;
+        ['sb-logo', 'lock-logo', 'off-logo'].forEach(id => document.getElementById(id).innerHTML = logo);
+        
+        // Inputs
+        document.getElementById('set-name').value = CFG.name;
+        document.getElementById('set-from').value = CFG.from;
+        document.getElementById('set-to').value = CFG.to;
+        document.getElementById('set-color').value = CFG.color;
     },
 
     unlock: () => {
-        const lock = document.getElementById('lock-screen');
-        lock.style.transform = "translateY(-100%)";
+        document.getElementById('lock-screen').classList.add('unlocked');
+        setTimeout(() => SIM.resize(), 500);
     },
 
-    loadConfig: () => {
-        // Apply CSS Variables
-        document.documentElement.style.setProperty('--c-brand-500', CONFIG.color);
-        
-        // Text
-        document.getElementById('lock-airline').innerText = CONFIG.airline;
-        document.getElementById('sb-brand-text').innerText = CONFIG.airline;
-        document.getElementById('head-origin').innerText = CONFIG.origin;
-        document.getElementById('head-dest').innerText = CONFIG.dest;
-        
-        // Inputs
-        document.getElementById('set-name').value = CONFIG.airline;
-        document.getElementById('set-color').value = CONFIG.color;
-        document.getElementById('set-bg').value = CONFIG.bg;
-        document.getElementById('set-origin').value = CONFIG.origin;
-        document.getElementById('set-dest').value = CONFIG.dest;
-
-        // Background
-        document.getElementById('lock-screen').style.backgroundImage = `url('${CONFIG.bg}')`;
+    toggleLight: () => {
+        document.body.classList.toggle('dark-mode');
     },
 
-    renderMovies: () => {
-        const grid = document.getElementById('movie-grid');
-        grid.innerHTML = DB.movies.map(m => `
-            <div class="card">
-                <img src="${m.img}" class="card-poster">
-                <div class="card-body">
-                    <div class="text-md" style="font-weight:700;">${m.title}</div>
-                    <div class="text-xs text-dim">${m.genre} &bull; ${m.year}</div>
-                </div>
-            </div>
-        `).join('');
+    callCrew: () => {
+        const t = document.getElementById('toast');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
     },
 
-    updateClock: () => {
-        const now = new Date();
-        document.getElementById('clock').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    }
-};
-
-/* --- 3. FLIGHT SIMULATOR ENGINE (CANVAS) --- */
-const FLIGHT_SIM = {
-    start: (canvasId) => {
-        const cvs = document.getElementById(canvasId);
-        const ctx = cvs.getContext('2d');
-        
-        // Resize listener
-        const resize = () => {
-            cvs.width = cvs.parentElement.offsetWidth;
-            cvs.height = cvs.parentElement.offsetHeight;
-        };
-        window.addEventListener('resize', resize);
-        resize();
-
-        // Sim State
-        let progress = 0; // 0 to 1
-        const mapPoints = [];
-        
-        // Generate random terrain curve
-        for(let i=0; i<=10; i++) {
-            mapPoints.push({ x: i * 0.1, y: 0.5 + (Math.random() * 0.2 - 0.1) });
-        }
-
-        const loop = () => {
-            // Update Physics
-            progress += 0.0005; 
-            if(progress > 1) progress = 0;
-
-            // Mock Data Updates
-            if(canvasId === 'sim-canvas') {
-                // Only update HUD if it's the home widget
-                document.getElementById('hud-alt').innerText = Math.floor(32000 + Math.sin(Date.now()/1000)*100).toLocaleString();
-                document.getElementById('hud-spd').innerText = Math.floor(580 + Math.cos(Date.now()/2000)*10);
-            }
-
-            // Draw Background (Radar style)
-            ctx.fillStyle = "#0b1120";
-            ctx.fillRect(0, 0, cvs.width, cvs.height);
-
-            // Draw Grid
-            ctx.strokeStyle = "rgba(255,255,255,0.05)";
-            ctx.lineWidth = 1;
-            for(let x=0; x<cvs.width; x+=50) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,cvs.height); ctx.stroke(); }
-            for(let y=0; y<cvs.height; y+=50) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(cvs.width,y); ctx.stroke(); }
-
-            // Draw Path
-            ctx.strokeStyle = CONFIG.color; // Use brand color
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            
-            // Simple Quadratic Curve for path
-            const startX = 50;
-            const startY = cvs.height - 50;
-            const endX = cvs.width - 50;
-            const endY = 50;
-            const cpX = cvs.width / 2;
-            const cpY = cvs.height - 100;
-
-            ctx.moveTo(startX, startY);
-            ctx.quadraticCurveTo(cpX, cpY, endX, endY);
-            ctx.stroke();
-
-            // Calculate Plane Position
-            // Bezier Math: (1-t)^2 * P0 + 2(1-t)t * P1 + t^2 * P2
-            const t = progress;
-            const px = Math.pow(1-t,2)*startX + 2*(1-t)*t*cpX + Math.pow(t,2)*endX;
-            const py = Math.pow(1-t,2)*startY + 2*(1-t)*t*cpY + Math.pow(t,2)*endY;
-
-            // Draw Plane Icon
-            ctx.fillStyle = "#fff";
-            ctx.beginPath();
-            ctx.arc(px, py, 6, 0, Math.PI*2);
-            ctx.fill();
-            
-            // Draw Ripple Effect
-            ctx.strokeStyle = `rgba(255,255,255,${0.5 * Math.sin(Date.now()/200)})`;
-            ctx.beginPath();
-            ctx.arc(px, py, 15 + 5*Math.sin(Date.now()/200), 0, Math.PI*2);
-            ctx.stroke();
-
-            requestAnimationFrame(loop);
-        };
-        loop();
-    }
-};
-
-/* --- 4. ARCADE GAME ENGINE --- */
-const ARCADE = {
-    activeGame: null,
-    interval: null,
+    shutdown: () => {
+        document.getElementById('off-screen').classList.add('active');
+    },
     
-    load: (gameName) => {
-        const cvs = document.getElementById('game-stage');
-        const ctx = cvs.getContext('2d');
-        
-        // Clear previous
-        if(ARCADE.interval) clearInterval(ARCADE.interval);
-        
-        if(gameName === 'snake') ARCADE.startSnake(cvs, ctx);
-        if(gameName === 'pong') ARCADE.startPong(cvs, ctx);
+    boot: (reload = false) => {
+        if(reload) location.reload();
     },
 
-    startSnake: (cvs, ctx) => {
-        let snake = [{x: 10, y: 10}];
-        let food = {x: 15, y: 15};
-        let dx = 1, dy = 0;
-        let gridSize = 20;
-        let tileCount = cvs.width / gridSize; // Approximate
-
-        document.onkeydown = (e) => {
-            if(e.key === 'ArrowUp' && dy===0) { dx=0; dy=-1; }
-            if(e.key === 'ArrowDown' && dy===0) { dx=0; dy=1; }
-            if(e.key === 'ArrowLeft' && dx===0) { dx=-1; dy=0; }
-            if(e.key === 'ArrowRight' && dx===0) { dx=1; dy=0; }
-        };
-
-        ARCADE.interval = setInterval(() => {
-            // Logic
-            let head = { x: snake[0].x + dx, y: snake[0].y + dy };
-            snake.unshift(head);
-            
-            if(head.x === food.x && head.y === food.y) {
-                food = { x: Math.floor(Math.random()*20), y: Math.floor(Math.random()*20) };
-            } else {
-                snake.pop();
-            }
-
-            // Draw
-            ctx.fillStyle = "black";
-            ctx.fillRect(0,0,cvs.width,cvs.height);
-            
-            ctx.fillStyle = CONFIG.color;
-            snake.forEach(p => ctx.fillRect(p.x*gridSize, p.y*gridSize, gridSize-2, gridSize-2));
-            
-            ctx.fillStyle = "red";
-            ctx.fillRect(food.x*gridSize, food.y*gridSize, gridSize-2, gridSize-2);
-        }, 100);
-    },
-
-    startPong: (cvs, ctx) => {
-        // Simple Ping Pong Logic would go here
-        // For brevity in this 1k line context, just a placeholder graphic
-        ctx.fillStyle = "black";
-        ctx.fillRect(0,0,cvs.width,cvs.height);
-        ctx.fillStyle = "white";
-        ctx.font = "30px Inter";
-        ctx.fillText("PONG LOADING...", 300, 225);
+    clock: () => {
+        setInterval(() => {
+            const d = new Date();
+            document.getElementById('clock-display').innerText = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        }, 1000);
     }
 };
 
-/* --- 5. NAVIGATION CONTROLLER --- */
+// --- NAVIGATION ---
 const NAV = {
-    go: (pageId, btn) => {
-        // Handle Sidebar UI
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        btn.classList.add('active');
+    go: (pid, btn) => {
+        // Handle Sidebar Selection
+        if(btn) {
+            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+            if(btn.classList.contains('nav-item')) btn.classList.add('active');
+        }
+        
+        // Handle Bottom Bar State (Only active if going to Home)
+        const homeBtn = document.querySelector('.bar-btn.home');
+        if(pid === 'p-welcome') homeBtn.classList.add('active');
+        else homeBtn.classList.remove('active');
 
-        // Handle Page Transition
-        document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
+        // Page Transition
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pid).classList.add('active');
+
+        if(pid === 'p-games') setTimeout(ARCADE.resize, 100);
     }
 };
 
-/* --- 6. SETTINGS MANAGER --- */
-const SETTINGS = {
+// --- SETTINGS ---
+const SET = {
+    preview: (inp, imgId, type) => {
+        if(inp.files[0]) {
+            const r = new FileReader();
+            r.onload = e => {
+                if(type === 'logo') CFG.logo = e.target.result;
+                if(type === 'bg') CFG.bg = e.target.result;
+            };
+            r.readAsDataURL(inp.files[0]);
+        }
+    },
     save: () => {
-        CONFIG.airline = document.getElementById('set-name').value;
-        CONFIG.color = document.getElementById('set-color').value;
-        CONFIG.bg = document.getElementById('set-bg').value;
-        CONFIG.origin = document.getElementById('set-origin').value;
-        CONFIG.dest = document.getElementById('set-dest').value;
-
-        localStorage.setItem('v36_config', JSON.stringify(CONFIG));
-        OS.loadConfig(); // Apply immediately
-        alert('System Updated. Re-rendering UI...');
+        CFG.name = document.getElementById('set-name').value;
+        CFG.from = document.getElementById('set-from').value;
+        CFG.to = document.getElementById('set-to').value;
+        CFG.color = document.getElementById('set-color').value;
+        localStorage.setItem('v40_os', JSON.stringify(CFG));
+        location.reload();
     },
     reset: () => {
-        localStorage.removeItem('v36_config');
+        localStorage.removeItem('v40_os');
         location.reload();
     }
 };
 
-/* --- 7. THEME TOGGLE --- */
-const THEME = {
-    toggle: () => {
-        document.body.classList.toggle('dark-mode');
+// --- FLIGHT SIMULATOR ---
+const SIM = {
+    ctx: null, cvs: null,
+    init: () => {
+        SIM.cvs = document.getElementById('sim-canvas');
+        SIM.ctx = SIM.cvs.getContext('2d');
+        window.addEventListener('resize', SIM.resize);
+        SIM.resize();
+        SIM.loop();
+    },
+    resize: () => {
+        if(!SIM.cvs) return;
+        SIM.cvs.width = SIM.cvs.parentElement.offsetWidth;
+        SIM.cvs.height = SIM.cvs.parentElement.offsetHeight;
+    },
+    loop: () => {
+        const c = SIM.ctx, w = SIM.cvs.width, h = SIM.cvs.height;
+        const t = Date.now() * 0.0005;
+
+        // Sky
+        const g = c.createLinearGradient(0,0,0,h);
+        g.addColorStop(0, "#0F172A"); g.addColorStop(1, "#334155");
+        c.fillStyle = g; c.fillRect(0,0,w,h);
+
+        // Moving Clouds (Simple)
+        c.fillStyle = "rgba(255,255,255,0.05)";
+        for(let i=0; i<5; i++) {
+            c.beginPath();
+            c.arc((w*i*0.3 + t*50)%w, h/2 + Math.sin(t+i)*50, 60, 0, Math.PI*2);
+            c.fill();
+        }
+
+        // Flight Path
+        c.strokeStyle = CFG.color; c.lineWidth = 3; c.beginPath();
+        c.moveTo(0, h-50);
+        c.quadraticCurveTo(w/2, h/2, w, 50);
+        c.stroke();
+
+        // Plane
+        const p = (Math.sin(t) + 1) / 2; 
+        // Simple plane math for curve approximation (simplified)
+        // In a real app we'd calculate point on bezier
+        const px = w/2; const py = h/2 + Math.sin(t)*20; // Just bobbing in center for "Live Widget" feel
+        
+        c.fillStyle = "white"; c.beginPath(); c.arc(px, py, 5, 0, Math.PI*2); c.fill();
+        c.strokeStyle = "rgba(255,255,255,0.3)"; c.beginPath(); c.arc(px, py, 15 + Math.sin(t*5)*5, 0, Math.PI*2); c.stroke();
+
+        requestAnimationFrame(SIM.loop);
     }
 };
 
-// BOOT THE SYSTEM
-window.onload = OS.init;
+// --- ARCADE ---
+const ARCADE = {
+    id: null,
+    resize: () => {
+        const c = document.getElementById('game-cvs');
+        c.width = c.parentElement.offsetWidth;
+        c.height = c.parentElement.offsetHeight;
+    },
+    start: (g) => {
+        document.getElementById('game-ui').style.display = 'none';
+        if(ARCADE.id) cancelAnimationFrame(ARCADE.id);
+        const c = document.getElementById('game-cvs');
+        const x = c.getContext('2d');
+        if(g === 'snake') ARCADE.snake(c, x);
+        if(g === 'breakout') ARCADE.breakout(c, x);
+    },
+    snake: (c, x) => {
+        let s=[{x:5,y:5}], d={x:1,y:0}, f={x:10,y:10}, lt=0;
+        document.onkeydown=e=>{if(e.key=='ArrowUp'&&d.y!=1)d={x:0,y:-1};if(e.key=='ArrowDown'&&d.y!=-1)d={x:0,y:1};if(e.key=='ArrowLeft'&&d.x!=1)d={x:-1,y:0};if(e.key=='ArrowRight'&&d.x!=-1)d={x:1,y:0}};
+        const l=t=>{if(t-lt>100){lt=t;const h={x:s[0].x+d.x,y:s[0].y+d.y};s.unshift(h);if(h.x==f.x&&h.y==f.y)f={x:Math.floor(Math.random()*20),y:Math.floor(Math.random()*15)};else s.pop();x.fillStyle='#000';x.fillRect(0,0,c.width,c.height);x.fillStyle=CFG.color;s.forEach(p=>x.fillRect(p.x*20,p.y*20,18,18));x.fillStyle='red';x.fillRect(f.x*20,f.y*20,18,18);}ARCADE.id=requestAnimationFrame(l)};l(0);
+    },
+    breakout: (c, x) => {
+        let b={x:150,y:200,dx:3,dy:-3}, p={x:100,w:80}, br=[];
+        for(let i=0;i<20;i++) br.push({x:(i%5)*60+20,y:Math.floor(i/5)*20+20,a:1});
+        document.onkeydown=e=>{if(e.key=='ArrowLeft')p.x-=30;if(e.key=='ArrowRight')p.x+=30};
+        const l=()=>{x.fillStyle='#000';x.fillRect(0,0,c.width,c.height);b.x+=b.dx;b.y+=b.dy;if(b.x<0||b.x>c.width)b.dx*=-1;if(b.y<0)b.dy*=-1;if(b.y>c.height){b.x=150;b.y=200}if(b.y>350&&b.x>p.x&&b.x<p.x+p.w)b.dy*=-1;br.forEach(k=>{if(k.a&&b.x>k.x&&b.x<k.x+50&&b.y>k.y&&b.y<k.y+15){b.dy*=-1;k.a=0}});x.fillStyle='white';x.beginPath();x.arc(b.x,b.y,5,0,7);x.fill();x.fillStyle=CFG.color;x.fillRect(p.x,360,p.w,10);br.forEach(k=>{if(k.a)x.fillRect(k.x,k.y,50,15)});ARCADE.id=requestAnimationFrame(l)};l();
+    }
+};
 
+// --- CHAT ---
+const CHAT = {
+    send: () => {
+        const i = document.getElementById('chat-in');
+        const v = i.value; if(!v)return;
+        const b = document.getElementById('chat-feed');
+        b.innerHTML += `<div style="align-self:flex-end; background:var(--primary); color:white; padding:10px 15px; border-radius:15px; max-width:80%; font-size:14px;">${v}</div>`;
+        i.value=''; b.scrollTop=b.scrollHeight;
+        setTimeout(()=>{
+            let r="Request received.";
+            if(v.includes('drink'))r="Drinks are on the way.";
+            if(v.includes('wifi'))r="WiFi Code: CX888";
+            b.innerHTML+=`<div style="align-self:flex-start; background:white; padding:10px 15px; border-radius:15px; max-width:80%; font-size:14px; box-shadow:var(--shadow);">${r}</div>`;
+            b.scrollTop=b.scrollHeight;
+        },800);
+    }
+};
+
+window.onload = SYS.init;
 </script>
 </body>
 </html>
